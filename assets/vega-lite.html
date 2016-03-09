@@ -1,0 +1,44 @@
+<html>
+  <script src="bower_components/d3/d3.min.js" charset="utf-8"></script>
+  <script src="bower_components/vega/vega.js" charset="utf-8"></script>
+  <script src="bower_components/vega-lite/vega-lite.js" charset="utf-8"></script>
+  <script src="bower_components/vega-embed/vega-embed.js" charset="utf-8"></script>
+
+  <dom-module id="vega-lite-plot">
+    <template>
+      <div id="plot">
+          <content></content>
+      </div>
+    </template>
+    <script>
+      Polymer({
+        is: "vega-lite-plot",
+        properties: {
+          json: {
+            type: Object,
+            notify: true,
+            observer: 'render'
+          }
+        },
+
+        render: function() {
+          var embedSpec = {
+            mode: "vega-lite",
+            spec: this.json
+          }
+          vg.embed("#plot", embedSpec, function(error, result) {
+            // Callback receiving the View instance and parsed Vega spec
+            // result.view is the View, which resides under the '#vis' element
+          });
+
+        },
+
+        ready: function (){
+          this.render()
+        },
+
+      });
+    </script>
+  </dom-module>
+
+</html>
