@@ -5,12 +5,11 @@ function openurl(url::AbstractString)
     @linux_only   run(`xdg-open $url`)
 end
 
-#Jupyter Notebook display
 import Base.writemime
 
 asset(url...) = readall(Pkg.dir("Vega", "assets", "bower_components", url...))
 
-function writemime(io::IO, ::MIME"text/html", v::VegaVisualization)
+function writemime(io::IO, ::MIME"text/html", v::VegaLiteVis)
     divid = "vg" * randstring(3)
     script_contents = scriptstr(v, divid)
     display("text/html", """
@@ -25,22 +24,22 @@ function writemime(io::IO, ::MIME"text/html", v::VegaVisualization)
     """)
 end
 
-import Patchwork: Elem
+# import Patchwork: Elem
+#
+# function patchwork_repr(v::VegaVisualization)
+#     divid = "vg" * randstring(3)
+#     script_contents = scriptstr(v, divid)
+#     Elem(:div, [
+#         Elem(:div, "") & Dict(:id=>divid, :style=>Dict("min-height"=>"$(v.height + 110)px")),
+#         Elem(:script, script_contents) & Dict(:type=>"text/javascript")
+#     ])
+# end
+#
+# function writemime(io::IO, m::MIME"text/html", v::VegaVisualization)
+#     writemime(io, m, patchwork_repr(v))
+# end
 
-function patchwork_repr(v::VegaVisualization)
-    divid = "vg" * randstring(3)
-    script_contents = scriptstr(v, divid)
-    Elem(:div, [
-        Elem(:div, "") & Dict(:id=>divid, :style=>Dict("min-height"=>"$(v.height + 110)px")),
-        Elem(:script, script_contents) & Dict(:type=>"text/javascript")
-    ])
-end
-
-function writemime(io::IO, m::MIME"text/html", v::VegaVisualization)
-    writemime(io, m, patchwork_repr(v))
-end
-
-function scriptstr(v::VegaVisualization, divid)
+function scriptstr(v::VegaLiteVis, divid)
     spec = JSON.json(tojs(v))
     return """
         require.config({

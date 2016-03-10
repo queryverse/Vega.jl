@@ -250,6 +250,7 @@ Sets axis properties
 config_axis(;properties...)
 
 General
+
 - `axisWidth` (`Real`) : Width of the axis line
 - `layer` (`AbstractString`) : A string indicating if the axis (and any gridlines) should be placed above or below the data marks.
 - `offset` (`Real`) : The offset, in pixels, by which to displace the axis from the edge of the enclosing group or data rectangle.
