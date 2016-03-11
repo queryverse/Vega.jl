@@ -4,7 +4,7 @@ module VegaLite
 
     using JSON
 
-    import Base: +, *, scale
+    import Base: +, *, scale, show
 
     export VegaLiteVis, scale, axis, legend
 
@@ -33,6 +33,7 @@ module VegaLite
 
 
     include("utils.jl")
+    include("render.jl")
     include("axis.jl")
     include("scale.jl")
     include("legend.jl")
