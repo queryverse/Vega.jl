@@ -1,5 +1,10 @@
 
+"""
+Sets the data source
+data_values(*sym1*=*vec1*, *sym2*=*vec2*, ...)
 
+Adds data vectors (`vec1`, `vec1`,..) and binds each of them to a symbol (`sym1`, `sym2`, ...)
+"""
 function data_values(;values...)
   length(values)==0 && error("no values given")
 
