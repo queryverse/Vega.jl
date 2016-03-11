@@ -31,7 +31,6 @@ title(1, "with plots using VegaLite") |> fontstyle(italic)
 #------- plot ------------------------------------
 @newchunk center
 
-
 ts = sort(rand(10))
 ys = Float64[ rand()*0.1 + cos(x) for x in ts]
 
@@ -39,6 +38,9 @@ v = data_values(time=ts, res=ys) +
       mark_line() +
       encoding_x_quant(:time) +
       encoding_y_quant(:res)
+
+@newchunk center2
+
 
 v2 = v + config_scale(round=true)
 JSON.print(v2.vis)
@@ -89,17 +91,17 @@ data_values(mpg) +
 data_values(mpg) +
   mark_point() +
   encoding_x_quant(:Cty, axis=false) +
-  encoding_y_quant(:Hwy) +
-  encoding_color_nominal(:Manufacturer)
+  encoding_y_quant(:Hwy, scale=scale(zero=false)) +
+  encoding_color_nominal(:Manufacturer) +
+  config_cell(width=350, height=400)
 
 data_values(mpg) +
   mark_line() +
   encoding_x_ord(:Year,
-                 axis  = Dict(:labelAngle=>-45, :labelAlign=>"right"),
-                 scale = Dict(:bandSize=>50)) +
+                 axis  = axis(labelAngle=-45, labelAlign="right"),
+                 scale = scale(bandSize=50)) +
   encoding_y_quant(:Hwy, aggregate="mean") +
   encoding_color_nominal(:Manufacturer)
-
 
 data_values(mpg) +
   mark_point() +
@@ -107,16 +109,25 @@ data_values(mpg) +
   encoding_row_ord(:Year) +
   encoding_x_quant(:Displ) +
   encoding_y_quant(:Hwy) +
+  encoding_size_quant(:Cty) +
   encoding_color_nominal(:Manufacturer)
 
-  {
-    "data": {"url": "data/cars.json"},
-    "mark": "text",
-    "encoding": {
-      "row": {"field": "Origin", "type": "ordinal"},
-      "column": {"field": "Cylinders", "type": "ordinal"},
-      "color": {"aggregate": "mean", "field": "Horsepower", "type": "quantitative"},
-      "text": {"aggregate": "count", "field": "*", "type": "quantitative"}
-    },
-    "config": {"mark": {"applyColorToBackground": true}}
-  }
+data_values(mpg) +
+  mark_text() +
+  encoding_column_ord(:Cyl) +
+  encoding_row_ord(:Year) +
+  encoding_text_quant(:Displ, aggregate="mean") +
+  config_mark(fontStyle="italic", fontSize=12, font="courier")
+
+
+{
+  "data": {"url": "data/cars.json"},
+  "mark": "text",
+  "encoding": {
+    "row": {"field": "Origin", "type": "ordinal"},
+    "column": {"field": "Cylinders", "type": "ordinal"},
+    "color": {"aggregate": "mean", "field": "Horsepower", "type": "quantitative"},
+    "text": {"aggregate": "count", "field": "*", "type": "quantitative"}
+  },
+  "config": {"mark": {"applyColorToBackground": true}}
+}
