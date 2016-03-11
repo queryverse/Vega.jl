@@ -6,9 +6,9 @@ _Julia bindings to Vega-Lite_
 |:--------:|:---------:|:-----------------------------:|:-----------:|
 |[![VegaLite](http://pkg.julialang.org/badges/VegaLite_0.3.svg)](http://pkg.julialang.org/?pkg=VegaLite&ver=0.3) | [![VegaLite](http://pkg.julialang.org/badges/VegaLite_0.4.svg)](http://pkg.julialang.org/?pkg=VegaLite&ver=0.4) | [![Build Status](https://travis-ci.org/fredo-dedup/VegaLite.jl.svg?branch=master)](https://travis-ci.org/fredo-dedup/VegaLite.jl) | [![Coverage Status](https://coveralls.io/repos/fredo-dedup/VegaLite.jl/badge.png?branch=master)](https://coveralls.io/r/fredo-dedup/VegaLite.jl?branch=master) |
 
-This package provides access to the Vega-lite charting library from Julia (see http:http://vega.github.io/vega-lite/).
+This package provides access to the Vega-Lite high-level visualization grammar from Julia (see http:http://vega.github.io/vega-lite/).
 
-Install with `Pkg.add("ReverseDiffSource")` (or Pkg.clone("https://github.com/fredo-dedup/VegaLite.jl.git") while its not in the official repository).
+Install with `Pkg.add("VegaLite")` (or Pkg.clone("https://github.com/fredo-dedup/VegaLite.jl.git") while its not in the official repository).
 
 Examples:
 
@@ -24,7 +24,7 @@ data_values(mpg) +            # add values
   encoding_y_quant(:Hwy)
 ```
 
-![plot1](examples/png/vega (1).png)
+![plot1](examples/png/vega (2).png)
 
 ```julia
 data_values(mpg) +
@@ -34,6 +34,11 @@ data_values(mpg) +
   encoding_color_nominal(:Manufacturer) +
   config_cell(width=350, height=400)
 
+```
+
+![plot1](examples/png/vega (3).png)
+
+```julia
 data_values(mpg) +
   mark_line() +
   encoding_x_ord(:Year,
@@ -42,6 +47,11 @@ data_values(mpg) +
   encoding_y_quant(:Hwy, aggregate="mean") +
   encoding_color_nominal(:Manufacturer)
 
+```
+
+![plot1](examples/png/vega (4).png)
+
+```julia
 data_values(mpg) +
   mark_point() +
   encoding_column_ord(:Cyl) +
@@ -51,6 +61,11 @@ data_values(mpg) +
   encoding_size_quant(:Cty) +
   encoding_color_nominal(:Manufacturer)
 
+```
+
+![plot1](examples/png/vega (5).png)
+
+```julia
 data_values(mpg) +
   mark_text() +
   encoding_column_ord(:Cyl) +
@@ -58,3 +73,5 @@ data_values(mpg) +
   encoding_text_quant(:Displ, aggregate="mean") +
   config_mark(fontStyle="italic", fontSize=12, font="courier")
 ```
+
+![plot1](examples/png/vega (6).png)
