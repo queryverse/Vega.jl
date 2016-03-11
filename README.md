@@ -4,11 +4,11 @@ _Julia bindings to Vega-Lite_
 
 |Julia 0.3 | Julia 0.4 | master (on nightly + release) | Coverage |
 |:--------:|:---------:|:-----------------------------:|:-----------:|
-|[![VegaLite](http://pkg.julialang.org/badges/VegaLite_0.3.svg)](http://pkg.julialang.org/?pkg=VegaLite&ver=0.3) | [![VegaLite](http://pkg.julialang.org/badges/VegaLite_0.4.svg)](http://pkg.julialang.org/?pkg=VegaLite&ver=0.4) | [![Build Status](https://travis-ci.org/JuliaDiff/VegaLite.jl.svg?branch=master)](https://travis-ci.org/JuliaDiff/VVegaLite.jl) | [![Coverage Status](https://coveralls.io/repos/JuliaDiff/VegaLite.jl/badge.png?branch=master)](https://coveralls.io/r/JuliaDiff/VegaLite.jl?branch=master) |
+|[![VegaLite](http://pkg.julialang.org/badges/VegaLite_0.3.svg)](http://pkg.julialang.org/?pkg=VegaLite&ver=0.3) | [![VegaLite](http://pkg.julialang.org/badges/VegaLite_0.4.svg)](http://pkg.julialang.org/?pkg=VegaLite&ver=0.4) | [![Build Status](https://travis-ci.org/fredo-dedup/VegaLite.jl.svg?branch=master)](https://travis-ci.org/fredo-dedup/VegaLite.jl) | [![Coverage Status](https://coveralls.io/repos/fredo-dedup/VegaLite.jl/badge.png?branch=master)](https://coveralls.io/r/fredo-dedup/VegaLite.jl?branch=master) |
 
 This package provides access to the Vega-lite charting library from Julia (see http:http://vega.github.io/vega-lite/).
 
-Install with `Pkg.add("ReverseDiffSource")`.
+Install with `Pkg.add("ReverseDiffSource")` (or Pkg.clone("https://github.com/fredo-dedup/VegaLite.jl.git") while its not in the official repository).
 
 Examples:
 
