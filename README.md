@@ -2,11 +2,11 @@
 
 _Julia bindings to Vega-Lite_
 
-|Julia 0.3 | Julia 0.4 | master (on nightly + release) | Coverage |
+|Julia 0.4 | Julia 0.5 | master (on nightly + release) | Coverage |
 |:--------:|:---------:|:-----------------------------:|:-----------:|
-|[![VegaLite](http://pkg.julialang.org/badges/VegaLite_0.3.svg)](http://pkg.julialang.org/?pkg=VegaLite&ver=0.3) | [![VegaLite](http://pkg.julialang.org/badges/VegaLite_0.4.svg)](http://pkg.julialang.org/?pkg=VegaLite&ver=0.4) | [![Build Status](https://travis-ci.org/fredo-dedup/VegaLite.jl.svg?branch=master)](https://travis-ci.org/fredo-dedup/VegaLite.jl) | [![Coverage Status](https://coveralls.io/repos/fredo-dedup/VegaLite.jl/badge.png?branch=master)](https://coveralls.io/r/fredo-dedup/VegaLite.jl?branch=master) |
+|[![VegaLite](http://pkg.julialang.org/badges/VegaLite_0.4.svg)](http://pkg.julialang.org/?pkg=VegaLite&ver=0.4) | N/A | [![Build Status](https://travis-ci.org/fredo-dedup/VegaLite.jl.svg?branch=master)](https://travis-ci.org/fredo-dedup/VegaLite.jl) | [![Coverage Status](https://coveralls.io/repos/fredo-dedup/VegaLite.jl/badge.png?branch=master)](https://coveralls.io/r/fredo-dedup/VegaLite.jl?branch=master) |
 
-This package provides access to the Vega-Lite high-level visualization grammar from Julia (see http://vega.github.io/vega-lite/). Install with `Pkg.add("VegaLite")` (or `Pkg.clone("https://github.com/fredo-dedup/VegaLite.jl.git")` while its not in the official repository).
+This package provides access to the Vega-Lite high-level visualization grammar from Julia (see http://vega.github.io/vega-lite/). Install with `Pkg.add("VegaLite")` (or `Pkg.clone("https://github.com/fredo-dedup/VegaLite.jl.git")` while its not in the official repository). You can use the integrated documentation (e.g. `? config_mark`) to get the full list of properties.
 
 ##Examples:
 
@@ -17,15 +17,15 @@ using VegaLite
 ts = sort(rand(10))
 ys = Float64[ rand()*0.1 + cos(x) for x in ts]
 
-v = data_values(time=ts, res=ys) +
-      mark_line() +
-      encoding_x_quant(:time) +
-      encoding_y_quant(:res)
+v = data_values(time=ts, res=ys) +    # add the data vectors & assign to symbols 'time' and 'res'
+      mark_line() +                   # mark type = line
+      encoding_x_quant(:time) +       # bind x dimension to :time, quantitative scale
+      encoding_y_quant(:res)          # bind y dimension to :res, quantitative scale
 ```
 
 ![plot1](examples/png/vega (1).png)
 
-- Plotting from a DataFrame, a scatterplot:
+- Scatterplot from a DataFrame:
 ```julia
 using RDatasets
 
@@ -45,7 +45,7 @@ data_values(mpg) +
   mark_point() +
   encoding_x_quant(:Cty, axis=false) +
   encoding_y_quant(:Hwy, scale=scale(zero=false)) +
-  encoding_color_nominal(:Manufacturer) +
+  encoding_color_nominal(:Manufacturer) +    # bind color to :Manufacturer, nominal scale
   config_cell(width=350, height=400)
 
 ```
