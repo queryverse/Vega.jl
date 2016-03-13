@@ -2,7 +2,7 @@
 
 module VegaLite
 
-    using JSON
+    using JSON, Compat
 
     import Base: +, *, scale, show
 

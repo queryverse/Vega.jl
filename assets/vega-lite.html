@@ -6,7 +6,7 @@
 
   <dom-module id="vega-lite-plot">
     <template>
-      <div id="plot">
+      <div>
           <content></content>
       </div>
     </template>
@@ -18,23 +18,24 @@
             type: Object,
             notify: true,
             observer: 'render'
-          }
+          },
+          svg: Boolean,
+          actions: Boolean
         },
 
         render: function() {
           var embedSpec = {
             mode: "vega-lite",
+            renderer: this.svg ? "svg" : "canvas",
+            actions: false, //this.actions,
             spec: this.json
           }
-          vg.embed("#plot", embedSpec, function(error, result) {
-            result.view.renderer("svg")
-            // Callback receiving the View instance and parsed Vega spec
-            // result.view is the View, which resides under the '#vis' element
+          vg.embed(this, embedSpec, function(error, result) {
           });
 
         },
 
-        ready: function (){
+        attached: function (){
           this.render()
         },
 
