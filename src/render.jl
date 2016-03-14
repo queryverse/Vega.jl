@@ -29,6 +29,8 @@ function writehtml(io::IO, v::VegaLiteVis; title="Vega.jl Visualization")
 
   var embedSpec = {
     mode: "vega-lite",
+    renderer: "$(SVG ? "svg" : "canvas")",
+    actions: $SAVE_BUTTONS,
     spec: $(JSON.json(v.vis))
   }
 
@@ -65,7 +67,6 @@ end
 
 ###################################################
 
-import Base.writemime
 
 # asset(url...) = readall(Pkg.dir("Vega", "assets", "bower_components", url...))
 
@@ -82,7 +83,7 @@ import Base.writemime
 #     """)
 # end
 #
-import Patchwork: Elem
+# import Patchwork: Elem
 
 # function patchwork_repr(v::VegaLiteVis)
 #     divid = "vg" * randstring(3)
@@ -151,9 +152,211 @@ import Patchwork: Elem
 #   write(io, fh)
 # end
 
-jspath(url...) = Pkg.dir("VegaLite", "assets", "bower_components", url...)
+# function jslibpath(url...)
+#   libpath = Pkg.dir("VegaLite", "assets", "bower_components", url...)
+#   replace(libpath, "\\", "/")  # for windows...
+# end
+#
+#
+# function writemime(io::IO, m::MIME"text/html", v::VegaLiteVis)
+#   divid = "vl" * randstring(3) # generated id for this plot
 
-function writemime(io::IO, m::MIME"text/html", v::VegaLiteVis)
+#   script = """
+#     require.config({
+#       paths: {
+#         d3:        "https://d3js.org/d3.v3.min",
+#         vega:      "https://vega.github.io/vega/vega.min",
+#         vegalite:  "https://vega.github.io/vega-lite/vega-lite",
+#         vegaembed: "https://vega.github.io/vega-editor/vendor/vega-embed"
+#       }
+#     });
+#
+#     require(["d3"], function(d3){
+#
+#       window.d3 = d3;
+#
+#       require(["vega", "vegalite", "vegaembed"],
+#              function(vg, vgl, vge){
+#
+#         // window.vg = vg;
+#
+#         vg.parse.spec({
+#   "description": "A simple bar chart with embedded data.",
+#   "data": {
+#     "values": [
+#       {"a": "A","b": 28}, {"a": "B","b": 55}, {"a": "C","b": 43},
+#       {"a": "D","b": 91}, {"a": "E","b": 81}, {"a": "F","b": 53},
+#       {"a": "G","b": 19}, {"a": "H","b": 87}, {"a": "I","b": 52}
+#     ]
+#   },
+#   "mark": "bar",
+#   "encoding": {
+#     "x": {"field": "a", "type": "ordinal"},
+#     "y": {"field": "b", "type": "quantitative"}
+#   }
+# }, function(chart) { chart({el:"#$divid"}).update(); });
+#
+#         document.getElementById("$divid").insertAdjacentHTML('beforeend', '<br><a >Save yourgh ! as PNG</a>')
+#
+#
+#       });
+#     });
+#   """
+#
+#   spec = """
+#   {
+#     "width": 400,
+#     "height": 200,
+#     "padding": {"top": 10, "left": 30, "bottom": 30, "right": 10},
+#     "data": [
+#       {
+#         "name": "table",
+#         "values": [
+#           {"x": 1,  "y": 28}, {"x": 2,  "y": 55},
+#           {"x": 3,  "y": 43}, {"x": 4,  "y": 91},
+#           {"x": 5,  "y": 81}, {"x": 6,  "y": 53},
+#           {"x": 7,  "y": 19}, {"x": 8,  "y": 87},
+#           {"x": 9,  "y": 52}, {"x": 10, "y": 48},
+#           {"x": 11, "y": 24}, {"x": 12, "y": 49},
+#           {"x": 13, "y": 87}, {"x": 14, "y": 66},
+#           {"x": 15, "y": 17}, {"x": 16, "y": 27},
+#           {"x": 17, "y": 68}, {"x": 18, "y": 16},
+#           {"x": 19, "y": 49}, {"x": 20, "y": 15}
+#         ]
+#       }
+#     ],
+#     "scales": [
+#       {
+#         "name": "x",
+#         "type": "ordinal",
+#         "range": "width",
+#         "domain": {"data": "table", "field": "x"}
+#       },
+#       {
+#         "name": "y",
+#         "type": "linear",
+#         "range": "height",
+#         "domain": {"data": "table", "field": "y"},
+#         "nice": true
+#       }
+#     ],
+#     "axes": [
+#       {"type": "x", "scale": "x"},
+#       {"type": "y", "scale": "y"}
+#     ],
+#     "marks": [
+#       {
+#         "type": "rect",
+#         "from": {"data": "table"},
+#         "properties": {
+#           "enter": {
+#             "x": {"scale": "x", "field": "x"},
+#             "width": {"scale": "x", "band": true, "offset": -1},
+#             "y": {"scale": "y", "field": "y"},
+#             "y2": {"scale": "y", "value": 0}
+#           },
+#           "update": {
+#             "fill": {"value": "steelblue"}
+#           },
+#           "hover": {
+#             "fill": {"value": "red"}
+#           }
+#         }
+#       }
+#     ]
+#   }
+#   """
+#
+#   spec2 = """
+#   {
+#     "description": "A simple bar chart with embedded data.",
+#     "data": {
+#       "values": [
+#         {"a": "A","b": 28}, {"a": "B","b": 55}, {"a": "C","b": 43},
+#         {"a": "D","b": 91}, {"a": "E","b": 81}, {"a": "F","b": 53},
+#         {"a": "G","b": 19}, {"a": "H","b": 87}, {"a": "I","b": 52}
+#       ]
+#     },
+#     "mark": "bar",
+#     "encoding": {
+#       "x": {"field": "a", "type": "ordinal"},
+#       "y": {"field": "b", "type": "quantitative"}
+#     }
+#   }
+#   """
+#
+#   script = """
+#         require.config({
+#           paths: {
+#             d3: "https://vega.github.io/vega-editor/vendor/d3.min",
+#             vega: "https://vega.github.io/vega/vega.min",
+#             cloud: "https://vega.github.io/vega-editor/vendor/d3.layout.cloud",
+#             topojson: "https://vega.github.io/vega-editor/vendor/topojson",
+#             vegalite: "https://vega.github.io/vega-lite/vega-lite",
+#             embed: "https://vega.github.io/vega-editor/vendor/vega-embed"
+#           }
+#         });
+#
+#         require(["d3", "topojson", "cloud"], function(d3, topojson, cloud){
+#
+#           window.d3 = d3;
+#           window.topojson = topojson;
+#           window.d3.layout.cloud = cloud;
+#           console.log("d3")
+#
+#
+#             require(["vega"], function(vg) {
+#
+#               window.vg = vg
+#               console.log("vg")
+#
+#               require(["vegalite"], function(vgl) {
+#
+#                 console.log("vegalite")
+#
+#                 var embedSpec = {
+#                   renderer: "svg",
+#                   actions: false,
+#                   spec: $spec2
+#                 };
+#
+#                 var vgSpec = vgl.compile(embedSpec.spec).spec;
+#                 vg.parse.spec(vgSpec, function(chart) { chart({el:\"#$divid\"}).update(); });
+#
+#               }); //vegaembed require end
+#             }); //vega require end
+#
+#         }); //d3 require end
+#     """
+    # vg.embed("#$divid", embedSpec, function(error, result) { });
+    # vg.parse.spec($spec, function(chart) { chart({el:\"#$divid\"}).update(); });
+
+
+    # window.setTimeout(function() {
+    # var pnglink = document.getElementById(\"$divid\").getElementsByTagName(\"canvas\")[0].toDataURL(\"image/png\")
+    # document.getElementById(\"$divid\").insertAdjacentHTML('beforeend', '<br><a href=\"' + pnglink + '\" download>Save as PNG</a>')
+    #
+    # }, 20);
+
+  # var vgSpec = vgl.compile(embedSpec.spec).spec;
+  # var embedSpec = {
+  # mode: "vega-lite",
+  # renderer: "svg",
+  # actions: false,
+  # spec: $(JSON.json(v.vis))
+  # };
+  #
+  # vg.embed("#$divid", embedSpec, function(error, result) { result.view });
+
+  # patch = Elem(:div, [
+  #             Elem(:div, "") & Dict(:id=>divid, :style=>Dict("min-height"=>"300px")),
+  #             # Elem(:div, "") & Dict(:id=>divid),
+  #             Elem(:script, script) & Dict(:type=>"text/javascript")
+  #         ])
+  #
+  # return writemime(io, m, patch)
+
+
   # fh = """
   # <div>
   #   <script src="$(jspath("d3","d3.min.js"))" charset="utf-8"></script>
@@ -161,50 +364,66 @@ function writemime(io::IO, m::MIME"text/html", v::VegaLiteVis)
   #   <script src="$(jspath("vega-lite", "vega-lite.js"))" charset="utf-8"></script>
   #   <script src="$(jspath("vega-embed", "vega-embed.js"))" charset="utf-8"></script>
 
-    fh = """
-    <div>
-
-    <div id="plot">
-      <content></content>
-    </div>
-
-
-
-    <script type="text/javascript">
-
-      require.config({
-        paths: {
-          d3: "$(jspath("d3","d3.min.js"))",
-          vega: "$(jspath("vega", "vega.js"))",
-          vegalite: "$(jspath("vega-lite", "vega-lite.js"))",
-          vegaembed: "$(jspath("vega-embed", "vega-embed.js"))"
-        }
-      });
-
-      require(["d3", "vega", "vegalite", "vegaembed"],
-              function(d3, vg, vgl, vge){
-        // window.d3 = d3;
-
-        var embedSpec = {
-          mode: "vega-lite",
-          renderer: "svg",
-          actions: false,
-          spec: $(JSON.json(v.vis))
-        }
-
-        vg.embed("#plot", embedSpec, function(error, result) {
-        });
-      });
-
-    </script>
-
-  </div>
-  """
-
-  println(fh)
-  # writemime(io, m, fh)
-  write(io, fh)
-end
-
-
-export writemime
+  # // d3: "$(jslibpath("d3","d3.min.js"))",
+  # // vega: "$(jslibpath("vega", "vega.js"))",
+  # // vegalite: "$(jslibpath("vega-lite", "vega-lite.js"))",
+  # // vegaembed: "$(jslibpath("vega-embed", "vega-embed.js"))"
+#
+#   fh = """
+#   <div>
+#     <div id="$divid"></div>
+#
+#     <meta charset="utf-8">
+#
+#     <script type="text/javascript">
+#       require.config({
+#         paths: {
+#           d3:        "https://d3js.org/d3.v3.min",
+#           vega:      "https://vega.github.io/vega/vega",
+#           vegalite:  "https://vega.github.io/vega-lite/vega-lite",
+#           vegaembed: "https://vega.github.io/vega-editor/vendor/vega-embed"
+#         }
+#       });
+#
+#       require(["d3"], function(d3){
+#
+#         window.d3 = d3;
+#         console.log("d3")
+#
+#         require(["vega"], function(vg) {
+#
+#           window.vg = vg
+#           console.log("vg")
+#
+#           require(["vegalite"], function(vgl) {
+#
+#             console.log("vegalite")
+#
+#             var embedSpec = {
+#               mode: "vega-lite",
+#               renderer: "svg",
+#               actions: false,
+#               spec: $(JSON.json(v.vis))
+#             }
+#
+#             var vgSpec = vgl.compile(embedSpec.spec).spec;
+#             vg.parse.spec(vgSpec, function(chart) { chart({el:\"#$divid\"}).update(); });
+#
+#           }); //vegaembed require end
+#         }); //vega require end
+#       }); //d3 require end
+#
+#     </script>
+#
+#   </div>
+#   """
+#   # FIXME : understand why vega-embed can't be loaded
+#   # vg.embed("#$divid", embedSpec, function(error, result) {
+# 
+#   println(fh)
+#   # writemime(io, m, fh)
+#   write(io, fh)
+# end
+#
+#
+# export writemime

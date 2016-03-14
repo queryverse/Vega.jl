@@ -7,18 +7,22 @@ _Julia bindings to Vega-Lite_
 |[![VegaLite](http://pkg.julialang.org/badges/VegaLite_0.4.svg)](http://pkg.julialang.org/?pkg=VegaLite&ver=0.4) | N/A | [![Build Status](https://travis-ci.org/fredo-dedup/VegaLite.jl.svg?branch=master)](https://travis-ci.org/fredo-dedup/VegaLite.jl) | [![Coverage Status](https://coveralls.io/repos/github/fredo-dedup/VegaLite.jl/badge.svg?branch=master)](https://coveralls.io/github/fredo-dedup/VegaLite.jl?branch=master) |
 
 
-This package provides access to the Vega-Lite high-level visualization grammar (http://vega.github.io/vega-lite/) from within Julia . Install with
-`Pkg.add("VegaLite")` (or `Pkg.clone("https://github.com/fredo-dedup/VegaLite.jl.git")`
-until it hasn't reached the official repository). You can use the integrated documentation (e.g. `? config_mark`) to get the full list of properties.
+This package provides access to the Vega-Lite high-level visualization grammar (http://vega.github.io/vega-lite/) from Julia.
 
-Vega-Lite is a simpler version of the Vega grammar allowing smaller and more expressive chart specifications. If you don't find this library powerful enough for your needs you can turn to Vega.jl (https://github.com/johnmyleswhite/Vega.jl) on which this project is largely based (thanks !).
+Vega-Lite is a simpler version of the Vega grammar allowing smaller and more expressive chart specifications. If you don't find this library powerful enough for your needs you can turn to Vega.jl (https://github.com/johnmyleswhite/Vega.jl) on which this project is partially based (thanks !).
 
-##TODO:
-- IJulia/Jupyter integration
-- More tests
-- Implement missing sub-specs : `transform`, `bin`,..
+Install with `Pkg.add("VegaLite")` (or `Pkg.clone("https://github.com/fredo-dedup/VegaLite.jl.git")`
+until it reaches the official repository). You can use the integrated documentation, e.g. `? config_mark` to get the full list of properties of the `config_mark` function.
 
-Any contribution, PR or issue, is welcome !
+The julia functions follow pretty closely the Vega-Lite JSON format: `data_values()` creates the `{"data": {values: { ...} }}` part of the spec file, etc.
+Only two functions are added:
+- `svg(Bool)` : sets the drawing mode of the plots, SVG if `true`, canvas if `false`. Default = `true`
+- `buttons(Bool)` : indicates if the plot should be accompanied with links 'Save as PNG', 'View source' and 'Open in Vega Editor'.
+
+Currently, VegaLite.jl works with IJulia/Jupyter, Escher and in the standard REPL (a browser window will open).
+
+
+All contributions, PR or issue, are welcome !
 
 
 ##Examples:
@@ -38,7 +42,7 @@ v = data_values(time=ts, res=ys) +    # add the data vectors & assign to symbols
 
 ![plot1](examples/png/vega (1).png)
 
-- Scatterplot from a DataFrame:
+- Scatterplot, using a DataFrame as the source:
 ```julia
 using RDatasets
 
@@ -52,7 +56,7 @@ data_values(mpg) +            # add values
 
 ![plot1](examples/png/vega (2).png)
 
-- A scatterplot, with colors and size settings:
+- A scatterplot, with colors and size settings for the plot:
 ```julia
 data_values(mpg) +
   mark_point() +

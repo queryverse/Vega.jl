@@ -27,7 +27,7 @@
           var embedSpec = {
             mode: "vega-lite",
             renderer: this.svg ? "svg" : "canvas",
-            actions: false, //this.actions,
+            actions: this.actions,
             spec: this.json
           }
           vg.embed(this, embedSpec, function(error, result) {
