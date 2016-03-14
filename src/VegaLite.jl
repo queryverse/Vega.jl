@@ -8,6 +8,8 @@ module VegaLite
 
     export VegaLiteVis, scale, axis, legend
 
+    export svg, buttons
+
     export data_values
 
     export config_grid, config_facet_axis, config_facet_cell,
@@ -51,6 +53,6 @@ module VegaLite
     Pkg.installed("DataFrames") != nothing && include("dataframes_integration.jl")
 
     ### Integration with IJulia - Jupyter
-    # Pkg.installed("IJulia") != nothing && include("ijulia_integration.jl")
+    Pkg.installed("IJulia") != nothing && include("ijulia_integration.jl")
 
 end

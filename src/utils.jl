@@ -21,6 +21,29 @@ softmerge(a::Dict, b::Any) = a
 softmerge(a::Any, b::Dict) = b
 softmerge(a, b) = b
 
+
+
+
+
+#  Switch for plotting in SVGs or canvas
+SVG = true
+svg() = SVG
+svg(b::Bool) = (global SVG ; SVG = b)
+
+
+
+
+#  Switch for showing or not the "save as PNG buttons"
+SAVE_BUTTONS = true
+buttons() = SAVE_BUTTONS
+buttons(b::Bool) = (global SAVE_BUTTONS ; SAVE_BUTTONS = b)
+
+
+
+
+
+
+
 # build Dict from kwargs, checks against signature
 function _mkdict(signature, properties)
   d = Dict()
