@@ -9,15 +9,16 @@ _Julia bindings to Vega-Lite_
 
 This package provides access to the Vega-Lite high-level visualization grammar (http://vega.github.io/vega-lite/) from Julia.
 
-Vega-Lite is a simpler version of the Vega grammar allowing smaller and more expressive chart specifications. If you don't find this library powerful enough for your needs you can turn to Vega.jl (https://github.com/johnmyleswhite/Vega.jl) on which this project is partially based (thanks !).
+`Vega-Lite` is a simpler version of the Vega grammar allowing smaller and more expressive chart specifications. `Vega-Lite` is intentionaly more limited than Vega, if you need a finer control over the produced graph you can turn instead to the Vega.jl package (https://github.com/johnmyleswhite/Vega.jl). Parts of the VegaLite package (rendering functions, IJulia integration) are based on Vega.jl (thanks !).
 
 Install with `Pkg.add("VegaLite")` (or `Pkg.clone("https://github.com/fredo-dedup/VegaLite.jl.git")`
-until it reaches the official repository). You can use the integrated documentation, e.g. `? config_mark` to get the full list of properties of the `config_mark` function.
+until it reaches the official repository). Most functions are documented, with the full list of their properties listed and explained, e.g. type `? config_mark` to get the full list of properties of the `config_mark` function, etc.
 
 The julia functions follow pretty closely the Vega-Lite JSON format: `data_values()` creates the `{"data": {values: { ...} }}` part of the spec file, etc.
+
 Only two functions are added:
 - `svg(Bool)` : sets the drawing mode of the plots, SVG if `true`, canvas if `false`. Default = `true`
-- `buttons(Bool)` : indicates if the plot should be accompanied with links 'Save as PNG', 'View source' and 'Open in Vega Editor'.
+- `buttons(Bool)` : indicates if the plot should be accompanied with links 'Save as PNG', 'View source' and 'Open in Vega Editor'. Default = `true`.
 
 Currently, VegaLite.jl works with IJulia/Jupyter, Escher and in the standard REPL (a browser window will open).
 
