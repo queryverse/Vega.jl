@@ -136,44 +136,92 @@ Pkg.build("IJulia")
 using IJulia
 @async notebook()
 
-using SHA
-sha256("abcde")
-5+6
 
-WARNING:root:kernel 6e1e5e58-776c-4d0e-b9e2-0d934ff40742 restarted
-WARNING: Union(args...) is deprecated, use Union{args...} instead.
- in depwarn at deprecated.jl:73
- in call at deprecated.jl:50
- in include at boot.jl:261
- in include_from_node1 at loading.jl:304
- in include at boot.jl:261
- in include_from_node1 at loading.jl:304
- in include at boot.jl:261
- in include_from_node1 at loading.jl:304
- in process_options at client.jl:280
- in _start at client.jl:378
-while loading D:\frtestar\.julia\v0.4\IJulia\src\handlers.jl, in expression starting on line 49
-ERROR: LoadError: UndefVarError: SHA256 not defined
- in init at D:\frtestar\.julia\v0.4\IJulia\src\IJulia.jl:62
- in include at boot.jl:261
- in include_from_node1 at loading.jl:304
- in process_options at client.jl:280
- in _start at client.jl:378
-while loading D:\frtestar\.julia\v0.4\IJulia\src\kernel.jl, in expression starting on line 6
-[I 14:40:00.311 NotebookApp] KernelRestarter: restarting kernel (1/5)
+##################### Atom.plotpane  #######################
 
-using Nettle
 
-signature_scheme = "hmac-sha256"
-isempty(signature_scheme) && (signature_scheme = "hmac-sha256")
-signature_scheme = split(signature_scheme, "-")
-if signature_scheme[1] != "hmac" || length(signature_scheme) != 2
-    error("unrecognized signature_scheme")
+
+using VegaLite
+using Media, Atom
+import Media: render
+
+
+####
+using Gadfly
+vt = plot(x=rand(10), y=rand(10));nothing
+
+typeof(vt)
+Base.Multimedia.displays
+Media.getdisplay(typeof(vt))
+
+
+#####
+
+ts = sort(rand(10))
+ys = Float64[ rand()*0.1 + cos(x) for x in ts]
+
+v = data_values(time=ts, res=ys) +
+      mark_line() +
+      encoding_x_quant(:time) +
+      encoding_y_quant(:res); nothing
+
+typeof(v)
+
+media(VegaLiteVis, Media.Graphical)
+getdisplay(typeof(v))
+getdisplay(Atom.Media.Graphical)
+
+function render(::Atom.PlotPane, v::VegaLiteVis)
+  io = IOBuffer()
+  VegaLite.writehtml(io, v)
+  stringmime("text/html",takebuf_string(io))
 end
-global const hmacstate = HMACState(eval(symbol(uppercase(signature_scheme[2]))),
-                            profile["key"])
 
 
-HMACState(uppercase(signature_scheme[2]), "abcd")
-import IJulia
-whos(IJulia)
+I confirm it is still on my todo list.
+
+It doesn't seem to me to be big enough for a GSoC though, but I don't know much about the kind of projects that are typical.
+
+While we are at it: there are two ways I can think of to indicate that we do not want to differentiate with respect to one or several of the variables : 1) add an option to `rdiff` to indicate those variables or 2) require the user to build a closure setting the values of the variable and ask `rdiff` to find the value in the function environment.
+
+Solution 1) seems more generic and require less efforts from the user. Is this what you also had in mind ?
+
+
+v
+
+
+#####
+
+type Eurghh ; end
+typeof(v)
+
+media(Eurghh, Media.Graphical)
+getdisplay(Eurghh)
+getdisplay(Atom.Media.Graphical)
+
+function render(::Atom.PlotPane, ::Eurghh)
+  HTML(stringmime("text/html", "<div>abcd</div>"))
+end
+
+Eurghh
+Eurghh()
+
+result=Eurghh()
+let Media.input = Editor()
+  println(Media.getdisplay(typeof(result), default = Atom.Editor()) )
+  # display ≠ Editor() && render(display, result)
+  # render(Editor(), result)
+end
+
+# @require Gadfly begin
+#   @render PlotPane p::Gadfly.Plot begin
+#     x, y = Atom.@rpc Atom.plotsize()
+#     Gadfly.set_default_plot_size(x*Gadfly.px, y*Gadfly.px)
+#     div(d(:style=>"background: white"),
+#         HTML(stringmime("text/html", p)))
+#   end
+# end
+
+end
+
+end
