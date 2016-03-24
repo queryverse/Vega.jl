@@ -1,3 +1,11 @@
+######################################################################
+#
+#     Escher Integration
+#
+#     - Defines a new Tile type : VegaLiteTile and its render function
+#
+######################################################################
+
 import Escher: Elem, Tile, render
 import Base: convert
 

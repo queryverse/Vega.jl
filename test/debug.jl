@@ -1,5 +1,7 @@
 module A ; end
 reload("VegaLite")
+reload("Atom")
+reload("Media")
 reload("Paper")
 
 
@@ -9,14 +11,10 @@ using VegaLite
 import JSON
 
 
-# config(abcd="trus")
-# config(viewport="trus")
-# config(viewport=[400,330])
-# JSON.json(v.vis)
-
 @session vgtest vbox pad(2em)
 
 @rewire VegaLite.VegaLiteVis
+show("abcd")
 
 sleep(3.0)
 vv = Paper.currentSession.window
@@ -126,36 +124,99 @@ data_values(mpg) +
   encoding_text_quant(:Displ, aggregate="mean") +
   config_mark(fontStyle="italic", fontSize=12, font="courier")
 
+vals = rand(['1':'9';'-'],81)
+vals = [ string(rand(['1':'9';'-'])) for i in 1:81]
+data_values(x   = repeat([1:9],outer=[9]),
+            y   = repeat([1:9],inner=[9]),
+            val = vals) +
+  mark_text() +
+  encoding_column_ord(:x) +
+  encoding_row_ord(:y) +
+  encoding_text_quant(:val) +
+  config_mark(fontSize=16, font="calibri", format="0d")
 
-##################### IJulia   #######################
-
-Pkg.build("IJulia")
-Pkg.build("IJulia")
-Pkg.build("IJulia")
-
-using IJulia
-@async notebook()
+collect("1":"9")
 
 
 ##################### Atom.plotpane  #######################
 
+using VegaLite
+
+####
+import Gadfly
+vt = Gadfly.plot(x=rand(10), y=rand(10))
+vt
+typeof(vt)
+Base.Multimedia.displays
+
+import Media
+Media.getdisplay(typeof(vt))
+
+Media.media(Gadfly.Plot, Media.Plot)
+
+
+show(vt)
+
+using Media, Atom
+import Media: render
+import Atom
+
+function render(::Atom.PlotPane, p::Gadfly.Plot)
+  x, y = Atom.@rpc plotsize()
+  println("render plot")
+  Gadfly.set_default_plot_size(x*Gadfly.px, y*Gadfly.px)
+  Atom.div(Atom.d(:style=>"background: white"),
+        Atom.HTML(stringmime("text/html", p)))
+  # Atom.div(Dict{Any,Any}(:style=>"background: blue"),
+          #  Atom.HTML("coucou"))
+end
+
+vt
+
+Atom.Abcd()
+
+type Abcd; end
+
+import Media.media
+Media.media(::Abcd) = Media.Graphical()
+Media.media(Abcd, Media.Plot)
+
+Media.getdisplay(Abcd)
+Media.getdisplay(Gadfly.Plot)
+Media.getdisplay(Media.Graphical)
+
+function render(::Atom.PlotPane, x::Abcd)
+  x, y = Atom.@rpc plotsize()
+  println("render Abcd")
+  Atom.div(Dict{Any,Any}(:style=>"background: blue"),
+           Atom.HTML("coucou"))
+end
+
+Abcd()
+A.Abcd()
+
+
+Media.render(Atom.Inline(), Abcd())
+methods(Media.render, (Any, Gadfly.Plot))
+methods(Media.render, (Atom.PlotPane, Any))
+
+Atom.@render PlotPane x::Abcd begin
+  # x, y = @rpc plotsize()
+  # println(x,y)
+  # div(Dict{Any,Any}(:style=>"background: black"),
+  #     HTML(stringmime("text/html", "coucou")))
+end
 
 
 using VegaLite
-using Media, Atom
-import Media: render
+import Media, Atom
+Media.media(VegaLite.VegaLiteVis, Media.Plot)
+
+methods(Media.render, (Atom.PlotPane, Any))
 
 
-####
-using Gadfly
-vt = plot(x=rand(10), y=rand(10));nothing
-
-typeof(vt)
-Base.Multimedia.displays
-Media.getdisplay(typeof(vt))
 
 
-#####
 
 ts = sort(rand(10))
 ys = Float64[ rand()*0.1 + cos(x) for x in ts]
@@ -163,65 +224,18 @@ ys = Float64[ rand()*0.1 + cos(x) for x in ts]
 v = data_values(time=ts, res=ys) +
       mark_line() +
       encoding_x_quant(:time) +
-      encoding_y_quant(:res); nothing
-
-typeof(v)
-
-media(VegaLiteVis, Media.Graphical)
-getdisplay(typeof(v))
-getdisplay(Atom.Media.Graphical)
-
-function render(::Atom.PlotPane, v::VegaLiteVis)
-  io = IOBuffer()
-  VegaLite.writehtml(io, v)
-  stringmime("text/html",takebuf_string(io))
-end
-
-
-I confirm it is still on my todo list.
-
-It doesn't seem to me to be big enough for a GSoC though, but I don't know much about the kind of projects that are typical.
-
-While we are at it: there are two ways I can think of to indicate that we do not want to differentiate with respect to one or several of the variables : 1) add an option to `rdiff` to indicate those variables or 2) require the user to build a closure setting the values of the variable and ask `rdiff` to find the value in the function environment.
-
-Solution 1) seems more generic and require less efforts from the user. Is this what you also had in mind ?
-
-
+      encoding_y_quant(:res)
 v
 
+########## new style  ##############
 
-#####
-
-type Eurghh ; end
-typeof(v)
-
-media(Eurghh, Media.Graphical)
-getdisplay(Eurghh)
-getdisplay(Atom.Media.Graphical)
-
-function render(::Atom.PlotPane, ::Eurghh)
-  HTML(stringmime("text/html", "<div>abcd</div>"))
+function testf(a, bs...; ks...)
+  println("a = $a")
+  println("bs = $bs")
+  println("ks = $ks")
 end
 
-Eurghh
-Eurghh()
-
-result=Eurghh()
-let Media.input = Editor()
-  println(Media.getdisplay(typeof(result), default = Atom.Editor()) )
-  # display ≠ Editor() && render(display, result)
-  # render(Editor(), result)
-end
-
-# @require Gadfly begin
-#   @render PlotPane p::Gadfly.Plot begin
-#     x, y = Atom.@rpc Atom.plotsize()
-#     Gadfly.set_default_plot_size(x*Gadfly.px, y*Gadfly.px)
-#     div(d(:style=>"background: white"),
-#         HTML(stringmime("text/html", p)))
-#   end
-# end
-
-end
-
-end
+testf(45, tt=:sdf)
+testf(45, "sss", tt=:sdf)
+testf(45, tt=:sdf, "qsdq")
+testf(45, tt=:sdf)

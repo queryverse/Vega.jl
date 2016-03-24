@@ -2,9 +2,9 @@
 #
 #     IJulia Integration
 #
-#     - consist in defining a writemime(::IO, m::MIME"text/html", v::VegaLiteVis)
-#       including scripts that load the required libraries (D3, vega, vega-lite)
-#     - Will it work with other html backends ?  probably not.
+#     - Consist in defining writemime(::IO, m::MIME"text/html", v::VegaLiteVis)
+#        only when IJulia is loaded.
+#     - Signals to Jupyter the required libs (D3, vega, vega-lite)
 #
 ######################################################################
 
@@ -22,58 +22,74 @@ import Base.writemime
 # // vegalite: "$(jslibpath("vega-lite", "vega-lite.js"))",
 # // vegaembed: "$(jslibpath("vega-embed", "vega-embed.js"))"
 
+@require IJulia begin  # define only if/when IJulia is loaded
 
-function writemime(io::IO, m::MIME"text/html", v::VegaLiteVis)
-  divid = "vl" * randstring(10) # generated id for this plot
+  function writemime(io::IO, m::MIME"text/html", v::VegaLiteVis)
+    divid = "vl" * randstring(10) # generated id for this plot
 
-  fh = """
-  <div>
-    <div id="$divid"></div>
+    fh = """
+    <div>
+      <div id="$divid"></div>
 
-    <meta charset="utf-8">
-
-    <script type="text/javascript">
-      require.config({
-        paths: {
-          d3:        "https://d3js.org/d3.v3.min",
-          vega:      "https://vega.github.io/vega/vega",
-          vegalite:  "https://vega.github.io/vega-lite/vega-lite",
-          vegaembed: "https://vega.github.io/vega-editor/vendor/vega-embed"
+      <style media="screen">
+        .vega-actions a {
+          margin-right: 10px;
+          font-family: sans-serif;
+          font-size: x-small;
+          font-style: italic;
         }
-      });
+      </style>
 
-      require(["d3"], function(d3){
-        window.d3 = d3;
+      <meta charset="utf-8">
 
-        require(["vega"], function(vg) {
-          window.vg = vg
+      <script type="text/javascript">
+        require.config({
+          paths: {
+            d3:        "https://d3js.org/d3.v3.min",
+            vega:      "https://vega.github.io/vega/vega",
+            vegalite:  "https://vega.github.io/vega-lite/vega-lite",
+            vegaembed: "https://vega.github.io/vega-editor/vendor/vega-embed"
+          }
+        });
 
-          require(["vegalite"], function(vgl) {
+        require(["d3"], function(d3){
+          window.d3 = d3;
 
-            var embedSpec = {
-              mode: "vega-lite",
-              renderer: "$(SVG ? "svg" : "canvas")",
-              actions: $SAVE_BUTTONS,
-              spec: $(JSON.json(v.vis))
-            }
+          require(["vega"], function(vg) {
+            window.vg = vg
 
-            var vgSpec = vgl.compile(embedSpec.spec).spec;
-            vg.parse.spec(vgSpec, function(chart) { chart({el:\"#$divid\"}).update(); });
+            require(["vegalite"], function(vgl) {
 
+              require(["vegaembed"], function(vge) {
+
+                var embedSpec = {
+                  mode: "vega-lite",
+                  renderer: "$(SVG ? "svg" : "canvas")",
+                  actions: $SAVE_BUTTONS,
+                  spec: $(JSON.json(v.vis))
+                }
+
+            //    vg.embed("#$divid", embedSpec, function(error, result) {
+            //    });
+
+                var vgSpec = vgl.compile(embedSpec.spec).spec;
+                vg.parse.spec(vgSpec, function(chart) { chart({el:\"#$divid\"}).update(); });
+
+              });
+            });
           });
         });
-      });
 
-    </script>
+      </script>
 
-  </div>
-  """
-  # FIXME : understand why vega-embed can't be loaded
-  #   SVG and SAVE_BUTTONS flags are ignored
-  # vg.embed("#$divid", embedSpec, function(error, result) {
+    </div>
+    """
+    # FIXME : understand why vega-embed can't be loaded
+    #   SVG and SAVE_BUTTONS flags are ignored
+    # vg.embed("#$divid", embedSpec, function(error, result) {
 
-  write(io, fh)
+    write(io, fh)
+  end
 end
-
 
 export writemime

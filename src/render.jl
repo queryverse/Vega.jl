@@ -1,3 +1,8 @@
+######################################################################
+#
+#     Default plotting using browser tab
+#
+######################################################################
 
 asset(url...) = @compat readstring(Pkg.dir("VegaLite", "assets", "bower_components", url...))
 
@@ -19,6 +24,15 @@ function writehtml(io::IO, v::VegaLiteVis; title="VegaLite plot")
     <body>
       <div id="$divid"></div>
     </body>
+
+    <style media="screen">
+      .vega-actions a {
+        margin-right: 10px;
+        font-family: sans-serif;
+        font-size: x-small;
+        font-style: italic;
+      }
+    </style>
 
     <script type="text/javascript">
 
@@ -48,6 +62,10 @@ function show(io::IO, v::VegaLiteVis)
         io = open(tmppath, "w")
         writehtml(io, v)
         close(io)
+
+            println("show :")
+            Base.show_backtrace(STDOUT, backtrace())
+            println()
 
         # Open the browser
         @osx_only     run(`open $tmppath`)
