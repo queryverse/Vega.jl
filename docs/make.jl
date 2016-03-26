@@ -1,0 +1,3 @@
+using Lapidary, VegaLite
+
+makedocs()
