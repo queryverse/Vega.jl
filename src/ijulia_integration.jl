@@ -2,7 +2,7 @@
 #
 #     IJulia Integration
 #
-#     - Consist in defining writemime(::IO, m::MIME"text/html", v::VegaLiteVis)
+#     - Consists in defining writemime(::IO, m::MIME"text/html", v::VegaLiteVis)
 #        only when IJulia is loaded.
 #     - Signals to Jupyter the required libs (D3, vega, vega-lite)
 #

@@ -37,7 +37,7 @@
           var embedSpec = {
             mode: "vega-lite",
             renderer: this.svg ? "svg" : "canvas",
-            actions: this.actions,
+            actions: this.actions ? true : false,
             spec: this.json
           }
           vg.embed(this, embedSpec, function(error, result) {
@@ -45,9 +45,9 @@
 
         },
 
-        attached: function (){
-          this.render()
-        },
+        // attached: function (){
+        //   this.render()
+        // },
 
       });
     </script>

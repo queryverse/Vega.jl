@@ -227,6 +227,36 @@ v = data_values(time=ts, res=ys) +
       encoding_y_quant(:res)
 v
 
+@require VegaLite begin
+  @render PlotPane v::VegaLite.VegaLiteVis begin
+    HTML() do io
+      print(io, """
+      <div>
+      <div id="vegaliteplot">aaaaaaaaa</div>
+
+    <script type="text/javascript">
+      document.getElementById("vegaliteplot").value = "zzzz"
+      console.log("was here !")
+
+    </script>
+
+      $(JSON.json(v.vis))
+      </div>
+      """)
+    end
+    # x, y = @rpc plotsize()
+    # Gadfly.set_default_plot_size(x*Gadfly.px, y*Gadfly.px)
+    # println("plotpane - VegaLiteVis")
+    # tmppath = string(tempname(), ".vegalite.html")
+    # io = open(tmppath, "w")
+    # VegaLite.writehtml(io, v)
+    # seek(io,0)
+    # readall(io)
+  end
+end
+
+
+
 ########## new style  ##############
 
 function testf(a, bs...; ks...)

@@ -4,7 +4,7 @@ _Julia bindings to Vega-Lite_
 
 |Julia 0.4 | Julia 0.5 | master (on nightly + release) | Coverage |
 |:--------:|:---------:|:-----------------------------:|:-----------:|
-|[![VegaLite](http://pkg.julialang.org/badges/VegaLite_0.4.svg)](http://pkg.julialang.org/?pkg=VegaLite&ver=0.4) | N/A | [![Build Status](https://travis-ci.org/fredo-dedup/VegaLite.jl.svg?branch=master)](https://travis-ci.org/fredo-dedup/VegaLite.jl) | [![Coverage Status](https://coveralls.io/repos/github/fredo-dedup/VegaLite.jl/badge.svg?branch=master)](https://coveralls.io/github/fredo-dedup/VegaLite.jl?branch=master) |
+|[![VegaLite](http://pkg.julialang.org/badges/VegaLite_0.4.svg)](http://pkg.julialang.org/?pkg=VegaLite&ver=0.4) | [![VegaLite](http://pkg.julialang.org/badges/VegaLite_0.5.svg)](http://pkg.julialang.org/?pkg=VegaLite&ver=0.5) | [![Build Status](https://travis-ci.org/fredo-dedup/VegaLite.jl.svg?branch=master)](https://travis-ci.org/fredo-dedup/VegaLite.jl) | [![Coverage Status](https://coveralls.io/repos/github/fredo-dedup/VegaLite.jl/badge.svg?branch=master)](https://coveralls.io/github/fredo-dedup/VegaLite.jl?branch=master) |
 
 
 This package provides access to the Vega-Lite high-level visualization grammar (http://vega.github.io/vega-lite/) from Julia.
