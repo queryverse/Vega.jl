@@ -1,5 +1,5 @@
 
-asset(url...) = @compat readstring(Pkg.dir("VegaLite", "assets", "bower_components", url...))
+asset(url...) = @compat readstring(joinpath(dirname(@__FILE__), "..", "assets", "bower_components", url...))
 
 #Vega Scaffold: https://github.com/vega/vega/wiki/Runtime
 function writehtml(io::IO, v::VegaLiteVis; title="Vega.jl Visualization")
@@ -153,7 +153,7 @@ end
 # end
 
 # function jslibpath(url...)
-#   libpath = Pkg.dir("VegaLite", "assets", "bower_components", url...)
+#   libpath = joinpath(dirname(@__FILE__), "..", "assets", "bower_components", url...)
 #   replace(libpath, "\\", "/")  # for windows...
 # end
 #
