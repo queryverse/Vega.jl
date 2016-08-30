@@ -15,6 +15,7 @@ function writehtml(io::IO, v::VegaLiteVis; title="Vega.jl Visualization")
   <html>
     <head>
       <title>$title</title>
+      <meta charset="UTF-8">
       <script>$d3</script>
       <script>$vega</script>
       <script>$vegalite</script>
@@ -419,7 +420,7 @@ end
 #   """
 #   # FIXME : understand why vega-embed can't be loaded
 #   # vg.embed("#$divid", embedSpec, function(error, result) {
-# 
+#
 #   println(fh)
 #   # writemime(io, m, fh)
 #   write(io, fh)
