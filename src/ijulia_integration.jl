@@ -14,7 +14,7 @@ import Base.writemime
 #   => libraries are loaded externally in the `require.config`
 
 # function jslibpath(url...)
-#   libpath = Pkg.dir("VegaLite", "assets", "bower_components", url...)
+#   libpath = joinpath(dirname(@__FILE__), "..", "assets", "bower_components", url...)
 #   replace(libpath, "\\", "/")  # for windows...
 # end
 # // d3: "$(jslibpath("d3","d3.min.js"))",

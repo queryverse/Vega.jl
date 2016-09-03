@@ -4,7 +4,7 @@
 #
 ######################################################################
 
-asset(url...) = @compat readstring(Pkg.dir("VegaLite", "assets", "bower_components", url...))
+asset(url...) = @compat readstring(joinpath(dirname(@__FILE__), "..", "assets", "bower_components", url...))
 
 #Vega Scaffold: https://github.com/vega/vega/wiki/Runtime
 function writehtml(io::IO, v::VegaLiteVis; title="VegaLite plot")
@@ -15,11 +15,11 @@ function writehtml(io::IO, v::VegaLiteVis; title="VegaLite plot")
   <html>
     <head>
       <title>$title</title>
+      <meta charset="UTF-8">
       <script>$(asset("d3","d3.min.js"))</script>
       <script>$(asset("vega", "vega.js"))</script>
       <script>$(asset("vega-lite", "vega-lite.js"))</script>
       <script>$(asset("vega-embed", "vega-embed.js"))</script>
-
     </head>
     <body>
       <div id="$divid"></div>
