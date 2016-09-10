@@ -68,9 +68,20 @@ function show(io::IO, v::VegaLiteVis)
             println()
 
         # Open the browser
-        @osx_only     run(`open $tmppath`)
-        @windows_only run(`cmd /c start $tmppath`)
-        @linux_only   run(`xdg-open $tmppath`)
+        if VERSION < v"0.5.0-"
+          @osx_only run(`open $tmppath`)
+          @windows_only run(`cmd /c start $tmppath`)
+          @linux_only   run(`xdg-open $tmppath`)
+        else
+          if is_apple()
+            run(`open $tmppath`)
+          elseif is_windows()
+            run(`cmd /c start $tmppath`)
+          elseif is_linux()
+            run(`xdg-open $tmppath`)
+          end
+        end
+
     end
 
     return

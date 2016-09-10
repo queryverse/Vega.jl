@@ -49,7 +49,7 @@ d3.selectAll('.vl-example').each(function() {
   const name = sel.attr('data-name');
   if (name) {
     const dir = sel.attr('data-dir');
-    const fullUrl = BASEURL + '/examples/specs/' + (dir ? (dir + '/') : '') + name + '.json';
+    const fullUrl = BASEURL + '/examples/specs/' + (dir ? (dir + '/') : '') + name + '.vl.json';
 
     d3.text(fullUrl, function(error, spec) {
       if (error) {
@@ -71,7 +71,7 @@ if (d3.select('.gallery').empty() === false) {
 }
 
 function renderGallery() {
-  d3.json('examples/vl-examples.json', function(error, VL_SPECS) {
+  d3.json(window.location.origin + BASEURL + '/examples/vl-examples.json', function(error, VL_SPECS) {
     if (error) { return console.warn(error); }
 
     d3.selectAll('div.gallery').each(function() {
@@ -102,7 +102,7 @@ function renderGallery() {
 
       imageGroup.append('div')
         .attr('class', 'image')
-        .style('background-image', function(d){ return 'url(examples/images/' + d.name + '.svg)'; })
+        .style('background-image', function(d) { return 'url(' + window.location.origin + BASEURL + '/examples/images/' + d.name + '.svg)'; })
         .style('background-size', function(d) {
           const bgSizeDefault = 'cover';
           if (!d.galleryParameters || !d.galleryParameters.backgroundSize) {

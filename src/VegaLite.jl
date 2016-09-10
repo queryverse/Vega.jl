@@ -45,7 +45,7 @@ include("mark.jl")
 include("encoding.jl")
 
 ### Integration with Escher
-Pkg.installed("Escher") != nothing && include("escher_integration.jl")
+# Pkg.installed("Escher") != nothing && include("escher_integration.jl")
 
 ### Integration with DataFrames
 Pkg.installed("DataFrames") != nothing && include("dataframes_integration.jl")

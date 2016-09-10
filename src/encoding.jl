@@ -17,7 +17,7 @@ encoding_mark_prop_spec = Dict(
 
 for channel in [:x, :y, :color, :shape, :size, :text,
                 :detail, :order, :path, :row, :column]
-  fn = symbol("encoding_" * string(channel))
+  fn = Symbol("encoding_" * string(channel))
   path = (:encoding, channel)
   @eval ($fn)(;properties...) = _mkvis($path, encoding_mark_prop_spec, properties)
   @eval ($fn)(val::Symbol;properties...) = ($fn)(;vcat(properties, [(:field, val)])...)
@@ -25,7 +25,7 @@ for channel in [:x, :y, :color, :shape, :size, :text,
 
   for (ts, tn) in [(:quant, "quantitative"), (:temp,   "temporal"),
                    (:ord,   "ordinal")     , (:nominal, "nominal")]
-    fn2 = symbol(string(fn) * "_" * string(ts))
+    fn2 = Symbol(string(fn) * "_" * string(ts))
     @eval ($fn2)(val;properties...)    = ($fn)(val;vcat(properties, [(:type, $tn)])...)
   end
 end

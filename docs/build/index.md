@@ -3,32 +3,95 @@
 
 # VegaLite.jl Documentation
 
-<a id='Base.LinAlg.scale-Tuple{}' href='#Base.LinAlg.scale-Tuple{}'>#</a>
-**`Base.LinAlg.scale`** &mdash; *Method*.
 
----
+The *VegaLite.jl* julia package provides access to the Vega-Lite high-level visualization grammar from Julia.
 
 
-Sets scale properties for the scale argument within `encoding()` :
+`Vega-Lite` (http://vega.github.io/vega-lite/) is a simpler version of the Vega grammar allowing smaller and more expressive chart specifications. For a finer control over the produced graph you can turn to the Vega.jl package (https://github.com/johnmyleswhite/Vega.jl). Parts of the VegaLite package (rendering functions, IJulia integration) are based on Vega.jl (thanks by the way !).
+
+
+All contributions, PR or issue, are welcome !
+
+- [VegaLite.jl Documentation](index.md#VegaLite.jl-Documentation-1)
+    - [Installation](index.md#Installation-1)
+    - [Vega-Lite design principles](index.md#Vega-Lite-design-principles-1)
+    - [Implementation in `VegaLite.jl`](index.md#Implementation-in-VegaLite.jl-1)
+    - [Supported backends](index.md#Supported-backends-1)
+    - [API](API.md#API-1)
+
+
+<a id='Installation-1'></a>
+
+## Installation
+
+
+Install with `Pkg.add("VegaLite")`.
+
+
+<a id='Vega-Lite-design-principles-1'></a>
+
+## Vega-Lite design principles
+
+
+Vega-Lite is a javascript library that renders a plot described in by JSON structure ( a 'spec').
+
+
+In a manner similar to R's ggplot2, a plot is specified by : - linking data vectors to 'channels' (x axis, y axis, size, text, column, rows, etc.), - indicating how the data vector should be interpreted     - quantitative for continuous values,   - temporal for dates or times,   - ordinal for ordered data,   - nominal for unordered symbols. - and finally what kind 'mark' should be plotted : bars, ticks, lines, ...
+
+
+See http://vega.github.io/vega-lite/ for a full documentation and tutorials.
+
+
+<a id='Implementation-in-VegaLite.jl-1'></a>
+
+## Implementation in `VegaLite.jl`
+
+
+You don't have to create the JSON spec file yourself, the package takes care of that. It is built instead incrementally by specialized functions that store the pieces in a type which evaluates to a JSON spec / an HTML file / etc.. depending on the active backend. The specialized functions try to follow closely the Vega-Lite JSON format, e.g: - The function `data_values()` creates the `{"data": {values: { ...} }}` part of the spec file, - `encoding_x_quant(:var, ...)` creates the part `encoding": { "x": {"field": "var", "type": "quantitative"}`, - etc.
+
+
+<a id='Example:-1'></a>
+
+### Example:
+
+
+  * Plotting a simple line chart:
+
 
 ```julia
-encoding_x(..., scale=scale(round=true, bandSize=12), ...)
+using VegaLite
+
+ts = sort(rand(10))
+ys = Float64[ rand()*0.1 + cos(x) for x in ts]
+
+v = data_values(time=ts, res=ys) +    # add the data vectors & assign to symbols 'time' and 'res'
+      mark_line() +                   # mark type = line
+      encoding_x_quant(:time) +       # bind x dimension to :time, quantitative scale
+      encoding_y_quant(:res)          # bind y dimension to :res, quantitative scale
 ```
 
-  * `type` (`AbstractString`) :  ScaleType, one of "linear", "log", "pow", "sqrt", "quantile", "quantize", "ordinal", "time", "utc".
-  * `domain` (`AbstractString[]`) : The domain of the scale, representing the set of data values. For quantitative data, this can take the form of a two-element array with minimum and maximum values. For ordinal/categorical data, this may be an array of valid input values. The domain may also be specified by a reference to a data source.
-  * `range` (`AbstractString[]`) : The range of the scale, representing the set of visual values. For numeric values, the range can take the form of a two-element array with minimum and maximum values. For ordinal or quantized data, the range may by an array of desired output values, which are mapped to elements in the specified domain. For ordinal scales only, the range can be defined using a DataRef: the range values are then drawn dynamically from a backing data set.
-  * `round` (`Bool`) :  If true, rounds numeric output values to integers. This can be helpful for snapping to the pixel grid.
 
-Ordinal
+![plot1](../examples/png/vega %281%29.png)
 
-  * `bandSize` (`Real`) : minimum 0
-  * `padding` (`Real`) : Applies spacing among ordinal elements in the scale range. The actual effect depends on how the scale is configured. If the __points__ parameter is `true`, the padding value is interpreted as a multiple of the spacing between points. A reasonable value is 1.0, such that the first and last point will be offset from the minimum and maximum value by half the distance between points. Otherwise, padding is typically in the range [0, 1] and corresponds to the fraction of space in the range interval to allocate to padding. A value of 0.5 means that the range band width will be equal to the padding width. For more, see the [D3 ordinal scale documentation](https://github.com/mbostock/d3/wiki/Ordinal-Scales).
 
-Typical
+More examples are provided in the examples folder.
 
-  * `clamp` (`Bool`) : If true, values that exceed the data domain are clamped to either the minimum or maximum range value
-  * `nice` (`Union{Bool, AbstractString}`) : If specified, modifies the scale domain to use a more human-friendly value range. If specified as a true boolean, modifies the scale domain to use a more human-friendly number range (e.g., 7 instead of 6.96). If specified as a string, modifies the scale domain to use a more human-friendly value range. For time and utc scale types only, the nice value should be a string indicating the desired time interval ("second", "minute", "hour", "day", "week", "month", "year").
-  * `exponent` (`Real`) : Sets the exponent of the scale transformation. For pow scale types only, otherwise ignored.
-  * `zero` (`Bool`) : If true, ensures that a zero baseline value is included in the scale domain. This option is ignored for non-quantitative scales.
+
+In addition to the plot spec building functions, two functions help providing control over the plot render: - `svg(Bool)` : sets the drawing mode of the plots, SVG if `true`, canvas if `false`. Default = `true` - `buttons(Bool)` : indicates if the plot should be accompanied with links 'Save as PNG', 'View source' and 'Open in Vega Editor'. Default = `true`.
+
+
+Most functions are documented, with the full list of their properties listed and explained, e.g. type `? config_mark` to get the full list of properties of the `config_mark` function, etc.
+
+
+<a id='Supported-backends-1'></a>
+
+## Supported backends
+
+
+|        Backend |                                                                                              Behaviour |
+| --------------:| ------------------------------------------------------------------------------------------------------:|
+|  standard REPL |                                                             a browser window will open upon evaluation |
+|      Atom/Juno | a browser window will open (same as REPL) *rendering into the Atom plotpane is not possible currently* |
+|         Escher |                                                                        the plot is rendered in web age |
+| IJulia/Jupyter |                                                              the plot will appear below the code block |
 

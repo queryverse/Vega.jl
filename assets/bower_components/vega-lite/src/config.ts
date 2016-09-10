@@ -1,6 +1,7 @@
 import {ScaleConfig, FacetScaleConfig, defaultScaleConfig, defaultFacetScaleConfig} from './scale';
 import {AxisConfig, defaultAxisConfig, defaultFacetAxisConfig} from './axis';
 import {LegendConfig, defaultLegendConfig} from './legend';
+import {StackOffset} from './stack';
 
 export interface CellConfig {
   width?: number;
@@ -10,14 +11,26 @@ export interface CellConfig {
 
   // FILL_STROKE_CONFIG
   /**
+   * The fill color.
    * @format color
    */
   fill?: string;
+
+  /** The fill opacity (value between [0,1]). */
   fillOpacity?: number;
+
+  /** The stroke color. */
   stroke?: string;
-  strokeWidth?: number;
+
+  /** The stroke opacity (value between [0,1]). */
   strokeOpacity?: number;
-  strokeDash?: number;
+
+  /** The stroke width, in pixels. */
+  strokeWidth?: number;
+
+  /** An array of alternating stroke, space lengths for creating dashed or dotted lines. */
+  strokeDash?: number[];
+
   /** The offset (in pixels) into which to begin drawing with the stroke dash array. */
   strokeDashOffset?: number;
 }
@@ -33,9 +46,16 @@ export const defaultFacetCellConfig: CellConfig = {
 };
 
 export interface FacetConfig {
+  /** Facet Scale Config */
   scale?: FacetScaleConfig;
+
+  /** Facet Axis Config */
   axis?: AxisConfig;
+
+  /** Facet Grid Config */
   grid?: FacetGridConfig;
+
+  /** Facet Cell Config */
   cell?: CellConfig;
 }
 
@@ -73,6 +93,11 @@ export enum Shape {
     TRIANGLEDOWN = 'triangle-down' as any,
 }
 
+export enum Orient {
+  HORIZONTAL = 'horizontal' as any,
+  VERTICAL = 'vertical' as any
+}
+
 export enum HorizontalAlign {
     LEFT = 'left' as any,
     RIGHT = 'right' as any,
@@ -90,12 +115,68 @@ export enum FontStyle {
     ITALIC = 'italic' as any,
 }
 
-export enum StackOffset {
-    ZERO = 'zero' as any,
-    CENTER = 'center' as any,
-    NORMALIZE = 'normalize' as any,
-    NONE = 'none' as any,
+export enum Interpolate {
+    /** piecewise linear segments, as in a polyline */
+    LINEAR = 'linear' as any,
+    /** close the linear segments to form a polygon */
+    LINEAR_CLOSED = 'linear-closed' as any,
+    /** alternate between horizontal and vertical segments, as in a step function */
+    STEP = 'step' as any,
+    /** alternate between vertical and horizontal segments, as in a step function */
+    STEP_BEFORE = 'step-before' as any,
+    /** alternate between horizontal and vertical segments, as in a step function */
+    STEP_AFTER = 'step-after' as any,
+    /** a B-spline, with control point duplication on the ends */
+    BASIS = 'basis' as any,
+    /** an open B-spline; may not intersect the start or end */
+    BASIS_OPEN = 'basis-open' as any,
+    /** a closed B-spline, as in a loop */
+    BASIS_CLOSED = 'basis-closed' as any,
+    /** a Cardinal spline, with control point duplication on the ends */
+    CARDINAL = 'cardinal' as any,
+    /** an open Cardinal spline; may not intersect the start or end, but will intersect other control points */
+    CARDINAL_OPEN = 'cardinal-open' as any,
+    /** a closed Cardinal spline, as in a loop */
+    CARDINAL_CLOSED = 'cardinal-closed' as any,
+    /** equivalent to basis, except the tension parameter is used to straighten the spline */
+    BUNDLE = 'bundle' as any,
+    /** cubic interpolation that preserves monotonicity in y */
+    MONOTONE = 'monotone' as any,
 }
+
+export enum AreaOverlay {
+  LINE = 'line' as any,
+  LINEPOINT = 'linepoint' as any,
+  NONE = 'none' as any
+}
+
+export interface OverlayConfig {
+  /**
+   * Whether to overlay line with point.
+   */
+  line?: boolean;
+
+  /**
+   * Type of overlay for area mark (line or linepoint)
+   */
+  area?: AreaOverlay;
+
+  /**
+   * Default style for the overlayed point.
+   */
+  pointStyle?: MarkConfig;
+
+  /**
+   * Default style for the overlayed point.
+   */
+  lineStyle?: MarkConfig;
+}
+
+export const defaultOverlayConfig: OverlayConfig = {
+  line: false,
+  pointStyle: {filled: true},
+  lineStyle: {}
+};
 
 export interface MarkConfig {
 
@@ -108,22 +189,24 @@ export interface MarkConfig {
    * for usage example.
    */
   filled?: boolean;
+
   /**
    * Default color.
    * @format color
    */
   color?: string;
+
   /**
    * Default Fill Color.  This has higher precedence than config.color
    * @format color
    */
   fill?: string;
+
   /**
    * Default Stroke Color.  This has higher precedence than config.color
    * @format color
    */
   stroke?: string;
-
 
   // ---------- Opacity ----------
   /**
@@ -149,10 +232,12 @@ export interface MarkConfig {
    * @minimum 0
    */
   strokeWidth?: number;
+
   /**
    * An array of alternating stroke, space lengths for creating dashed or dotted lines.
    */
   strokeDash?: number[];
+
   /**
    * The offset (in pixels) into which to begin drawing with the stroke dash array.
    */
@@ -165,7 +250,7 @@ export interface MarkConfig {
   /**
    * The orientation of a non-stacked bar, tick, area, and line charts.
    * The value is either horizontal (default) or vertical.
-   * - For bar and tick, this determines whether the size of the bar and tick
+   * - For bar, rule and tick, this determines whether the size of the bar and tick
    * should be applied to x or y dimension.
    * - For area, this property determines the orient property of the Vega output.
    * - For line, this property determines the sort order of the points in the line
@@ -173,17 +258,29 @@ export interface MarkConfig {
    * For stacked charts, this is always determined by the orientation of the stack;
    * therefore explicitly specified value will be ignored.
    */
-  orient?: string;
+  orient?: Orient;
 
   // ---------- Interpolation: Line / area ----------
   /**
-   * The line interpolation method to use. One of linear, step-before, step-after, basis, basis-open, basis-closed, bundle, cardinal, cardinal-open, cardinal-closed, monotone.
+   * The line interpolation method to use. One of linear, step-before, step-after, basis, basis-open, cardinal, cardinal-open, monotone.
    */
-  interpolate?: string;
+  interpolate?: Interpolate;
   /**
    * Depending on the interpolation type, sets the tension parameter.
    */
   tension?: number;
+
+  // ---------- Line ---------
+  /**
+   * Size of line mark.
+   */
+  lineSize?: number;
+
+  // ---------- Rule ---------
+  /**
+   * Size of rule mark.
+   */
+  ruleSize?: number;
 
   // ---------- Bar ----------
   /**
@@ -191,6 +288,7 @@ export interface MarkConfig {
    * which provides 1 pixel offset between bars.
    */
   barSize?: number;
+
   /**
    * The size of the bars on continuous scales.
    */
@@ -198,9 +296,9 @@ export interface MarkConfig {
 
   // ---------- Point ----------
   /**
-   * The symbol shape to use. One of circle (default), square, cross, diamond, triangle-up, or triangle-down.
+   * The symbol shape to use. One of circle (default), square, cross, diamond, triangle-up, or triangle-down, or a custom SVG path.
    */
-  shape?: Shape;
+  shape?: Shape | string;
 
   // ---------- Point Size (Point / Square / Circle) ----------
   /**
@@ -282,9 +380,12 @@ export interface MarkConfig {
 
 export const defaultMarkConfig: MarkConfig = {
   color: '#4682b4',
+  shape: Shape.CIRCLE,
   strokeWidth: 2,
   size: 30,
   barThinSize: 2,
+  // lineSize is undefined by default, and refer to value from strokeWidth
+  ruleSize: 1,
   tickThickness: 1,
 
   fontSize: 10,
@@ -314,26 +415,48 @@ export interface Config {
    * D3 Number format for axis labels and text tables. For example "s" for SI units.
    */
   numberFormat?: string;
+
   /**
    * Default datetime format for axis and legend labels. The format can be set directly on each axis and legend.
    */
   timeFormat?: string;
 
+  /**
+   * Default axis and legend title for count fields.
+   * @type {string}
+   */
+  countTitle?: string;
+
+  /** Cell Config */
   cell?: CellConfig;
+
+  /** Mark Config */
   mark?: MarkConfig;
+
+  /** Mark Overlay Config */
+  overlay?: OverlayConfig;
+
+  /** Scale Config */
   scale?: ScaleConfig;
+
+  /** Axis Config */
   axis?: AxisConfig;
+
+  /** Legend Config */
   legend?: LegendConfig;
 
+  /** Facet Config */
   facet?: FacetConfig;
 }
 
 export const defaultConfig: Config = {
   numberFormat: 's',
   timeFormat: '%Y-%m-%d',
+  countTitle: 'Number of Records',
 
   cell: defaultCellConfig,
   mark: defaultMarkConfig,
+  overlay: defaultOverlayConfig,
   scale: defaultScaleConfig,
   axis: defaultAxisConfig,
   legend: defaultLegendConfig,

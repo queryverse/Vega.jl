@@ -4,58 +4,16 @@ If you find a bug in the code or a mistake in the [documentation](https://vega.g
 or want a new feature, you can help us by creating an issue to [our repository](http://github.com/vega/vega-lite),
 or even better, submit a pull request.
 
-## Creating an Issue
+- For small fixes, please feel free to submit a pull request. No worry about creating an issue first.
 
-Before creating an issue, please browse through the
-[issue list](https://github.com/vega/vega-lite/issues) to avoid duplicates.
-
-A good issue shouldn't leave others needing to chase you up for more information.
-Here are properties of a good issue:
-
-- __Use clear and descriptive title__ for the issue
-
-- __Describe how to reproduce the issue__ If possible,
-please provide an example Vega-Lite specification for reproducing the issue.
-
-- __Provide screenshots/animated GIFs or describe the behavior you observed
-after following the steps__ and point out what exactly is the problem with that behavior.
-[Skitch](https://evernote.com/skitch) is a useful tool for capturing screenshots.
-Github's issue tracker also supports drag-and-drop image upload.
-
-- __Explain which behavior you expected to see instead and why.__
-
-## Submitting a Pull Request
-
-You can contribute to our codebase by submitting
-[a pull request](https://help.github.com/articles/using-pull-requests/).
-Here are some guides:
-
-- Search GitHub for a related pull request. You don't want to duplicate effort.
-
-- Before submitting a pull request:
-  - All lint and test should pass.
-  - Run `npm run lint` and `npm run test`.
-  - Update the documentation under `site/docs/` to reflect the changes.
-  - Make sure you have merged `master` into your branch.  If you are not a git command line ninja, we recommend [SourceTree](https://www.sourcetreeapp.com/).
-  - Provide a concise description for the pull request so that we can copy the description and simply paste in  [our release note](https://github.com/vega/vega-lite/releases).  When writing description for a pull request or a commit, please:
-    - Use imperative mood and present tense ([Why?](http://stackoverflow.com/questions/13861318/why-is-it-considered-good-practice-to-describe-git-commits-in-the-present-tense)).
-    - Mention relevant issues using github's # syntax. (e.g., `#1` for mentioning issue #1)
-    - Focus on _what_ and _why_ rather than _how_
-    - See more [tips about git commit](http://chris.beams.io/posts/git-commit/).
-
-
-- For small fixes, please feel free to submit a pull request
-with appropriate test cases or example specs the demonstrate the use case.
-No worry about creating an issue first.
-
-- For major changes, please discuss with us via [our mailing list] and Github first,
+- For major changes, please discuss with us via [our mailing list](https://groups.google.com/forum/#!forum/vega-js) and Github first,
 so we can better coordinate our efforts, prevent duplication of work,
 and help you to craft the change so that it is successfully accepted into the project.
 
 - Generally we name a branch using this pattern `<your 2-3 letters initial>/<topic>`.
 For example, @kanitw's branch regarding scale type might be called `kw/scale-type`.
 
-- You can refer to related issue by adding #<issue-no> to the pull request's description.
+See our [issue](.github/ISSUE_TEMPLATE.md) and [pull request](.github/PULL_REQUEST_TEMPLATE.md) templates for more information.
 
 ### Looking for a Task to Contribute
 
@@ -71,7 +29,7 @@ To contribute changes to the documentation or website, simply submit a pull requ
 the corresponding markdown files in `site/`.
 
 The images that are shown on the homepage and in the gallery have to be generated with `npm run images`.
-To run the script, you need to install [gnu parallel](https://www.gnu.org/software/parallel/).  (For Mac, you can simply do `brew install parallel`.)
+To run the script, you need to install [gnu parallel](https://www.gnu.org/software/parallel/). (For Mac, you can simply do `brew install parallel`.)
 
 Since we only publish the Github Pages when we release a new version,
 it might be slightly outdated compared to `master`.
@@ -82,31 +40,45 @@ you can run `npm run site` to serve the github page locally at [http://localhost
 
 ## Repository Setup
 
-1. Make sure you have node.js. (For mac users, we recommend using
-[homebrew](http://brew.sh) and simply run `brew install node`.)
+1. Make sure you have [node.js](https://nodejs.org/en/). For mac users, we recommend using [homebrew](http://brew.sh) and simply run:
 
-2. clone this repository and cd into your local clone of the repository, and install all the npm dependencies:
+  ```sh
+  brew install node
+  ```
 
-```sh
-git clone https://github.com/vega/vega-lite.git
-cd vega-lite
-npm install
-```
+2. Clone this repository and cd into your local clone of the repository, and install all the npm dependencies:
 
-Now you should be able to build and test the code.
+  ```sh
+  git clone https://github.com/vega/vega-lite.git
+  cd vega-lite
+  npm install
+  ```
 
-3. To make the gallery works, you need to install bower and its dependencies:
+  Now you should be able to build and test the code.
 
-```sh
-npm install -g bower
-bower install
-```
+3. To make the gallery work, you need to install [bower](http://bower.io/) and its dependencies:
 
-4. To serve the website and documentation, you also have to [install Jekyll with Github Pages Gem](https://help.github.com/articles/using-jekyll-with-pages/#installing-jekyll).
-First, make sure you have ruby installed (If you do not, run `brew install ruby` on Mac will install it).
-Then, run `gem install bundler`. Finally, simply run `bundle install` to install jekyll and its dependencies
-(we already have the `Gemfile` in the repo).
+  ```sh
+  npm install -g bower
+  bower install
+  ```
 
+4. To serve the website and documentation, you will need [ruby](https://www.ruby-lang.org/en/), [bundler](http://bundler.io/) and [Jekyll](https://help.github.com/articles/using-jekyll-as-a-static-site-generator-with-github-pages/).
+
+  For ruby, Mac users can use [homebrew](http://brew.sh) to add it:
+  ```sh
+  brew install ruby
+  ```
+
+  For bundler:
+  ```sh
+  gem install bundler
+  ```
+
+  For jekyll and its dependencies, because we already have the `Gemfile` in the repo, you can simply run:
+  ```sh
+  bundle install
+  ```
 
 ## Directory Structure
 
@@ -115,8 +87,7 @@ Then, run `gem install bundler`. Finally, simply run `bundle install` to install
 - `data/` – Example data.
 - `site/` – Vega-Lite website including documentation.
 - `examples/` – Example Vega-Lite specifications.
-  - `examples/docs/` contains examples that are used in the documetnation, but should not be shown in the gallery.
-  - `examples/vl-examples.json` lists all examples under `examples/`.  Similarly, `examples/docs/vl-docs-examples.json` lists all examples under `examples/docs`.
+  - `examples/vl-examples.json` lists all examples under `examples/`. Similarly, `examples/docs/vl-docs-examples.json` lists all examples under `examples/docs`.
 
 - `lib/` contains JSON schema's `schema.json`
 - `scripts/` - Scripts for NPM commands.
@@ -127,10 +98,9 @@ Then, run `gem install bundler`. Finally, simply run `bundle install` to install
   All methods for `vl.xxx` will be in either `src/xxx.ts` or `src/xxx/xxx.ts`.
   For example, `vl.channel.*` methods are in `src/channel.ts`.
   `vl.compile` is in `src/compile/compile.ts`.
-  - `src/schema/` contains JSON schema and TypeScript interface declaration.
-  We compile `schema` variable inside `src/schema/schema.ts` to generate the JSON schema.
+  - All interface for Vega-Lite syntax should be declared at the top-level of the `src/` folder.
 
-- `test/` - Code for unit testing.  `test`'s structure reflects `src`'s' directory structure.
+- `test/` - Code for unit testing. `test`'s structure reflects `src`'s' directory structure.
 For example, `test/compile/` test files inside `src/compile/`.
   - Note that we prepend `/* tslint:disable:quotemark */` to all files under `test/compile`
   to allow putting JSON spec in tests directly without getting lint errors.
@@ -140,7 +110,7 @@ Some of them are downloaded from the TypeStrong community.
 
 ## Commands
 
-This section lists commands that are commonly used during development.  See `package.json` for other commands.
+This section lists commands that are commonly used during development. See `package.json` for other commands.
 
 ### Build
 
@@ -148,7 +118,7 @@ You can run `npm run build` to compile Vega-Lite and regenerate `vega-lite-schem
 
 ### Basic Lint & Test
 
-`npm run lint` and `npm run test` run ts-lint and all unit-tests respectively.  These two commands are automatically run by `npm start` and `npm run watch`.
+`npm run lint` and `npm run test` run ts-lint and all unit-tests respectively. These two commands are automatically run by `npm start` and `npm run watch`.
 
 ### Test Coverage
 
@@ -189,7 +159,7 @@ x-compile`. All compiled specs will be in `examples/_original`.
 
 Once you develop some features and would like to diff the compiled specs, run `npm x-diff`.
 This will compile all examples again and output the diff for changed examples in the console.
-All compiled specs will be in `examples/_output`.  For changed examples,
+All compiled specs will be in `examples/_output`. For changed examples,
 SVG files will be created in `examples/_diff` for comparison.
 You can open those files to inspect visual changes, or run a diff command
 (e.g., `diff examples/_diff/area-base.svg examples/_diff/area.svg`).
@@ -208,7 +178,7 @@ i.e., running `brew install jq` if you use [homebrew](http://brew.sh) on mac.
 
 We use the [atom](atom.io) editor with the following plug-ins:
 - `atom-typescript` - This provides us IDE-like features for TS inside Atom including renaming, go to definition, find all references.
-- `linter` and `linter-tslint` – These shows tslint errors inside the editor.  This is quite important since our Travis run includes linting too. Therefore, if your branch has a linting error, Travis test will fail too.
+- `linter` and `linter-tslint` – These shows tslint errors inside the editor. This is quite important since our Travis run includes linting too. Therefore, if your branch has a linting error, Travis test will fail too.
 
 __Tips:__ If you don't want to see intermediate files (`.js`, `.js.map`), you can "Hide VCS Ignored Files" in the `tree-view` plugin.
 
@@ -237,7 +207,7 @@ Now all the changes you make in Datalib are reflected in your Vega-Lite automati
 
 # Note
 
-Vega-Lite enables a number of open-source applications including user interface tools ([PoleStar](https://github.com/uwdata/polestar) and [Voyager](https://github.com/uwdata/voyager)) and visualization recommender ([Compass](https://github.com/uwdata/compass)).  Look at their contribute pages if you are interested!
+Vega-Lite enables a number of open-source applications including user interface tools ([PoleStar](https://github.com/uwdata/polestar) and [Voyager](https://github.com/uwdata/voyager)) and visualization recommender ([Compass](https://github.com/uwdata/compass)). Look at their contribute pages if you are interested!
 
 - [PoleStar: Contribute](https://github.com/uwdata/polestar/wiki/Contribute)
 - [Voyager: Contribute](https://github.com/uwdata/voyager/wiki/Contribute)
