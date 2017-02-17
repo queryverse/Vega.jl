@@ -53,6 +53,7 @@ function writehtml(io::IO, v::VegaLiteVis; title="VegaLite plot")
   """)
 end
 
+
 function show(io::IO, v::VegaLiteVis)
     if displayable("text/html")
         v
@@ -63,12 +64,12 @@ function show(io::IO, v::VegaLiteVis)
         writehtml(io, v)
         close(io)
 
-            println("show :")
-            Base.show_backtrace(STDOUT, backtrace())
-            println()
+        # println("show :")
+        # Base.show_backtrace(STDOUT, backtrace())
+        # println()
 
         # Open the browser
-        if VERSION < v"0.5.0-"
+        @static if VERSION < v"0.5.0-"
           @osx_only run(`open $tmppath`)
           @windows_only run(`cmd /c start $tmppath`)
           @linux_only   run(`xdg-open $tmppath`)

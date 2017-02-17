@@ -44,7 +44,7 @@ include("data_values.jl")
 include("mark.jl")
 include("encoding.jl")
 
-### Integration with Escher
+### Integration with Escher (Escher does not seem to work in 0.5)
 # Pkg.installed("Escher") != nothing && include("escher_integration.jl")
 
 ### Integration with DataFrames
@@ -52,5 +52,8 @@ Pkg.installed("DataFrames") != nothing && include("dataframes_integration.jl")
 
 ### Integration with IJulia - Jupyter
 Pkg.installed("IJulia") != nothing && include("ijulia_integration.jl")
+
+### Integration with Atom-Juno-Media
+Pkg.installed("Atom") != nothing && include("atom_integration.jl")
 
 end

@@ -1,30 +1,15 @@
 ######################################################################
 #
-#     IJulia Integration
+#     Atom Integration
 #
-#     - Consists in defining writemime(::IO, m::MIME"text/html", v::VegaLiteVis)
-#        only when IJulia is loaded.
-#     - Signals to Jupyter the required libs (D3, vega, vega-lite)
+#     - Inhibits display of VegaLite plots in Atom to avoid having plots
+#          sent twice to the browser
 #
 ######################################################################
 
-@compat import Base.show
+@require Atom begin  # define only if/when Atom is loaded
 
-# FIXME : Apparently, loading local js files is not allowed by the browser
-#   => libraries are loaded externally in the `require.config`
-
-# function jslibpath(url...)
-#   libpath = joinpath(dirname(@__FILE__), "..", "assets", "bower_components", url...)
-#   replace(libpath, "\\", "/")  # for windows...
-# end
-# // d3: "$(jslibpath("d3","d3.min.js"))",
-# // vega: "$(jslibpath("vega", "vega.js"))",
-# // vegalite: "$(jslibpath("vega-lite", "vega-lite.js"))",
-# // vegaembed: "$(jslibpath("vega-embed", "vega-embed.js"))"
-
-@require IJulia begin  # define only if/when IJulia is loaded
-
-  @compat function show(io::IO, m::MIME"text/html", v::VegaLiteVis)
+  function writemime(io::IO, m::MIME"text/html", v::VegaLiteVis)
     divid = "vl" * randstring(10) # generated id for this plot
 
     fh = """
@@ -89,6 +74,13 @@
     # vg.embed("#$divid", embedSpec, function(error, result) {
 
     write(io, fh)
+  end
+  import Atom, Media
+
+  Media.media(VegaLiteVis, Media.Plot)
+
+  function Media.render(e::Atom.Editor, plt::VegaLiteVis)
+    Media.render(e, nothing)
   end
 
 end
