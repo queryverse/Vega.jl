@@ -1,44 +1,100 @@
-import {Model} from './Model';
-import {FieldDef, OrderChannelDef} from '../fielddef';
-import {COLUMN, ROW, X, Y, SIZE, COLOR, SHAPE, TEXT, LABEL, Channel} from '../channel';
-import {field} from '../fielddef';
+import {BAR, POINT, CIRCLE, SQUARE} from '../mark';
+import {AggregateOp} from '../aggregate';
+import {COLOR, OPACITY} from '../channel';
+import {Config} from '../config';
+import {FieldDef, field, OrderChannelDef} from '../fielddef';
 import {SortOrder} from '../sort';
-import {QUANTITATIVE, ORDINAL, TEMPORAL} from '../type';
-import {format as timeFormatExpr} from './time';
-import {contains} from '../util';
+import {TimeUnit} from '../timeunit';
+import {QUANTITATIVE, ORDINAL} from '../type';
+import {contains, union} from '../util';
 
-export const FILL_STROKE_CONFIG = ['fill', 'fillOpacity',
-  'stroke', 'strokeWidth', 'strokeDash', 'strokeDashOffset', 'strokeOpacity',
+import {FacetModel} from './facet';
+import {LayerModel} from './layer';
+import {Model} from './model';
+import {template as timeUnitTemplate} from '../timeunit';
+import {UnitModel} from './unit';
+import {Spec, isUnitSpec, isFacetSpec, isLayerSpec} from '../spec';
+
+
+export function buildModel(spec: Spec, parent: Model, parentGivenName: string): Model {
+  if (isFacetSpec(spec)) {
+    return new FacetModel(spec, parent, parentGivenName);
+  }
+
+  if (isLayerSpec(spec)) {
+    return new LayerModel(spec, parent, parentGivenName);
+  }
+
+  if (isUnitSpec(spec)) {
+    return new UnitModel(spec, parent, parentGivenName);
+  }
+
+  console.error('Invalid spec.');
+  return null;
+}
+
+// TODO: figure if we really need opacity in both
+export const STROKE_CONFIG = ['stroke', 'strokeWidth',
+  'strokeDash', 'strokeDashOffset', 'strokeOpacity', 'opacity'];
+
+export const FILL_CONFIG = ['fill', 'fillOpacity',
   'opacity'];
 
-export function applyColorAndOpacity(p, model: Model) {
+export const FILL_STROKE_CONFIG = union(STROKE_CONFIG, FILL_CONFIG);
+
+export function applyColorAndOpacity(p, model: UnitModel) {
   const filled = model.config().mark.filled;
-  const fieldDef = model.fieldDef(COLOR);
+  const colorFieldDef = model.encoding().color;
+  const opacityFieldDef = model.encoding().opacity;
 
   // Apply fill stroke config first so that color field / value can override
   // fill / stroke
-  applyMarkConfig(p, model, FILL_STROKE_CONFIG);
-
-  let value;
-  if (model.has(COLOR)) {
-    value = {
-      scale: model.scaleName(COLOR),
-      field: model.field(COLOR, fieldDef.type === ORDINAL ? {prefn: 'rank_'} : {})
-    };
-  } else if (fieldDef && fieldDef.value) {
-    value = { value: fieldDef.value };
+  if (filled) {
+    applyMarkConfig(p, model, FILL_CONFIG);
+  } else {
+    applyMarkConfig(p, model, STROKE_CONFIG);
   }
 
-  if (value !== undefined) {
+  let colorValue;
+  let opacityValue;
+  if (model.has(COLOR)) {
+    colorValue = {
+      scale: model.scaleName(COLOR),
+      field: model.field(COLOR, colorFieldDef.type === ORDINAL ? {prefix: 'rank'} : {})
+    };
+  } else if (colorFieldDef && colorFieldDef.value) {
+    colorValue = { value: colorFieldDef.value };
+  }
+
+  if (model.has(OPACITY)) {
+    opacityValue = {
+      scale: model.scaleName(OPACITY),
+      field: model.field(OPACITY, opacityFieldDef.type === ORDINAL ? {prefix: 'rank'} : {})
+    };
+  } else if (opacityFieldDef && opacityFieldDef.value) {
+    opacityValue = { value: opacityFieldDef.value };
+  }
+
+  if (colorValue !== undefined) {
     if (filled) {
-      p.fill = value;
+      p.fill = colorValue;
     } else {
-      p.stroke = value;
+      p.stroke = colorValue;
     }
   } else {
     // apply color config if there is no fill / stroke config
     p[filled ? 'fill' : 'stroke'] = p[filled ? 'fill' : 'stroke'] ||
       {value: model.config().mark.color};
+  }
+
+  // If there is no fill, always fill symbols
+  // with transparent fills https://github.com/vega/vega-lite/issues/1316
+  if (!p.fill && contains([BAR, POINT, CIRCLE, SQUARE], model.mark())) {
+    p.fill = {value: 'transparent'};
+  }
+
+  if (opacityValue !== undefined) {
+    p.opacity = opacityValue;
   }
 }
 
@@ -49,89 +105,49 @@ export function applyConfig(properties, config, propsList: string[]) {
       properties[property] = { value: value };
     }
   });
+  return properties;
 }
 
-export function applyMarkConfig(marksProperties, model: Model, propsList: string[]) {
-  applyConfig(marksProperties, model.config().mark, propsList);
+export function applyMarkConfig(marksProperties, model: UnitModel, propsList: string[]) {
+  return applyConfig(marksProperties, model.config().mark, propsList);
 }
-
 
 /**
- * Builds an object with format and formatType properties.
+ * Returns number format for a fieldDef
  *
  * @param format explicitly specified format
  */
-export function formatMixins(model: Model, channel: Channel, format: string) {
-  const fieldDef = model.fieldDef(channel);
+export function numberFormat(fieldDef: FieldDef, format: string, config: Config) {
+  if (fieldDef.type === QUANTITATIVE && !fieldDef.bin) {
+    // add number format for quantitative type only
 
-  if(!contains([QUANTITATIVE, TEMPORAL], fieldDef.type)) {
-    return {};
-  }
-
-  let def: any = {};
-
-  if (fieldDef.type === TEMPORAL) {
-    def.formatType = 'time';
-  }
-
-  if (format !== undefined) {
-    def.format = format;
-  } else {
-    switch (fieldDef.type) {
-      case QUANTITATIVE:
-        def.format = model.config().numberFormat;
-        break;
-      case TEMPORAL:
-        def.format = timeFormat(model, channel) || model.config().timeFormat;
-        break;
+    if (format) {
+      return format;
+    } else if (fieldDef.aggregate === AggregateOp.COUNT) {
+      // FIXME: need a more holistic way to deal with this.
+      return 'd';
     }
+    // TODO: need to make this work correctly for numeric ordinal / nominal type
+    return config.numberFormat;
   }
-
-  if (channel === TEXT) {
-    // text does not support format and formatType
-    // https://github.com/vega/vega/issues/505
-
-    const filter = (def.formatType || 'number') + (def.format ? ':\'' + def.format + '\'' : '');
-    return {
-      text: {
-        template: '{{' + model.field(channel, { datum: true }) + ' | ' + filter + '}}'
-      }
-    };
-  }
-
-  return def;
+  return undefined;
 }
-
-function isAbbreviated(model: Model, channel: Channel, fieldDef: FieldDef) {
-  switch (channel) {
-    case ROW:
-    case COLUMN:
-    case X:
-    case Y:
-      return model.axis(channel).shortTimeLabels;
-    case COLOR:
-    case SHAPE:
-    case SIZE:
-      return model.legend(channel).shortTimeLabels;
-    case TEXT:
-      return model.config().mark.shortTimeLabels;
-    case LABEL:
-      // TODO(#897): implement when we have label
-  }
-  return false;
-}
-
-
 
 /** Return field reference with potential "-" prefix for descending sort */
 export function sortField(orderChannelDef: OrderChannelDef) {
-  return (orderChannelDef.sort === SortOrder.DESCENDING ? '-' : '') + field(orderChannelDef);
+  return (orderChannelDef.sort === SortOrder.DESCENDING ? '-' : '') +
+    field(orderChannelDef, {binSuffix: 'mid'});
 }
 
 /**
- * Returns the time format used for axis labels for a time unit.
+ * Returns the time template used for axis/legend labels or text mark for a temporal field
  */
-export function timeFormat(model: Model, channel: Channel): string {
-  const fieldDef = model.fieldDef(channel);
-  return timeFormatExpr(fieldDef.timeUnit, isAbbreviated(model, channel, fieldDef));
+export function timeTemplate(templateField: string, timeUnit: TimeUnit, format: string, shortTimeLabels: boolean, config: Config): string {
+  if (!timeUnit || format) {
+    // If there is not time unit, or if user explicitly specify format for axis/legend/text.
+    const _format = format || config.timeFormat; // only use config.timeFormat if there is no timeUnit.
+    return '{{' + templateField + ' | time:\'' + _format + '\'}}';
+  } else {
+    return timeUnitTemplate(timeUnit, templateField, shortTimeLabels);
+  }
 }

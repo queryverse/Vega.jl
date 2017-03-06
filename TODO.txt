@@ -1,0 +1,8 @@
+- buttons : not working in Escher - DONE
+- Find out how to require vega-embed in Jupyter, this is preventing the svg and buttons flag to function (currently hardwired to true and false resp.)
+- use CSS to separate actions buttons (see vega-lite site) - DONE
+- how to change the font of axes ? with CSS ?
+- finish implementation (transform, bin, ), check against schema spec
+- try to have it work on JUNO, hint : check Base.Multimedia.displays to know where we are displaying html - DONE
+- explain better the behaviour for each backend. Mention the need to push!(window.assets, ("VegaLite", "vega-lite-plot"))
+- ....

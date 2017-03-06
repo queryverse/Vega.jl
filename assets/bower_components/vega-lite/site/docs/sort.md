@@ -13,9 +13,7 @@ permalink: /docs/sort.html
     "x": {
       "field": ...,
       "type": ...,
-      "sort": {                // sort
-        ...
-      },
+      "sort": ...,         // sort
       ...
     },
     "y": ...,
@@ -25,7 +23,7 @@ permalink: /docs/sort.html
 }
 ```
 
-`sort` property of [a mark properties channel](encoding.html#mark-props) determines the order of the scale domain.  Supported `sort` value depends on the field's scale type.
+`sort` property of [a mark properties channel](encoding.html#mark-props) determines the order of the scale domain. Supported `sort` value depends on the field's scale type.
 
 ## Continuous Scale
 
@@ -38,7 +36,7 @@ If the channel has a continuous scale (quantitative or time), `sort` can have th
 
 #### Example: Reversed X-Scale
 
-Setting x's `sort` to `"descending"` reverses the x-axis.  Thus, the following visualization's x-axis starts on the maximum value of the field "Horsepower" and ends on zero.
+Setting x's `sort` to `"descending"` reverses the x-axis. Thus, the following visualization's x-axis starts on the maximum value of the field "Horsepower" and ends on zero.
 
 <div class="vl-example">
 {
@@ -62,7 +60,7 @@ If the channel has an ordinal scale, the field's values of the channel can be so
 
 {:#sort-field}
 
-2) Sorting by aggregated value of another "sort" field.  In this case, `sort` is a __sort field definition object__, which has the following properties:
+2) Sorting by aggregated value of another "sort" field. In this case, `sort` is a __sort field definition object__, which has the following properties:
 
 | Property      | Type          | Description    |
 | :------------ |:-------------:| :------------- |
@@ -75,9 +73,11 @@ support manually specify sort order
 example: sorting color mapping
  -->
 
-3) Unsorted – `"none`" – The field is not sorted.  This is equivalent to specifying `sort:false` in [Vega's scales](https://github.com/vega/vega/wiki/Scales).
+3) Unsorted – `"none`" – The field is not sorted. This is equivalent to specifying `sort: false` in [Vega's scales](https://github.com/vega/vega/wiki/Scales).
 
 <span class="note-line">__Default value:__ `"ascending"`.</span>
+
+4) Specify custom order by providing custom `scale`'s [`domain`](scale.html#domain).  (In this case, you don't need to use `sort` property.)
 
 #### Example: Sorting Ordinal Scale by Another Field
 

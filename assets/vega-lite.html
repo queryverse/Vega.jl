@@ -9,6 +9,16 @@
       <div>
           <content></content>
       </div>
+
+      <style>
+        :host ::content .vega-actions a {
+          margin-right: 10px;
+          font-family: sans-serif;
+          font-size: x-small;
+          font-style: italic;
+        }
+      </style>
+
     </template>
     <script>
       Polymer({
@@ -27,7 +37,7 @@
           var embedSpec = {
             mode: "vega-lite",
             renderer: this.svg ? "svg" : "canvas",
-            actions: this.actions,
+            actions: this.actions ? true : false,
             spec: this.json
           }
           vg.embed(this, embedSpec, function(error, result) {
@@ -35,9 +45,9 @@
 
         },
 
-        attached: function (){
-          this.render()
-        },
+        // attached: function (){
+        //   this.render()
+        // },
 
       });
     </script>
