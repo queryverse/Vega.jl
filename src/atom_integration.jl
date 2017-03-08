@@ -11,17 +11,16 @@
 
   import Atom, Media
 
-  Media.media(VegaLiteVis, Media.Plot)
-
   function Media.render(e::Atom.Editor, plt::VegaLiteVis)
+    show(plt)
     Media.render(e, nothing)
   end
-
-  Media.render(pane::Atom.PlotPane, plt::VegaLiteVis) = nothing
 
   # tests if wkhtmltoimage is in the path, if yes define rendering in plot pane
   try
     run(`wkhtmltoimage -V`)
+
+    Media.media(VegaLiteVis, Media.Plot)
 
     function Media.render(pane::Atom.PlotPane, plt::VegaLiteVis)
       # create a temporary file
