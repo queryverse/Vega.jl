@@ -6,25 +6,29 @@
 #
 ######################################################################
 
-import Escher: Elem, Tile, render
-import Base: convert
+@require Escher begin
 
-type VegaLiteTile <: Tile
-  json::AbstractString
-  svg::Bool
-  actions::Bool
-end
+  import Escher: Elem, Tile, render
+  import Base: convert
 
-function VegaLiteTile(vis::AbstractString)
-  VegaLiteTile(vis, SVG, SAVE_BUTTONS)
-end
+  type VegaLiteTile <: Tile
+    json::AbstractString
+    svg::Bool
+    actions::Bool
+  end
 
-convert(::Type{Tile}, v::VegaLiteVis) = VegaLiteTile(JSON.json(v.vis))
+  function VegaLiteTile(vis::AbstractString)
+    VegaLiteTile(vis, SVG, SAVE_BUTTONS)
+  end
 
-function render(plot::VegaLiteTile, state)
-  attr = Dict(:json=>plot.json)
-  plot.svg     && ( attr[:svg]     = "" )
-  plot.actions && ( attr[:actions] = "" )
+  convert(::Type{Tile}, v::VegaLiteVis) = VegaLiteTile(JSON.json(v.vis))
 
-  Elem(:"vega-lite-plot", attributes = attr)
+  function render(plot::VegaLiteTile, state)
+    attr = Dict(:json=>plot.json)
+    plot.svg     && ( attr[:svg]     = "" )
+    plot.actions && ( attr[:actions] = "" )
+
+    Elem(:"vega-lite-plot", attributes = attr)
+  end
+
 end

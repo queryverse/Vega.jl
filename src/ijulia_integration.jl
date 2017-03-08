@@ -8,21 +8,21 @@
 #
 ######################################################################
 
-@compat import Base.show
-
-# FIXME : Apparently, loading local js files is not allowed by the browser
-#   => libraries are loaded externally in the `require.config`
-
-# function jslibpath(url...)
-#   libpath = joinpath(dirname(@__FILE__), "..", "assets", "bower_components", url...)
-#   replace(libpath, "\\", "/")  # for windows...
-# end
-# // d3: "$(jslibpath("d3","d3.min.js"))",
-# // vega: "$(jslibpath("vega", "vega.js"))",
-# // vegalite: "$(jslibpath("vega-lite", "vega-lite.js"))",
-# // vegaembed: "$(jslibpath("vega-embed", "vega-embed.js"))"
-
 @require IJulia begin  # define only if/when IJulia is loaded
+
+  @compat import Base.show
+
+  # FIXME : Apparently, loading local js files is not allowed by the browser
+  #   => libraries are loaded externally in the `require.config`
+
+  # function jslibpath(url...)
+  #   libpath = joinpath(dirname(@__FILE__), "..", "assets", "bower_components", url...)
+  #   replace(libpath, "\\", "/")  # for windows...
+  # end
+  # // d3: "$(jslibpath("d3","d3.min.js"))",
+  # // vega: "$(jslibpath("vega", "vega.js"))",
+  # // vegalite: "$(jslibpath("vega-lite", "vega-lite.js"))",
+  # // vegaembed: "$(jslibpath("vega-embed", "vega-embed.js"))"
 
   @compat function show(io::IO, m::MIME"text/html", v::VegaLiteVis)
     divid = "vl" * randstring(10) # generated id for this plot

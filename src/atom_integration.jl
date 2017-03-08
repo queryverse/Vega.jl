@@ -14,9 +14,10 @@
   Media.media(VegaLiteVis, Media.Plot)
 
   function Media.render(e::Atom.Editor, plt::VegaLiteVis)
-
     Media.render(e, nothing)
   end
+
+  Media.render(pane::Atom.PlotPane, plt::VegaLiteVis) = nothing
 
   # tests if wkhtmltoimage is in the path, if yes define rendering in plot pane
   try
