@@ -20,8 +20,10 @@ Only two functions are added:
 - `svg(Bool)` : sets the drawing mode of the plots, SVG if `true`, canvas if `false`. Default = `true`
 - `buttons(Bool)` : indicates if the plot should be accompanied with links 'Save as PNG', 'View source' and 'Open in Vega Editor'. Default = `true`.
 
-Currently, VegaLite.jl works with IJulia/Jupyter, Escher and in the standard REPL (a browser window will open).
-
+Currently, VegaLite.jl works with : 
+- IJulia
+- the standard REPL (a browser window will open)
+- Juno (a browser window will open, with experimental support of Juno's PlotPane if you have `wkhtmltoimage` installed and in the path) 
 
 All contributions, PR or issue, are welcome !
 
