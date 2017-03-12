@@ -12,17 +12,9 @@
 
   @compat import Base.show
 
-  # FIXME : Apparently, loading local js files is not allowed by the browser
+  # FIXME : Apparently, loading local d3, vegalite, .. js files is not
+  #  allowed by the browser / IJulia
   #   => libraries are loaded externally in the `require.config`
-
-  # function jslibpath(url...)
-  #   libpath = joinpath(dirname(@__FILE__), "..", "assets", "bower_components", url...)
-  #   replace(libpath, "\\", "/")  # for windows...
-  # end
-  # // d3: "$(jslibpath("d3","d3.min.js"))",
-  # // vega: "$(jslibpath("vega", "vega.js"))",
-  # // vegalite: "$(jslibpath("vega-lite", "vega-lite.js"))",
-  # // vegaembed: "$(jslibpath("vega-embed", "vega-embed.js"))"
 
   @compat function show(io::IO, m::MIME"text/html", v::VegaLiteVis)
     divid = "vl" * randstring(10) # generated id for this plot
@@ -43,50 +35,46 @@
       <meta charset="utf-8">
 
       <script type="text/javascript">
-        require.config({
-          paths: {
-            d3:        "https://d3js.org/d3.v3.min",
-            vega:      "https://vega.github.io/vega/vega",
-            vegalite:  "https://vega.github.io/vega-lite/vega-lite",
-            vegaembed: "https://vega.github.io/vega-editor/vendor/vega-embed"
-          }
+        requirejs.config({
+            paths: {
+              d3: "https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.16/d3.min.js?noext",
+              vg: "https://cdnjs.cloudflare.com/ajax/libs/vega/2.5.1/vega.min.js?noext",
+              vl: "https://vega.github.io/vega-lite/vega-lite.js?noext",
+              vg_embed: "https://vega.github.io/vega-editor/vendor/vega-embed.js?noext"
+            },
+            shim: {
+              vg_embed: {deps: ["vg.global", "vl.global"]},
+              vl: {deps: ["vg"]},
+              vg: {deps: ["d3"]}
+            }
         });
 
-        require(["d3"], function(d3){
-          window.d3 = d3;
-
-          require(["vega"], function(vg) {
-            window.vg = vg
-
-            require(["vegalite"], function(vgl) {
-
-              require(["vegaembed"], function(vge) {
-
-                var embedSpec = {
-                  mode: "vega-lite",
-                  renderer: "$(SVG ? "svg" : "canvas")",
-                  actions: $SAVE_BUTTONS,
-                  spec: $(JSON.json(v.vis))
-                }
-
-            //    vg.embed("#$divid", embedSpec, function(error, result) {
-            //    });
-
-                var vgSpec = vgl.compile(embedSpec.spec).spec;
-                vg.parse.spec(vgSpec, function(chart) { chart({el:\"#$divid\"}).update(); });
-
-              });
-            });
-          });
+        define('vg.global', ['vg'], function(vgGlobal) {
+            window.vg = vgGlobal;
         });
+
+        define('vl.global', ['vl'], function(vlGlobal) {
+            window.vl = vlGlobal;
+        });
+
+        require(["vg_embed"], function(vg_embed) {
+          var vlSpec = $(JSON.json(v.vis));
+
+          var embedSpec = {
+            mode: "vega-lite",
+            renderer: "$(SVG ? "svg" : "canvas")",
+            actions: $SAVE_BUTTONS,
+            spec: vlSpec
+          };
+
+          vg_embed("#$divid", embedSpec, function(error, result) {});
+        })
+
 
       </script>
 
     </div>
     """
-    # FIXME : understand why vega-embed can't be loaded
-    #   SVG and SAVE_BUTTONS flags are ignored
-    # vg.embed("#$divid", embedSpec, function(error, result) {
 
     write(io, fh)
   end
