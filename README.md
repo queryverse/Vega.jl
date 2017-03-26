@@ -20,10 +20,10 @@ Only two functions are added:
 - `svg(Bool)` : sets the drawing mode of the plots, SVG if `true`, canvas if `false`. Default = `true`
 - `buttons(Bool)` : indicates if the plot should be accompanied with links 'Save as PNG', 'View source' and 'Open in Vega Editor'. Default = `true`.
 
-Currently, VegaLite.jl works with : 
+Currently, VegaLite.jl works with :
 - IJulia
 - the standard REPL (a browser window will open)
-- Juno (a browser window will open, with experimental support of Juno's PlotPane if you have `wkhtmltoimage` installed and in the path) 
+- Juno (a browser window will open, with experimental support of Juno's PlotPane if you have `wkhtmltoimage` installed and in the path)
 
 All contributions, PR or issue, are welcome !
 
@@ -43,7 +43,7 @@ v = data_values(time=ts, res=ys) +    # add the data vectors & assign to symbols
       encoding_y_quant(:res)          # bind y dimension to :res, quantitative scale
 ```
 
-![plot1](examples/png/vega (1).png)
+![plot1](examples/png/vegalite1.png)
 
 - Scatterplot, using a DataFrame as the source:
 ```julia
@@ -57,7 +57,7 @@ data_values(mpg) +            # add values
   encoding_y_quant(:Hwy)      # bind y dimension to :Hwy field in mpg
 ```
 
-![plot1](examples/png/vega (2).png)
+![plot1](examples/png/vegalite2.png)
 
 - A scatterplot, with colors and size settings for the plot:
 ```julia
@@ -70,7 +70,7 @@ data_values(mpg) +
 
 ```
 
-![plot1](examples/png/vega (3).png)
+![plot1](examples/png/vegalite3.png)
 
 - A slope graph:
 ```julia
@@ -84,7 +84,7 @@ data_values(mpg) +
 
 ```
 
-![plot1](examples/png/vega (4).png)
+![plot1](examples/png/vegalite4.png)
 
 - A trellis plot:
 ```julia
@@ -99,7 +99,7 @@ data_values(mpg) +
 
 ```
 
-![plot1](examples/png/vega (5).png)
+![plot1](examples/png/vegalite5.png)
 
 - A table:
 ```julia
@@ -111,4 +111,4 @@ data_values(mpg) +
   config_mark(fontStyle="italic", fontSize=12, font="courier")
 ```
 
-![plot1](examples/png/vega (6).png)
+![plot1](examples/png/vegalite6.png)
