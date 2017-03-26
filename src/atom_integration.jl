@@ -7,7 +7,7 @@
 #
 ######################################################################
 
-@require Atom begin  # define only if/when Atom is loaded
+@require Atom begin
 
   import Atom, Media
 
@@ -16,15 +16,15 @@
     show(plt)
   end
 
-  # tests if wkhtmltoimage is in the path, if yes define rendering in plot pane
+  # if package Wkhtmltox is present redirect rendering to Juno's plot pane
   try
-    run(`wkhtmltoimage -V`)
+    import Wkhtmltox
 
     Media.media(VegaLiteVis, Media.Plot)
 
     Media.render(e::Atom.Editor, plt::VegaLiteVis) =
       Media.render(e, nothing)
-  
+
     function Media.render(pane::Atom.PlotPane, plt::VegaLiteVis)
       # create a temporary file
       tmppath = string(tempname(), ".vegalite.html")
@@ -32,9 +32,17 @@
         writehtml(io, plt)
       end
 
-      sz = (400,400)
       png_fn = string(tempname(), ".png")
-      run(`wkhtmltoimage -f png -q --width $(sz[1]) --height $(sz[2]) $tmppath $png_fn`)
+
+      Wkhtmltox.img_init(1)
+      is = Wkhtmltox.ImgSettings("in" => tmppath,
+                                 "out" => png_fn,
+                                 "fmt" => "png")  # png format output
+      conv = Wkhtmltox.ImgConverter(is)
+      Wkhtmltox.run(conv)
+
+      conv = nothing
+      Wkhtmltox.img_deinit()
 
       Media.render(pane, Atom.div(Atom.img(src=png_fn)))
     end
