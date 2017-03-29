@@ -16,9 +16,9 @@
     show(plt)
   end
 
-  # if package Wkhtmltox is present redirect rendering to Juno's plot pane
+  # if package PhantomJS is present redirect rendering to Juno's plot pane
   try
-    import Wkhtmltox
+    import PhantomJS
 
     Media.media(VegaLiteVis, Media.Plot)
 
@@ -26,25 +26,17 @@
       Media.render(e, nothing)
 
     function Media.render(pane::Atom.PlotPane, plt::VegaLiteVis)
-      # create a temporary file
-      tmppath = string(tempname(), ".vegalite.html")
-      open(tmppath, "w") do io
-        writehtml(io, plt)
-      end
+      # write html to an IOBuffer()
+      pio = IOBuffer()
+      VegaLite.writehtml(pio, plt)
+      seekstart(pio)
 
-      png_fn = string(tempname(), ".png")
+      # convert to png
+      png = PhantomJS.renderhtml(pio, clipToSelector=".marks", format="png")
 
-      Wkhtmltox.img_init(1)
-      is = Wkhtmltox.ImgSettings("in" => tmppath,
-                                 "out" => png_fn,
-                                 "fmt" => "png")  # png format output
-      conv = Wkhtmltox.ImgConverter(is)
-      Wkhtmltox.run(conv)
-
-      conv = nothing
-      Wkhtmltox.img_deinit()
-
-      Media.render(pane, Atom.div(Atom.img(src=png_fn)))
+      Media.render(pane,
+                   Atom.div(
+                     Atom.img(src = "data:image/png;base64," * base64encode(png))))
     end
   end
 
