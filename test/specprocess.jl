@@ -2,125 +2,84 @@ using JSON
 
 fn = joinpath(dirname(@__FILE__), "v2.json")
 
-
 spc = JSON.parsefile(fn)
-
-
-
 
 spc1 = spc["definitions"]["FilterTransform"]
 
+#####################################################
 
-
-
-
-
-
-
-for (k,v) in spc["definitions"]
-  println("$k :  ($(v["type"]))")
-end
-
-
-function _transsubtype(typ::String)
+function elemtype(typ::String)
   typ=="number" && return Number
   typ=="boolean" && return Bool
-  typ=="string" && return String
-  typ=="array" && return Vector{Any}
   typ=="integer" && return Int64
+  typ=="string"  && return String
+  typ=="array" && return Vector{Any}
   error("unknown spec type $typ")
 end
-
-function transtype(spec::Dict)
-  if haskey(spec, "type")
-    typ = spec["type"]
-    isa(typ, String) && return _transsubtype(typ)
-
-    if isa(typ, Vector)
-      typs = _transsubtype.(typ)
-      return Union{typs...}
-    end
-
-    error("Can't parse type $typ")
-  elseif haskey(spec, "\$ref")
-    typ = split(spec["\$ref"], "/")[3]
-    return "VL" * typ
-  else
-    return Void
-  end
-end
-
-function trans(name::String, sp::Dict)
-  # doc = IOBuffer()
-  # func = IOBuffer()
-  # println(doc, "documentation")
-  # haskey(sp, "description") && println(doc, sp["description"])
-  # println(func, "function $name(")
-
-  println("### $name ###")
-  params = Dict{String, NTuple{2}}()
-  if sp["type"] == "object"
-    for (k,v) in sp["properties"]
-      typ = transtype(v)
-      desc = get(v, "description", "")
-      params[lowercase(k)] = (typ, desc)
-      println("  - $k : $typ")
-    end
-    println()
-  else
-    println("  $(sp["type"])")
-    println()
-  end
-
-end
-
-
 
 function proploop(props::Dict)
   params = Dict{String, NTuple{2}}()
   for (k,v) in props
-    typ = parsedef(v, k)
+    typ = parsetype(v)
+    if isa(typ, Dict) # needs secondary def
+      extensions = ["" ; 1:100]
+      ext = extensions[findfirst(e -> !haskey(defs, "_$k$e"), extensions)]
+      typname = "_$k$ext"
+      defs[typname] = typ
+      typ = typname
+    end
     desc = get(v, "description", "")
     params[k] = (typ, desc)
   end
   params
 end
 
-function parsedef(spec::Dict, namehint::String)
-  println("parsedef $namehint")
+function parsetype(spec::Dict)
   if haskey(spec, "type")
     typ = spec["type"]
+
     if isa(typ, Vector)
-      typs = _transsubtype.(typ)
+      typs = elemtype.(typ)
       return Union{typs...}
+
     elseif isa(typ, String)
-      typ != "object" && return _transsubtype(typ)
+      if typ == "object"
+        haskey(spec, "properties") && return proploop(spec["properties"])
 
-      extensions = ["" ; 1:100]
-      ext = extensions[findfirst(ext -> !haskey(defs, "$namehint$ext"), extensions)]
-      typname = "$namehint$ext"
-      if haskey(spec, "properties")
-        defs[typname] = proploop(spec["properties"])
+        return Void
+      else
+        return elemtype(typ)
       end
-
-      return typname
     end
 
-    error("Can't parse type $typ")
+    error("type $typ is neither an array nor a string")
 
   elseif haskey(spec, "\$ref")
     typ = split(spec["\$ref"], "/")[3]
     return typ
 
   else
+    warn("not a ref and no type for $spec")
     return Void
   end
 end
 
+
+parsetype(spc["definitions"]["CellConfig"])
+
+############
+
 defs = Dict{String, Any}()
 
 for (k,v) in spc["definitions"]
-  parsedef(v, k)
+  def = parsetype(v)
+  if def==nothing
+    warn("no properties found for $k")
+    continue
+  end
+
+  haskey(defs, k) && error("def $k already defined !")
+  defs[k] = def
 end
 
 length(defs)
@@ -129,17 +88,64 @@ for (k,v) in defs
   println("#####  $k  #####")
   if isa(v, Dict)
     for (n,(t,d)) in v
-      print("  - $n : $t ")
-      if !isa(t, Type)
-        print(haskey(defs, t) ? "(ok found)" : "(not found)")
-      end
-      println()
+      println("  - $n : $t ")
+      isa(t, Type) || haskey(defs, t) || println("!!!! $t not defined !!!!")
     end
   else
     println("  = $v")
   end
   println()
 end
+
+
+for (n,(t,d)) in defs["AreaOverlay"]
+  println("  - $n : $t ")
+  isa(t, Type) || haskey(defs, t) || warn("$t not defined")
+end
+
+
+#################################################################
+
+
+#####  ExtendedScheme  #####
+  - name : String
+  - count : Number
+  - extent : Array{Any,1}
+
+
+function extendedScheme(args...;kwargs...)
+  def = defs["ExtendedScheme"]
+
+  typs = [ t for (f,(t,d)) in def ]
+  fields = [ Symbol(f) for (f,(t,d)) in def ]
+  utyps = [ sum(t .== typs) == 1 for t in typs ]
+
+  pars = Dict{Symbol,Any}(kwargs)
+  for a in args
+    idx = findfirst(i -> utyps[i] && isa(a, typs[i]), 1:length(typs))
+    if idx != 0
+      pars[fields[idx]] = a
+    end
+  end
+  JSON.json(pars)
+end
+
+extendedScheme(15,"qsdf")
+extendedScheme(extent=15,"qsdf")
+
+
+
+function test(;kwargs...)
+  Dict{Symbol,Any}(kwargs)
+end
+
+ttt = test(a=156, b="qsdf")
+ttt[:b]
+
+
+const
+type VLInterpolate <: VLSpec
+
 
 
 haskey(defs, "Scale")
