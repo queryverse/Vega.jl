@@ -1,2 +1,7 @@
+*.jl.cov
+*.jl.*.cov
+*.jl.mem
 docs/build/
 docs/site/
+/deps/downloads
+/deps/lib
