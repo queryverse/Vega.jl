@@ -4,7 +4,6 @@ fn = joinpath(dirname(@__FILE__), "v2.json")
 
 spc = JSON.parsefile(fn)
 
-spc1 = spc["definitions"]["FilterTransform"]
 
 #####################################################
 
@@ -13,12 +12,12 @@ function elemtype(typ::String)
   typ=="boolean" && return Bool
   typ=="integer" && return Int64
   typ=="string"  && return String
-  typ=="array" && return Vector{Any}
+  typ=="array" && return Vector
   error("unknown spec type $typ")
 end
 
 function proploop(props::Dict)
-  params = Dict{String, NTuple{2}}()
+  params = Dict{Symbol, NTuple{2}}()
   for (k,v) in props
     typ = parsetype(v)
     if isa(typ, Dict) # needs secondary def
@@ -29,7 +28,7 @@ function proploop(props::Dict)
       typ = typname
     end
     desc = get(v, "description", "")
-    params[k] = (typ, desc)
+    params[Symbol(k)] = (typ, desc)
   end
   params
 end
@@ -112,26 +111,85 @@ end
   - count : Number
   - extent : Array{Any,1}
 
+type VLSpec{T}
+  json::String
+end
 
-function extendedScheme(args...;kwargs...)
-  def = defs["ExtendedScheme"]
 
-  typs = [ t for (f,(t,d)) in def ]
-  fields = [ Symbol(f) for (f,(t,d)) in def ]
-  utyps = [ sum(t .== typs) == 1 for t in typs ]
+VLSpec{Int64}("abcd")
+VLSpec{:yo}("abcd")
+VLSpec{"yo"}("abcd")
 
-  pars = Dict{Symbol,Any}(kwargs)
+typeof(JSON.json(Dict(:cdf=>"yo")))
+
+function wrapper(def::Dict, args...;kwargs...)
+  # first map the kw args to the field in the definitions
+  pars = Dict{Symbol,Any}()
+  for (f,v) in kwargs
+    haskey(def,f) || error("unexpected parameter $f")
+    ftyp = def[f][1]
+    isa(v, ftyp) || error("expecting a $ftyp for parameter $f, got $(typeof(v))")
+    pars[f] = v
+  end
+
+  # try to guess where other parameters apply
+  typs =   [ t for (f,(t,d)) in def ]
+  fields = [ f for (f,(t,d)) in def ]
+  utyps =  [ sum(t .== typs) == 1 && !haskey(pars, t) for t in typs ]
+
   for a in args
     idx = findfirst(i -> utyps[i] && isa(a, typs[i]), 1:length(typs))
-    if idx != 0
+    if idx == 0
+      error("could not map argument $a to any expected field")
+    else
       pars[fields[idx]] = a
+      utyps[idx] = false
     end
   end
+
   JSON.json(pars)
 end
 
+function extendedScheme(args...;kwargs...)
+  VLSpec{:extendedScheme}(wrapper(defs["ExtendedScheme"],
+                          args...;kwargs...))
+end
+
+extendedScheme(15)
 extendedScheme(15,"qsdf")
+extendedScheme(15,"qsdf", 456)
 extendedScheme(extent=15,"qsdf")
+extendedScheme(extent=[15],"qsdf")
+
+
+def = defs["ExtendedScheme"]
+haskey(def, :extent)
+
+defs["Encoding"]
+
+module A
+end
+
+module A
+
+for (k,v) in Main.defs
+  if isa(v, Dict)
+    println("defining $k")
+    sk = Symbol(lowercase(k[1:1]) * k[2:end])
+    @eval ($sk)(args...;kwargs...) = Main.VLSpec{$k}(Main.wrapper(defs[$k], args...;kwargs...))
+  end
+end
+
+legend()
+methods(legend)
+@enum FRUIT apple=1 orange=2 kiwi=3
+typeof(FRUIT)
+typeof(apple)
+apple
+
+apple = "abcd"
+
+end
 
 
 
