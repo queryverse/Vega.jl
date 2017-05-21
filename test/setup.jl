@@ -1,14 +1,8 @@
-module A
-end
-
-
 
 using JSON
 
 fn = joinpath(dirname(@__FILE__), "v2.json")
-
 spc = JSON.parsefile(fn)
-
 
 #####################################################
 
@@ -128,10 +122,6 @@ function toDef(spec::Dict)
     return UnionDef(get(spec, "description", ""),
                     toDef.(spec["anyOf"]))
 
-  # elseif haskey(spec, "additionalProperties") && isa(spec["additionalProperties"], Dict)
-  #   println("here")
-  #   return toDef(spec["additionalProperties"])
-
   elseif length(spec) == 0
     return VoidDef()
 
@@ -141,7 +131,7 @@ function toDef(spec::Dict)
   end
 end
 
-toDef(spc["definitions"]["BaseSelectionDef"])
+# toDef(spc["definitions"]["BaseSelectionDef"])
 
 # tspc = spc["definitions"]["BaseSelectionDef"]["properties"]["bind"]["anyOf"][6]
 #
@@ -152,69 +142,6 @@ toDef(spc["definitions"]["BaseSelectionDef"])
 #
 # isa(get(tspc, "additionalProperties", false), Dict)
 # toDef(tspc["additionalProperties"])
-
-
-
-
-#####################################################
-
-function elemtype(typ::String)
-  typ=="number" && return Number
-  typ=="boolean" && return Bool
-  typ=="integer" && return Int64
-  typ=="string"  && return String
-  typ=="array" && return Vector
-  error("unknown spec type $typ")
-end
-
-function proploop(props::Dict)
-  params = Dict{Symbol, NTuple{2}}()
-  for (k,v) in props
-    typ = parsetype(v)
-    if isa(typ, Dict) # needs secondary def
-      extensions = ["" ; 1:100]
-      ext = extensions[findfirst(e -> !haskey(defs, "_$k$e"), extensions)]
-      typname = "_$k$ext"
-      defs[typname] = typ
-      typ = typname
-    end
-    desc = get(v, "description", "")
-    params[Symbol(k)] = (typ, desc)
-  end
-  params
-end
-
-function parsetype(spec::Dict)
-  if haskey(spec, "type")
-    typ = spec["type"]
-
-    if isa(typ, Vector)
-      typs = elemtype.(typ)
-      return Union{typs...}
-
-    elseif isa(typ, String)
-      if typ == "object"
-        haskey(spec, "properties") && return proploop(spec["properties"])
-
-        return Void
-      else
-        return elemtype(typ)
-      end
-    end
-
-    error("type $typ is neither an array nor a string")
-
-  elseif haskey(spec, "\$ref")
-    typ = split(spec["\$ref"], "/")[3]
-    return typ
-
-  else
-    warn("not a ref and no type for $spec")
-    return Void
-  end
-end
-
-parsetype(spc["definitions"]["CellConfig"])
 
 ############
 
@@ -233,51 +160,6 @@ for (k,v) in spc["definitions"]
 end
 
 
-# tspc = spc["definitions"]["LegendFieldDef<Field, number>"]
-# toDef(tspc)
-# for (k,v) in tspc["properties"]
-#   println(k)
-#   toDef(v)
-# end
-
-
-length(defs)
-
-for (k,v) in defs
-  println("#####  $k  #####")
-  if isa(v, Dict)
-    for (n,(t,d)) in v
-      println("  - $n : $t ")
-      isa(t, Type) || haskey(defs, t) || println("!!!! $t not defined !!!!")
-    end
-  else
-    println("  = $v")
-  end
-  println()
-end
-
-defs["AreaOverlay"]
-defs["Encoding"]
-
-
-#################################################################
-
-
-#####  ExtendedScheme  #####
-  - name : String
-  - count : Number
-  - extent : Array{Any,1}
-
-type VLSpec{T}
-  json::String
-end
-
-
-VLSpec{Int64}("abcd")
-VLSpec{:yo}("abcd")
-VLSpec{"yo"}("abcd")
-
-typeof(JSON.json(Dict(:cdf=>"yo")))
 
 ##############################################################################
 
@@ -311,20 +193,6 @@ end
 #   true
 # end
 
-#
-# equiv(a::SpecDef, b::SpecDef) = false
-# function equiv{T <: SpecDef}(a::T, b::T)
-#   T in [IntDef, NumberDef, BoolDef, VoidDef] && return true
-#   T == RefDef    && return a.ref == b.ref
-#   T == StringDef && return a.enum == b.enum
-#   T == ArrayDef && return equiv(a.items, b.items)
-#   false
-# end
-#
-# equiv(IntDef(""), IntDef(""))
-# equiv(IntDef(""), NumberDef(""))
-
-
 function wrapper(def::ObjDef, args...;kwargs...)
 
   # def = defs["DateTime"]
@@ -355,174 +223,11 @@ function wrapper(def::ObjDef, args...;kwargs...)
     end
   end
 
-
   # check for required fields
   if length(def.required) > 0
     all( r -> Symbol(r) in keys(pars), def.required ) ||
       error("some required param missing")
   end
 
-  pars
-end
-
-
-defs["DateTime"].props
-
-
-
-
-
-
-
-
-
-
-
-wrapper(defs["DateTime"], 12, 20)
-wrapper(defs["DateTime"], 12, 20, 10, 10, 10, 10, 10)
-wrapper(defs["DateTime"], milliseconds=12)
-wrapper(defs["DateTime"], "Monday")
-wrapper(defs["DateTime"], day="Monday")
-wrapper(defs["DateTime"], day="Monday", "abcd")
-
-wrapper(defs["Axis"], values=[1.2, 3.5])
-wrapper(defs["Axis"], values=[])
-
-isdefined(:DateTime)
-
-################## check of symbols ##############
-
-function juliaTypeof(n::String)
-  nn = lowercase(n[1:1]) * n[2:end]
-  return match(r"[a-zA-Z]*", nn).match
-end
-
-r"^[a-zA-Z]*"
-r = match(r"[a-zA-Z]*", "LegendFieldDef<Field, number>")
-r.captures[1]
-r.match
-fieldnames(r)
-
-using DataFrames
-
-res = DataFrame(on=String[], nn=String[], used=Bool[], typ=DataType[])
-for (k,v) in defs
-  nk = juliaTypeof(k)
-  s = isdefined(Symbol(nk))
-  push!(res, (k, nk, s, typeof(v)))
-end
-
-show(res)
-res[res[:used] ,:]
-
-res[res[:typ] .== StringDef, :]
-
-for p in filter(p -> p.second > 1, collect(countmap(res[:nn])))
-  p.second <= 1 && continue
-  println(res[res[:nn] .== p.first,:])
-end
-
-
-setdiff(Set(unique(res[:nn])), Set(res[:nn]))
-
-
-ns = Set{String}()
-for (k,v) in defs
-  nk = juliaTypeof(k)
-  a =
-  nk in ns && println("")
-  pk  = lpad(k, 20, ' ')
-  pnk = lpad(nk, 20, ' ')
-  s = isdefined(Symbol(nk)) ? "used !" : ""
-  ps = lpad(s, 8, ' ')
-  push!()
-  println("$pk -> $pnk $ps: $(typeof(v))")
-end
-
-
-
-##############################################################
-
-function extendedScheme(args...;kwargs...)
-  VLSpec{:extendedScheme}(wrapper(defs["ExtendedScheme"],
-                          args...;kwargs...))
-end
-
-extendedScheme(15)
-extendedScheme(15,"qsdf")
-extendedScheme(15,"qsdf", 456)
-extendedScheme(extent=15,"qsdf")
-extendedScheme(extent=[15],"qsdf")
-
-dump(:(  abcd{:yo}(45) ))
-
-def = defs["Axis"]
-
-def = defs["ExtendedScheme"]
-haskey(def, :extent)
-
-defs["Encoding"]
-
-k = :abcd
-
-:( ($k)(args) = $(Expr(:curly, :VLSpec, QuoteNode(k)))(10) )
-
-
-
-module A
-end
-
-module A
-
-for (k,v) in Main.defs
-  if isa(v, Dict)
-    println("defining $k")
-    sk = Symbol(lowercase(k[1:1]) * k[2:end])
-    @eval ($sk)(args...;kwargs...) = Main.VLSpec{$k}(Main.wrapper(defs[$k], args...;kwargs...))
-  end
-end
-
-legend()
-methods(legend)
-@enum FRUIT apple=1 orange=2 kiwi=3
-typeof(FRUIT)
-typeof(apple)
-apple
-
-apple = "abcd"
-
-end
-
-
-
-function test(;kwargs...)
-  Dict{Symbol,Any}(kwargs)
-end
-
-ttt = test(a=156, b="qsdf")
-ttt[:b]
-
-
-const
-type VLInterpolate <: VLSpec
-
-
-
-haskey(defs, "Scale")
-
-namehint = "Scale"
-findfirst(ext -> !haskey(defs, "$namehint$ext"), ["" ; 1:100])
-map(ext -> !haskey(defs, "$namehint$ext"), ["" ; 1:5])
-
-
-trans("bin", spc1)
-
-spec = spc["definitions"]["Axis"]["properties"]["orient"]
-
-spec = spc["definitions"]["LayerSpec"]["properties"]
-
-
-
-for (k,v) in spc["definitions"]
-  trans(k, v)
+  JSON.json(pars)
 end
