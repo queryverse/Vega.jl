@@ -3,9 +3,117 @@ module A
 end
 
 
+
 include("setup.jl")
 
-#################################################################
+keys(spc)
+
+defs["root"] = toDef(spc)
+
+
+##############################################################
+
+using DataFrames
+
+ns = DataFrame(pos=String[], nn=String[],
+               def=SpecDef[], typ=DataType[],
+               nf=Bool[])
+
+function needsfunction(s::SpecDef)
+  typeof(s) in [IntDef, NumberDef, BoolDef, StringDef,
+                ArrayDef, VoidDef] && return false
+  typeof(s) in [ObjDef, RefDef] && return true
+  if isa(s, UnionDef)
+    return any(needsfunction, s.items)
+  else
+    error("unknown type $(typeof(s))")
+  end
+end
+
+lookinto!(s::SpecDef, pos) = nothing
+
+function lookinto!(s::ObjDef,  pos)
+  for (k,v) in s.props
+    push!(ns, (pos, k, v, typeof(v), needsfunction(v)))
+    lookinto!(v, "$pos-$k")
+  end
+end
+
+function lookinto!(s::UnionDef,  pos)
+  for v in s.items
+    push!(ns, (pos, "*", v, typeof(v), needsfunction(v)))
+    lookinto!(v, "$pos-*")
+  end
+end
+
+for (k,v) in defs
+  lookinto!(v, k)
+end
+ns
+
+
+tf(;kwargs...) = println(kwargs)
+tf(on=456)
+tf(as=456)
+
+unique(ns[:typ])
+
+filt = (ns[:typ] .== UnionDef) & ns[:nf]
+ns[ filt, :]
+ns[(ns[:typ] .== UnionDef) & ! ns[:nf],:]
+
+######### field names qui sont courts
+filt = (length.(Array(ns[:nn])) .<= 3) &
+       (ns[:nn] .!= "*") & ns[:nf] &
+       ( (ns[:typ] .== ObjDef) | (ns[:typ] .== RefDef) | (ns[:typ] .== UnionDef) )
+
+unique(ns[filt, :nn ])
+
+######### fonctions à créer
+filt = (ns[:nn] .!= "*") & ns[:nf] &
+       ( (ns[:typ] .== ObjDef) | (ns[:typ] .== RefDef) | (ns[:typ] .== UnionDef) )
+
+unique(ns[filt,:nn])
+
+######### field names sur fontions existantes
+filt = (ns[:nn] .!= "*") & ns[:nf] &
+       ( (ns[:typ] .== ObjDef) | (ns[:typ] .== RefDef) | (ns[:typ] .== UnionDef) )
+
+unique(ns[filt,:nn])
+
+######### fonctions à créer déjà définies
+filt = [ isdefined(Symbol(n)) for n in Array(ns[:nn])] &
+       (ns[:nn] .!= "*") & ns[:nf] &
+       ( (ns[:typ] .== ObjDef) | (ns[:typ] .== RefDef) | (ns[:typ] .== UnionDef) )
+
+unique(ns[filt, :nn ])
+
+######### fonctions à créer
+filt = (ns[:nn] .!= "*") &
+       ( (ns[:typ] .== ObjDef) | (ns[:typ] .== RefDef) | (ns[:typ] .== UnionDef) )
+
+ns[filt, : ]
+unique(ns[filt, :nn])
+countmap(ns[filt, :nn])
+
+unique(typeof.(Array(ns[:nn])))
+
+sort(ns, by= n->length(n))
+
+
+
+s = first(defs).second
+
+map(k -> println(k), keys(s.props))
+
+for (k,v) in defs
+  if
+
+
+
+###################################################################
+
+
 
 #####  ExtendedScheme  #####
   - name : String
@@ -139,6 +247,17 @@ schs = """{
   }
 }
 """
+
+plot(data(url("data/seattle-temps.csv")),
+     mark("bar"),
+     encoding(x(timeUnit="month", field="date", type="temporal"),
+              y(agregate="mean", field="temp", type="quantitative")))
+
+plot(data(url("data/seattle-temps.csv")),
+     mark("bar"),
+     encoding(x = spec(timeUnit="month", field="date", type="temporal"),
+              y = spec(agregate="mean", field="temp", type="quantitative"))
+
 
 plot(data= Url("data/seattle-temps.csv"),
      mark = "bar",
