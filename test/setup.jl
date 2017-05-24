@@ -147,6 +147,7 @@ end
 
 defs = Dict{String, SpecDef}()
 
+# Add definitions
 for (k,v) in spc["definitions"]
   println(k)
   def = toDef(v)
@@ -159,6 +160,8 @@ for (k,v) in spc["definitions"]
   defs[k] = def
 end
 
+# Add definition for the base schema
+defs["root"] = toDef(spc)
 
 
 ##############################################################################

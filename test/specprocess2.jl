@@ -5,9 +5,7 @@ end
 
 
 include("setup.jl")
-
 keys(spc)
-
 defs["root"] = toDef(spc)
 
 
@@ -51,11 +49,6 @@ for (k,v) in defs
 end
 ns
 
-
-tf(;kwargs...) = println(kwargs)
-tf(on=456)
-tf(as=456)
-
 unique(ns[:typ])
 
 filt = (ns[:typ] .== UnionDef) & ns[:nf]
@@ -73,7 +66,28 @@ unique(ns[filt, :nn ])
 filt = (ns[:nn] .!= "*") & ns[:nf] &
        ( (ns[:typ] .== ObjDef) | (ns[:typ] .== RefDef) | (ns[:typ] .== UnionDef) )
 
-unique(ns[filt,:nn])
+fnames = unique(ns[filt,:nn])
+showall(sort(fnames))
+
+ns[ ns[:nn] .== "type", :]
+
+for fn in fnames
+  println("defining $fn")
+  fs = fn=="type" ? :typ : Symbol(fn)
+  if isdefined(fs)
+    println("   importing $fn ")
+    eval( Expr(:import, :Base, fs) )
+  end
+
+  @eval( function ($fs)(;kwargs...)
+            $(Expr(:curly, :VLSpec, QuoteNode(sk)))(
+                wrapper(defs[$k], args...;kwargs...))
+        end )
+  end
+
+end
+
+
 
 ######### field names sur fontions existantes
 filt = (ns[:nn] .!= "*") & ns[:nf] &
@@ -112,35 +126,141 @@ for (k,v) in defs
 
 
 ###################################################################
-
-
-
-#####  ExtendedScheme  #####
-  - name : String
-  - count : Number
-  - extent : Array{Any,1}
+#   function creation
+###################################################################
 
 type VLSpec{T}
-  json::String
+  params::Dict{Symbol, Any}
 end
 
-VLSpec{Int64}("abcd")
-VLSpec{:yo}("abcd")
-VLSpec{"yo"}("abcd")
+vltype{T}(::VLSpec{T}) = T
+# vltype(VLSpec{:abcd}(Dict{Symbol, Any}()))
 
-typeof(JSON.json(Dict(:cdf=>"yo")))
+juliafriendly = Dict(:typ => :type)
 
-defs["DateTime"].props
 
-wrapper(defs["DateTime"], 12, 20)
-wrapper(defs["DateTime"], 12, 20, 10, 10, 10, 10, 10)
-wrapper(defs["DateTime"], milliseconds=12)
-wrapper(defs["DateTime"], "Monday")
-wrapper(defs["DateTime"], day="Monday")
-wrapper(defs["DateTime"], day="Monday", "abcd")
+function wrapper2(args...;kwargs...)
+  pars = Dict{Symbol,Any}()
 
-wrapper(defs["Axis"], values=[1.2, 3.5])
-wrapper(defs["Axis"], values=[])
+  # first map the kw args to the fields in the definitions
+  for (f,v) in kwargs
+    jf = get(juliafriendly, f, f)
+    if isa(v, VLSpec)
+      (vltype(v) == f) || error("expecting function $f for keyword arg $f, got $(vltype(v))")
+      pars[jf] = v.params
+    else
+      pars[jf] = v
+    end
+  end
+
+  # now the other arguments
+  for v in args
+    isa(v, VLSpec) || error("expecting a field function when no keyword given for $v")
+    f = vltype(v)
+    jf = get(juliafriendly, f, f)
+    pars[jf] = v.params
+  end
+
+  pars
+end
+
+
+######### fonctions à créer
+filt = (ns[:nn] .!= "*") & ns[:nf] &
+       ( (ns[:typ] .== ObjDef) | (ns[:typ] .== RefDef) | (ns[:typ] .== UnionDef) )
+
+fnames = unique(ns[filt,:nn])
+showall(sort(fnames))
+
+ns[ ns[:nn] .== "type", :]  # 12 cas
+
+
+fn = :resolve
+fn = :abcd
+
+Symbol(Main)
+
+for fn in fnames
+  println("defining $fn")
+  fs = fn=="type" ? :typ : Symbol(fn)
+  if isdefined(fs)
+    mt = @eval typeof($fs).name.mt
+    if isdefined(mt, :module) && mt.module != current_module()
+      println("   importing $fs from $(mt.module)")
+      eval( Expr(:import, Symbol(mt.module), fs) )
+    end
+  end
+
+  try
+    @eval( function ($fs)(args...;kwargs...)
+             $(Expr(:curly, :VLSpec, QuoteNode(fs)))( wrapper2(args...; kwargs...) )
+           end  )
+  catch e
+    println(e)
+  end
+end
+
+
+function plot(args...;kwargs...)
+  pars = wrapper2(args...;kwargs...)
+  VLPlot(JSON.json(pars))
+end
+
+"data": {
+  "values": [
+    {"a": "C", "b": 2}, {"a": "C", "b": 7}, {"a": "C", "b": 4},
+    {"a": "D", "b": 1}, {"a": "D", "b": 2}, {"a": "D", "b": 6},
+    {"a": "E", "b": 8}, {"a": "E", "b": 4}, {"a": "E", "b": 7}
+  ]
+},
+
+
+vals = JSON.parse("""
+{
+  "values": [
+    {"a": "C", "b": 2}, {"a": "C", "b": 7}, {"a": "C", "b": 4},
+    {"a": "D", "b": 1}, {"a": "D", "b": 2}, {"a": "D", "b": 6},
+    {"a": "E", "b": 8}, {"a": "E", "b": 4}, {"a": "E", "b": 7}
+  ]
+}
+""")
+
+
+plot(data = vals,
+     mark = "point",
+     encoding(x(field="a", typ="nominal"),
+              y(field="b", typ="quantitative")))
+
+include("render.jl")
+
+
+
+
+dump(filter)
+fs = methods(filter)
+fdef  = fs.ms[1]
+fdef.module
+
+dump(fdef)
+
+filter(s::String) = nothing
+
+fs = :abcd
+:( ($fs)(args...;kwargs...) =
+            $(Expr(:curly, :VLSpec, QuoteNode(fs)))( wrapper2(args...; kwargs...) ) )
+
+@eval( ($fs)(args...;kwargs...) =
+            $(Expr(:curly, :VLSpec, QuoteNode(fs)))( wrapper2(args...; kwargs...) ) )
+
+resolve(456)
+resolve(n=465)
+
+resolve(n=465, x=abcd(t="abcd"))
+resolve(n=465, abcd=abcd(t="abcd"))
+
+import Base.filter
+
+methodswith(DataType)
 
 # TODO : conversion of datetime etc...
 
@@ -218,6 +338,27 @@ vls =
     }
   }
 """
+
+{
+ "mark":"bar",
+ "data":{
+  "values":[{"b":2,"a":"C"},{"b":7,"a":"C"},{"b":4,"a":"C"},
+            {"b":1,"a":"D"},{"b":2,"a":"D"},{"b":6,"a":"D"},
+            {"b":8,"a":"E"},{"b":4,"a":"E"},{"b":7,"a":"E"}]
+        },
+  "encoding": {
+    "y":{
+      "field":"temp",
+      "type":"quantitative",
+      "aggregate":"mean"},
+    "x":{
+      "timeUnit":"month",
+      "field":"date",
+      "type":"temporal"}
+    }
+}
+
+
 
 JSON.parse(vls)
 

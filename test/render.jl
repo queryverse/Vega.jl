@@ -4,8 +4,9 @@
 #
 ######################################################################
 
-
-
+type VLPlot
+  json::String
+end
 
 asset(url...) = normpath(joinpath(dirname(@__FILE__), "..", "deps", "lib", url...))
 
@@ -13,7 +14,7 @@ const SVG = true
 const SAVE_BUTTONS = false
 
 #Vega Scaffold: https://github.com/vega/vega/wiki/Runtime
-function writehtml(io::IO, v::VLSpec{:plot}; title="VegaLite plot")
+function writehtml(io::IO, v::VLPlot; title="VegaLite plot")
   divid = "vg" * randstring(3)
 
   println(io,
@@ -60,7 +61,7 @@ end
 
 import Base.show
 
-function show(io::IO, v::VLSpec{:plot})
+function show(io::IO, v::VLPlot)
   if displayable("text/html")
     v
   else
