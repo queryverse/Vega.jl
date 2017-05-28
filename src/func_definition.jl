@@ -105,9 +105,69 @@ for (sfn, def) in funcs
   end
 
   # create function documentation
-  
+
 
 end
+(sfn, def) = first(funcs)
+ks = first(keys(def))
+ds = " `$sfn` \n"
+ds *= "One of : \n"
+for spec in ks
+  ds *=
+first(ks.items)
+
+using Base.Markdown
+
+r = mkdoc(first(ks.items),2)
+md"$r"
+
+
+
+
+show(md"# ABCD")
+
+function mkdoc(spec::UnionDef, padding)
+  docstr = String[]
+  push!(docstr, spec.desc * "\n")
+  push!(docstr, "One of : \n")
+  for (i,v) in enumerate(spec.items)
+    push!(docstr, "  * Case #$i : $(v.desc)\n")
+    append!(docstr, mkdoc(v, padding+2))
+  end
+  docstr
+end
+
+function mkdoc(spec::ObjDef, padding)
+  docstr = String[]
+  push!(docstr, spec.desc)
+  for (k,v) in spec.props
+    fstr =  "  * `$k` "
+    fstr *= "(Number, default = 1)"
+    v.desc != "" && (fstr *= " : $(v.desc)")
+    fstr *= "\n"
+    push!(docstr, fstr)
+  end
+  for s in docstr
+    s = repeat(" ", padding) * s
+  end
+  docstr
+end
+
+function mkdoc(spec::SpecDef, padding)
+  docstr = String[]
+  push!(docstr, "Number")
+  push!(docstr, spec.desc)
+  for s in docstr
+    s = repeat(" ", padding) * s
+  end
+  docstr
+end
+
+
+ds = mkdoc(ks,0)
+s = reduce((a,b) -> a*b, "", ds)
+@doc "$s" padding
+
 
 function plot(args...;kwargs...)
   pars = wrapper(args...;kwargs...)
