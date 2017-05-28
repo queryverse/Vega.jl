@@ -3,10 +3,17 @@
 #   function creation
 ###################################################################
 
-# first step : list the functions to be created
+type VLSpec{T}
+  params::Dict{Symbol, Any}
+end
 
-ns = Any[]
+vltype{T}(::VLSpec{T}) = T
 
+sp2jl = Dict(:type => :typ)
+jl2sp = Dict( (v,k) for (k,v) in sp2jl)
+
+
+# first step : list all the property names
 
 needsfunction(s::IntDef) = false
 needsfunction(s::NumberDef) = false
@@ -15,7 +22,8 @@ needsfunction(s::StringDef) = false
 needsfunction(s::VoidDef) = false
 
 needsfunction(s::ObjDef) = true
-needsfunction(s::RefDef) = true
+
+needsfunction(s::RefDef) = needsfunction(defs[s.ref])
 
 needsfunction(s::UnionDef) = any(needsfunction, s.items)
 
@@ -40,49 +48,65 @@ function lookinto!(s::UnionDef,  pos)
   end
 end
 
+ns = Any[]
 for (k,v) in defs
   lookinto!(v, k)
 end
 # ns
 ns
 
-type VLSpec{T}
-  params::Dict{Symbol, Any}
-end
+######## list function to be created with their associated definitions
 
-vltype{T}(::VLSpec{T}) = T
-
-sp2jl = Dict(:type => :typ)
-jl2sp = Dict( (v,k) for (k,v) in sp2jl)
-
-fdefs = Dict{Symbol, Any}()
-for (pos, name, spec, typ, hasfunc) in ns
+funcs = Dict{Symbol,Any}()
+for (pos, name, spec, typ, needsfunc) in ns
   name == "*" && continue
   name == "plot" && continue # different, defined later
-  !hasfunc && continue
+  !needsfunc && continue
 
   fn = get(sp2jl, name, name)
   sfn = Symbol(fn)
 
-  if !haskey(fdefs, name)  # function not defined already
-
-    println("defining $fn $(fn==name ? "" : "(formerly $name)")")
-    if isdefined(sfn)
-      mt = @eval typeof($sfn).name.mt
-      if isdefined(mt, :module) && mt.module != current_module()
-        println("   importing $sfn from $(mt.module)")
-        eval( Expr(:import, Symbol(mt.module), sfn) )
-      end
-    end
-
-    try
-      @eval( function ($sfn)(args...;kwargs...)
-               $(Expr(:curly, :VLSpec, QuoteNode(sfn)))( wrapper(args...; kwargs...) )
-             end  )
-    catch e
-      println(e)
+  if !haskey(funcs, sfn)
+    funcs[sfn] = Dict{SpecDef, Vector}( spec => [pos;])
+  else
+    ss  = collect(keys(funcs[sfn]))
+    idx = findfirst( ss .== spec )
+    if idx != 0  # defintion already seen
+      push!(funcs[sfn][ss[idx]], pos)
+    else
+      funcs[sfn][spec] = [pos;]
     end
   end
+end
+
+length(funcs) # 67
+sum(p -> length(p.second), collect(funcs)) # 148 definitions
+sum(p -> length(p.second), collect(funcs)) # 83 definitions
+
+sort(collect(funcs), by= p -> -length(p.second))
+k = collect(keys(funcs[:condition]))
+
+for (sfn, def) in funcs
+  println("defining $sfn")
+  if isdefined(sfn)
+    mt = @eval typeof($sfn).name.mt
+    if isdefined(mt, :module) && mt.module != current_module()
+      println("   importing $sfn from $(mt.module)")
+      eval( Expr(:import, Symbol(mt.module), sfn) )
+    end
+  end
+
+  try
+    @eval( function ($sfn)(args...;kwargs...)
+             $(Expr(:curly, :VLSpec, QuoteNode(sfn)))( wrapper(args...; kwargs...) )
+           end  )
+  catch e
+    println(e)
+  end
+
+  # create function documentation
+  
+
 end
 
 function plot(args...;kwargs...)

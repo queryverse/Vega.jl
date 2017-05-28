@@ -10,186 +10,217 @@ end
 
 include("../src/schema_parsing.jl")
 include("../src/func_definition.jl")
-include("../test/render.jl")
-
-
-vals = JSON.parse("""
-{
-  "values": [
-    {"a": "C", "b": 2}, {"a": "C", "b": 7}, {"a": "C", "b": 4},
-    {"a": "D", "b": 1}, {"a": "D", "b": 2}, {"a": "D", "b": 6},
-    {"a": "E", "b": 8}, {"a": "E", "b": 4}, {"a": "E", "b": 7}
-  ]
-}
-""")
-
-
-p = plot(data = vals,
-     mark = "point",
-     encoding(x(field="a", typ="nominal"),
-              y(field="b", typ="quantitative"))) ;
-
-p
-p.json
-layer
-
-
-encoding(x(field="a"))
-
-
-
-
-plot(data = vals,
-     layer(mark = "point",
-           encoding(x(field="a", typ="nominal"),
-                    y(field="b", typ="quantitative")) ),
-     layer(mark = "line",
-           encoding(x(field="a", typ="nominal"),
-                    y(field="b", typ="quantitative")))
-    )
-encoding(x(field="a"), x(field="a"))
+include("../src/render.jl")
 
 
 ###################################
 
-{
-  "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-  "data": {"url": "data/movies.json"},
-  "mark": "circle",
-  "encoding": {
-    "x": {
-      "bin": {"maxbins": 10},
-      "field": "IMDB_Rating",
-      "type": "quantitative"
-    },
-    "y": {
-      "bin": {"maxbins": 10},
-      "field": "Rotten_Tomatoes_Rating",
-      "type": "quantitative"
-    },
-    "size": {
-      "aggregate": "count",
-      "type": "quantitative"
-    }
-  }
-}
+durl = "https://raw.githubusercontent.com/vega/new-editor/master/data/movies.json"
 
-dat = download("https://github.com/bantic/imdb-data-scraping/blob/master/data/movies.json")
-
-dat = readall(joinpath(dirname(@__FILE__), "../examples/movies.json") )
-show(dat)
-dat2 = JSON.parse(dat)
-
-
-fsrc = joinpath(dirname(@__FILE__), "../examples/movies.json")
-
-plot(data(url="data/movies.json"),
+plot(data(url=durl),
      mark="circle",
      encoding(x(bin(maxbins=10), field="IMDB_Rating", typ="quantitative"),
               y(bin(maxbins=10), field="Rotten_Tomatoes_Rating", typ="quantitative"),
               size(aggregate="count", typ="quantitative"))
      )
 
+##########################################################################
 
-data(url=465)
+# TODO : comment faire le "axis": null ???
 
-url
+rooturl = "https://raw.githubusercontent.com/vega/new-editor/master/data/"
+durl = rooturl * "unemployment-across-industries.json"
+
+plot(data(url=durl),
+     width=600, height=400,
+     mark="area",
+     encoding(x(timeUnit="yearmonth", field="date", typ="temporal",
+                scale(nice="month"),
+                axis(domain=false, format="%Y", labelAngle=-45, tickSize=10)),
+              y(aggregate="sum", field="count", typ="quantitative",
+                stack="center"),
+              color(field="series", typ="nominal", scale(scheme="category20b"))
+             )
+     )
+
+############################################################################
+
+# TODO le schema json ne contient pas la def de "brush", ni "grid"
+
+rooturl = "https://raw.githubusercontent.com/vega/new-editor/master/data/"
+durl = rooturl * "data/cars.json"
+
+plot(repeat(row    = ["Horsepower","Acceleration"],
+            column = ["Horsepower", "Miles_per_Gallon"]),
+     spec(
+          data(url=durl),
+          mark="point",
+          selection(
+                    # brush(typ="interval", resolve="union",
+                    #       encodings=["x"],
+                    #       on="[mousedown[event.shiftKey], mouseup] > mousemove",
+                    #       translate="[mousedown[event.shiftKey], mouseup] > mousemove"),
+                    grid(typ="interval", resolve="global",
+                         bind="scales",
+                         translate="[mousedown[!event.shiftKey], mouseup] > mousemove")
+                   ),
+          encoding(
+                    x(field(repeat="row"), typ="quantitative"),
+                    y(field(repeat="column"), typ="quantitative"),
+                    color(field="Origin", typ="nominal",
+                          condition(selection="!brush", value="grey"))
+                    )
+          )
+     )
+
+# brush pas encore définie
 
 
-
-
-plot(data = vals,
-     mark = "point",
-     encoding(y(field="b", typ="quantitative")))
-
-
-
-
-
-
-@doc "doc of encoding" encoding
-
-
-
-
-########################################
-
-vls =
-"""
-  {
-    "data": {
-      "values": [
-        {"a": "C", "b": 2}, {"a": "C", "b": 7}, {"a": "C", "b": 4},
-        {"a": "D", "b": 1}, {"a": "D", "b": 2}, {"a": "D", "b": 6},
-        {"a": "E", "b": 8}, {"a": "E", "b": 4}, {"a": "E", "b": 7}
-      ]
-    },
-    "mark": "point",
-    "encoding": {
-      "x": {"field": "a", "type": "nominal"}
-    }
-  }
-"""
+###########################################################################
 
 {
- "mark":"bar",
- "data":{
-  "values":[{"b":2,"a":"C"},{"b":7,"a":"C"},{"b":4,"a":"C"},
-            {"b":1,"a":"D"},{"b":2,"a":"D"},{"b":6,"a":"D"},
-            {"b":8,"a":"E"},{"b":4,"a":"E"},{"b":7,"a":"E"}]
+  "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+  "description": "A error bar plot showing mean, min, and max in the US population distribution of age groups in 2000.",
+  "data": {"url": "data/population.json"},
+  "transform": [{"filter": "datum.year == 2000"}],
+  "layer": [
+    {
+      "mark": "rule",
+      "encoding": {
+        "x": {"field": "age","type": "ordinal"},
+        "y": {
+          "aggregate": "min",
+          "field": "people",
+          "type": "quantitative",
+          "axis": {"title": "population"}
         },
-  "encoding": {
-    "y":{
-      "field":"temp",
-      "type":"quantitative",
-      "aggregate":"mean"},
-    "x":{
-      "timeUnit":"month",
-      "field":"date",
-      "type":"temporal"}
-    }
-}
-
-
-
-JSON.parse(vls)
-
-include("render.jl")
-
-po = VLSpec{:plot}(vls) ;
-show(po)
-
-
-JSON.json(Dict("abcd" => VLSpec{:test}("abcs")))
-
-schs = """{
-  "\$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-  "data": {"url": "data/seattle-temps.csv"},
-  "mark": "bar",
-  "encoding": {
-    "x": {
-      "timeUnit": "month",
-      "field": "date",
-      "type": "temporal"
+        "y2": {
+          "aggregate": "max",
+          "field": "people",
+          "type": "quantitative"
+        }
+      }
     },
-    "y": {
-      "aggregate": "mean",
-      "field": "temp",
-      "type": "quantitative"
+    {
+      "mark": "tick",
+      "encoding": {
+        "x": {"field": "age","type": "ordinal"},
+        "y": {
+          "aggregate": "min",
+          "field": "people",
+          "type": "quantitative",
+          "axis": {"title": "population"}
+        },
+        "size": {"value": 5}
+      }
+    },
+    {
+      "mark": "tick",
+      "encoding": {
+        "x": {"field": "age","type": "ordinal"},
+        "y": {
+          "aggregate": "max",
+          "field": "people",
+          "type": "quantitative",
+          "axis": {"title": "population"}
+        },
+        "size": {"value": 5}
+      }
+    },
+    {
+      "mark": "point",
+      "encoding": {
+        "x": {"field": "age","type": "ordinal"},
+        "y": {
+          "aggregate": "mean",
+          "field": "people",
+          "type": "quantitative",
+          "axis": {"title": "population"}
+        },
+        "size": {"value": 2}
+      }
     }
-  }
+  ]
 }
-"""
 
 
-#### tuples of pairs  ########
 
-plot(:data => ("data/seattle-temps.csv"),
-     :mark => "bar",
-     :encoding => (:x => (:timeUnit => "month",
-                          :field => "date",
-                          :type => "temporal" ),  # pb with 'type' field name
-                   :y => (:aggregate => "mean",
-                          :field => "temp",
-                          :type => "quantitative" ))
+rooturl = "https://raw.githubusercontent.com/vega/new-editor/master/"
+durl = rooturl * "data/population.json"
+println(durl)
+xchan = x(field="age", typ="ordinal", axis(labelAngle=-45))
+ychan = y(field="people", typ="quantitative")
+
+ymin = y(aggregate="min", field="people", typ="quantitative",
+         axis(title="population"))
+ymax = y(aggregate="max", field="people", typ="quantitative",
+        axis(title="population"))
+y2max = y2(aggregate="max", field="people", typ="quantitative",
+        axis(title="population"))
+ymean = y(aggregate="mean", field="people", typ="quantitative",
+                axis(title="population"))
+
+
+plot(data(url=durl),
+     transform=[ Dict(filter => "datum.year==2000")],
+     layer(mark="tick",  encoding(xchan, ymin, size(value=5))),
+     layer(mark="tick",  encoding(xchan, ymax, size(value=5))),
+     layer(mark="point", encoding(xchan, ymean, size(value=5))),
+     layer(mark="rule",  encoding(xchan, ymin, y2max))
+     )
+
+plot(data(url=durl),
+     layer(mark="point", encoding(xchan, ychan)),
+     layer(mark="line",  encoding(xchan, ymean)),
+     width=800, height=600
     )
+
+
+
+###########################################################
+
+rooturl = "https://raw.githubusercontent.com/vega/new-editor/master/"
+durl = rooturl * "data/cars.json"
+
+plot(data(url=durl),
+     mark="rect",
+     encoding(x(field="Origin", typ="ordinal"),
+              y(field="Cylinders", typ="ordinal"),
+              color(aggregate="mean", field="Horsepower", typ="quantitative")),
+     width=200, height=200,
+    )
+
+
+############################################################
+
+
+defs["plot"]
+
+getdesc(s::RefDef) = s.desc * "\n" * getdesc(defs[s.ref])
+getdesc(s::SpecDef) = s.desc
+getdesc(s::VoidDef) = ""
+
+function getdesc(s::ObjDef)
+  ret = s.desc
+  ret *= "\n\n# Arguments\n\n"
+  for (k,v) in s.props
+    vs = "`$k` ($(typeof(v)))"
+    ret *= "  * $vs : " * getdesc(v) * "\n\n"
+  end
+  return ret
+end
+
+function getdesc(s::UnionDef)
+  ret = s.desc
+  ret *= "\n\n# One of :\n\n"
+  for v in s.items
+    ret *= "  * " * getdesc(v) * "\n\n"
+  end
+  return ret
+end
+
+
+println(getdesc(defs["EncodingWithFacet<Field>"]))
+
+
+println(getdesc(defs["EqualFilter"]))

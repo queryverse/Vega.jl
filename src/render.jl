@@ -4,10 +4,17 @@
 #
 ######################################################################
 
-asset(url...) = @compat readstring(joinpath(dirname(@__FILE__), "..", "assets", "bower_components", url...))
+type VLPlot
+  json::String
+end
+
+asset(url...) = normpath(joinpath(dirname(@__FILE__), "..", "deps", "lib", url...))
+
+const SVG = true
+const SAVE_BUTTONS = false
 
 #Vega Scaffold: https://github.com/vega/vega/wiki/Runtime
-function writehtml(io::IO, v::VegaLiteVis; title="VegaLite plot")
+function writehtml(io::IO, v::VLPlot; title="VegaLite plot")
   divid = "vg" * randstring(3)
 
   println(io,
@@ -16,10 +23,10 @@ function writehtml(io::IO, v::VegaLiteVis; title="VegaLite plot")
     <head>
       <title>$title</title>
       <meta charset="UTF-8">
-      <script>$(asset("d3","d3.min.js"))</script>
-      <script>$(asset("vega", "vega.js"))</script>
-      <script>$(asset("vega-lite", "vega-lite.js"))</script>
-      <script>$(asset("vega-embed", "vega-embed.js"))</script>
+      <script src="file://$(asset("d3.v3.min.js"))"></script>
+      <script src="file://$(asset("vega.min.js"))"></script>
+      <script src="file://$(asset("vega-lite.min.js"))"></script>
+      <script src="file://$(asset("vega-embed.min.js"))"></script>
     </head>
     <body>
       <div id="$divid"></div>
@@ -36,16 +43,15 @@ function writehtml(io::IO, v::VegaLiteVis; title="VegaLite plot")
 
     <script type="text/javascript">
 
-      var embedSpec = {
+      var opt = {
         mode: "vega-lite",
         renderer: "$(SVG ? "svg" : "canvas")",
-        actions: $SAVE_BUTTONS,
-        spec: $(JSON.json(v.vis))
+        actions: $SAVE_BUTTONS
       }
 
-      vg.embed("#$divid", embedSpec, function(error, result) {
-        result.view.renderer("svg")
-      });
+      var spec = $(v.json)
+
+      vega.embed('#$divid', spec, opt);
 
     </script>
 
@@ -53,37 +59,45 @@ function writehtml(io::IO, v::VegaLiteVis; title="VegaLite plot")
   """)
 end
 
+import Base.show
 
-function show(io::IO, v::VegaLiteVis)
-    if displayable("text/html")
-        v
+function show(io::IO, v::VLPlot)
+  if displayable("text/html")
+    v
+  else
+    # create a temporary file
+    tmppath = string(tempname(), ".vegalite.html")
+    io = open(tmppath, "w")
+    writehtml(io, v)
+    close(io)
+
+    # println("show :")
+    # Base.show_backtrace(STDOUT, backtrace())
+    # println()
+
+    # Open the browser
+    @static if VERSION < v"0.5.0-"
+      @osx_only run(`open $tmppath`)
+      @windows_only run(`cmd /c start $tmppath`)
+      @linux_only   run(`xdg-open $tmppath`)
     else
-        # create a temporary file
-        tmppath = string(tempname(), ".vegalite.html")
-        io = open(tmppath, "w")
-        writehtml(io, v)
-        close(io)
-
-        # println("show :")
-        # Base.show_backtrace(STDOUT, backtrace())
-        # println()
-
-        # Open the browser
-        @static if VERSION < v"0.5.0-"
-          @osx_only run(`open $tmppath`)
-          @windows_only run(`cmd /c start $tmppath`)
-          @linux_only   run(`xdg-open $tmppath`)
-        else
-          if is_apple()
-            run(`open $tmppath`)
-          elseif is_windows()
-            run(`cmd /c start $tmppath`)
-          elseif is_linux()
-            run(`xdg-open $tmppath`)
-          end
-        end
-
+      if is_apple()
+        run(`open $tmppath`)
+      elseif is_windows()
+        run(`cmd /c start $tmppath`)
+      elseif is_linux()
+        run(`xdg-open $tmppath`)
+      end
     end
 
-    return
+  end
+
+  return
+end
+
+import Atom, Media
+
+function Media.render(e::Atom.Editor, plt::VLPlot)
+  Media.render(e, nothing)
+  show(plt)
 end

@@ -80,6 +80,56 @@ type VoidDef <: SpecDef ; end
 
 #####################################################
 
+import Base.==
+
+function ==(a::ObjDef, b::ObjDef)
+  a.desc == b.desc || return false
+  Set(keys(a.props)) == Set(keys(b.props)) || return false
+  all( a.props[k] == b.props[k] for k in keys(a.props) ) || return false
+  a.addprops == b.addprops || return false
+  a.required == b.required
+end
+
+function ==(a::NumberDef, b::NumberDef)
+  a.desc == b.desc || return false
+end
+
+function ==(a::IntDef, b::IntDef)
+  a.desc == b.desc || return false
+end
+
+function ==(a::StringDef, b::StringDef)
+  a.desc == b.desc || return false
+  a.enum == b.enum
+end
+
+function ==(a::BoolDef, b::BoolDef)
+  a.desc == b.desc || return false
+end
+
+function ==(a::ArrayDef, b::ArrayDef)
+  a.desc == b.desc || return false
+  a.items == b.items
+end
+
+function ==(a::UnionDef, b::UnionDef)
+  a.desc == b.desc || return false
+  all( p -> p[1]==p[2], zip(a.items, b.items)) #TODO make order independant
+end
+
+function ==(a::RefDef, b::RefDef)
+  a.desc == b.desc || return false
+  a.ref == b.ref
+end
+
+function ==(a::VoidDef, b::VoidDef)
+  true
+end
+
+
+
+#####################################################
+
 function toDef(spec::Dict)
   if haskey(spec, "type")
     typ = spec["type"]
