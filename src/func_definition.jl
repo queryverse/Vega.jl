@@ -1,5 +1,5 @@
-module A
-end
+# module A
+# end
 
 include("schema_parsing.jl")
 
@@ -13,8 +13,34 @@ end
 
 vltype{T}(::VLSpec{T}) = T
 
-sp2jl = Dict(:type => :typ)
-jl2sp = Dict( (v,k) for (k,v) in sp2jl)
+const jl2sp = Dict{Symbol,Symbol}(:_range => :range,
+                                  :_repeat => :repeat,
+                                  :_mark => :mark,
+                                  :_scale => :scale,
+                                  :_bind => :bind,
+                                  :_bin => :bin,
+                                  :_filter => :filter,
+                                  :_equal => :equal,
+                                  :_values => :values,
+                                  :_cell => :cell,
+                                  :_sort => :sort,
+                                  :_color => :color,
+                                  :_column => :column,
+                                  :_detail => :detail,
+                                  :_opacity => :opacity,
+                                  :_order => :order,
+                                  :_row => :row,
+                                  :_shape => :shape,
+                                  :_size => :size,
+                                  :_text => :text,
+                                  :_x => :x,
+                                  :_x2 => :x2,
+                                  :_y => :y,
+                                  :_y2 => :y2,
+                                  :_type => :type
+                                  )
+
+const sp2jl = Dict( (v,k) for (k,v) in jl2sp)
 
 # first step : list all the property names
 
@@ -53,15 +79,17 @@ end
 # ns
 ns
 
+# defs["plot"]
+
 ######## list function to be created with their associated definitions
 
 funcs = Dict{Symbol,Any}()
 for (pos, name, spec, typ, needsfunc) in ns
-  name == "*" && continue
-  name == "plot" && continue # different, defined later
+  sname = pos=="plot" ? :plot : Symbol(name)  # plot is for root def
+  sname == :* && continue
   !needsfunc && continue
 
-  fn = get(sp2jl, name, name)
+  fn = get(sp2jl, sname, sname)
   sfn = Symbol(fn)
 
   if !haskey(funcs, sfn)
@@ -77,14 +105,15 @@ for (pos, name, spec, typ, needsfunc) in ns
   end
 end
 
-length(funcs) # 67
+funcs[:plot]
+
+showall(collect(keys(funcs)))
+length(funcs) # 68
 sum(p -> length(p.second), collect(funcs)) # 148 definitions
 sum(p -> length(p.second), collect(funcs)) # 83 definitions
 
-sort(collect(funcs), by= p -> -length(p.second))
-k = collect(keys(funcs[:condition]))
-
 for (sfn, def) in funcs
+  sfn == :plot && continue # different, defined later
   println("defining $sfn")
   if isdefined(sfn)
     mt = @eval typeof($sfn).name.mt
@@ -101,208 +130,7 @@ for (sfn, def) in funcs
   catch e
     println(e)
   end
-
-  # create function documentation
-
-
 end
-
-#####################################################################
-
-function mkdoc(spec::UnionDef, context::Symbol, padding)
-  docstr = String[]
-  spec.desc != "" && push!(docstr, spec.desc, "")
-  push!(docstr, "One of : ", "")
-  for (i,v) in enumerate(spec.items)
-    fs = needsfunction(v) ? "`$context(<keyword args..>)`" : "`$context=...`"
-    push!(docstr, "  - _case #$i_ $fs")
-    v.desc != "" && push!(docstr, "", v.desc)
-    push!(docstr, "")
-    append!(docstr, mkdoc(v, Symbol(""), 4))
-  end
-  repeat(" ", padding) .* docstr
-end
-
-function mkdoc(spec::ObjDef, context::Symbol, padding)
-  docstr = String[]
-  spec.desc != "" && push!(docstr, spec.desc, "")
-  for (k,v) in spec.props
-    dstrs = mkdoc(v, Symbol(k), 2)
-    dstrs[1] = "* `$k` : " * dstrs[1]
-    append!(docstr, dstrs)
-    # push!(docstr, "")
-  end
-  repeat(" ", padding) .* docstr
-end
-
-function mkdoc(spec::RefDef, context::Symbol, padding)
-  mkdoc(defs[spec.ref], context, padding)
-end
-
-function mkdoc(spec::IntDef, context::Symbol, padding)
-  docstr = String[]
-  push!(docstr, "(Int) ", spec.desc)
-  repeat(" ", padding) .* docstr
-end
-
-function mkdoc(spec::NumberDef, context::Symbol, padding)
-  docstr = String[]
-  push!(docstr, "(Number) ", spec.desc)
-  repeat(" ", padding) .* docstr
-end
-
-function mkdoc(spec::StringDef, context::Symbol, padding)
-  docstr = String[]
-  push!(docstr, "(String) ", spec.desc)
-  repeat(" ", padding) .* docstr
-end
-
-function mkdoc(spec::BoolDef, context::Symbol, padding)
-  docstr = String[]
-  push!(docstr, "(Boolean) ", spec.desc)
-  repeat(" ", padding) .* docstr
-end
-
-function mkdoc(spec::ArrayDef, context::Symbol, padding)
-  docstr = String[]
-  push!(docstr, "(Array of $(typeof(spec.items))) ", spec.desc)
-  repeat(" ", padding) .* docstr
-end
-
-function mkdoc(spec::VoidDef, context::Symbol, padding)
-  push!(docstr, "(Void) ", spec.desc)
-  repeat(" ", padding) .* docstr
-end
-
-(sfn, def) = first(funcs)
-ks = first(keys(def))
-
-ds = mkdoc(ks,:padding, 0)
-s = join(rstrip.(ds), "\n")
-
-@doc "$s" padding
-println(s)
-@doc(s, padding)
-
-for (sfn, dvs) in take(funcs,3)
-  println("documenting $sfn")
-  docstr = String[]
-  for (def, fns) in dvs
-    flist = join("`" .* unique(fns) .* "`", ", ", " and ")
-    push!(docstr, "## `$sfn` as in $flist")
-    append!(docstr, mkdoc(def, sfn, 0))
-    push!(docstr, "")
-  end
-  println( join(rstrip.(docstr), "\n") )
-end
-
-
-ds = ["abcd", "sdf"]
-
-broadcast(.*, "  ", ds)
-
-
-haskey(funcs, :broadcast)
-
-rpad
-
-s = """
-# `padding`
-The default visualization padding, in pixels, from the edge of the visualization canvas to the data rectangle. This can be a single number or an object with `"top"`, `"left"`, `"right"`, `"bottom"` properties.
-
-*Default value*: `5`
-
-One of :
-  * Case #1
-    - `left` (Number, default = 1)
-    - `bottom` (Number, default = 1)
-    - `right` (Number, default = 1)
-    - `top` (Number, default = 1)
-  * Case #2 :
-    Number
-"""
-
-a = 1
-@doc s a
-
-Docs.doc!(Docs.Binding(A,:a), s)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-(sfn, def) = first(funcs)
-
-
-
-ks = first(keys(def))
-ds = " `$sfn` \n"
-ds *= "One of : \n"
-for spec in ks
-  ds *=
-first(ks.items)
-
-using Base.Markdown
-
-r = mkdoc(first(ks.items),2)
-md"$r"
-
-
-
-
-show(md"# ABCD")
-
-function mkdoc(spec::UnionDef, padding)
-  docstr = String[]
-  push!(docstr, spec.desc * "\n")
-  push!(docstr, "One of : \n")
-  for (i,v) in enumerate(spec.items)
-    push!(docstr, "  * Case #$i : $(v.desc)\n")
-    append!(docstr, mkdoc(v, padding+2))
-  end
-  docstr
-end
-
-function mkdoc(spec::ObjDef, padding)
-  docstr = String[]
-  push!(docstr, spec.desc)
-  for (k,v) in spec.props
-    fstr =  "  * `$k` "
-    fstr *= "(Number, default = 1)"
-    v.desc != "" && (fstr *= " : $(v.desc)")
-    fstr *= "\n"
-    push!(docstr, fstr)
-  end
-  for s in docstr
-    s = repeat(" ", padding) * s
-  end
-  docstr
-end
-
-function mkdoc(spec::SpecDef, padding)
-  docstr = String[]
-  push!(docstr, "Number")
-  push!(docstr, spec.desc)
-  for s in docstr
-    s = repeat(" ", padding) * s
-  end
-  docstr
-end
-
-
-ds = mkdoc(ks,0)
-s = reduce((a,b) -> a*b, "", ds)
-@doc "$s" padding
-
 
 function plot(args...;kwargs...)
   pars = wrapper(args...;kwargs...)
@@ -310,6 +138,141 @@ function plot(args...;kwargs...)
   VLPlot(JSON.json(pars))
 end
 
+
+#####################################################################
+
+function mkdoc(spec::UnionDef, context::Symbol, indent)
+  docstr = String[]
+  spec.desc != "" && push!(docstr, spec.desc, "")
+  push!(docstr, "One of : ")
+  for (i,v) in enumerate(spec.items)
+    fs = needsfunction(v) ? "`$context(<keyword args..>)`" : "`$context=...`"
+    push!(docstr, "  - _case #$(i)_ $fs $(v.desc)")
+    # v.desc != "" && push!(docstr, "", v.desc)
+    # push!(docstr, "")
+    append!(docstr, mkdoc(v, Symbol(""), 4))
+  end
+  repeat(" ", indent) .* docstr
+end
+
+# haskey(funcs, :_bind)
+# get(sp2jl, :bind, :bind)
+function mkdoc(spec::ObjDef, context::Symbol, indent)
+  docstr = String[]
+  spec.desc != "" && push!(docstr, spec.desc, "")
+  for (k,v) in spec.props
+    sk = Symbol(k)
+    sk = get(sp2jl, sk, sk)
+    if haskey(funcs, sk)
+      push!(docstr, "* `$sk` : _see `?$sk`_")
+    else
+      dstrs = mkdoc(v, sk, 2)
+      dstrs[1] = "* `$sk` : " * dstrs[1]
+      append!(docstr, dstrs)
+    end
+    # push!(docstr, "")
+  end
+  repeat(" ", indent) .* docstr
+end
+
+function mkdoc(spec::RefDef, context::Symbol, indent)
+  mkdoc(defs[spec.ref], context, indent)
+end
+
+function mkdoc(spec::IntDef, context::Symbol, indent)
+  docstr = String[]
+  push!(docstr, "(Int) $(spec.desc)")
+  repeat(" ", indent) .* docstr
+end
+
+function mkdoc(spec::NumberDef, context::Symbol, indent)
+  docstr = String[]
+  push!(docstr, "(Number) $(spec.desc)")
+  repeat(" ", indent) .* docstr
+end
+
+function mkdoc(spec::StringDef, context::Symbol, indent)
+  docstr = String[]
+  push!(docstr, "(String) $(spec.desc)")
+  repeat(" ", indent) .* docstr
+end
+
+function mkdoc(spec::BoolDef, context::Symbol, indent)
+  docstr = String[]
+  push!(docstr, "(Boolean) $(spec.desc)")
+  repeat(" ", indent) .* docstr
+end
+
+function mkdoc(spec::ArrayDef, context::Symbol, indent)
+  docstr = String[]
+  push!(docstr, "(Array of $(typeof(spec.items))) $(spec.desc)")
+  repeat(" ", indent) .* docstr
+end
+
+function mkdoc(spec::VoidDef, context::Symbol, indent)
+  docstr = String[]
+  push!(docstr, "(Void) ")
+  repeat(" ", indent) .* docstr
+end
+
+# (sfn, dvs) = first(funcs)
+# ks = first(keys(def))
+#
+# ds = mkdoc(ks,:padding, 0)
+# s = join(rstrip.(ds), "\n")
+#
+# mkdoc(NumberDef(""), :test, 0)
+#
+# @doc "$s" padding
+# println(s)
+# @doc(s, padding)
+
+for (sfn, dvs) in funcs #take(funcs,10)
+  # println("documenting $sfn")
+  docstr = String[]
+  for (def, fns) in dvs
+    # (def, fns) = first(dvs)
+    flist = join("`" .* unique(fns) .* "`", ", ", " and ")
+    push!(docstr, "## `$sfn` as in $flist")
+    append!(docstr, mkdoc(def, sfn, 0))
+    push!(docstr, "")
+  end
+  # println( join(rstrip.(docstr), "\n") )
+  Docs.doc!(Docs.Binding(current_module(),sfn),
+            Docs.docstr(join(rstrip.(docstr), "\n")))
+  # println()
+  # println()
+end
+#
+# sfn = :plot
+# @doc "abcd" -> sfn
+#
+#
+# funcs[:plot]
+#
+#
+# a = 1
+# @doc s a
+#
+# s = "abcd"
+# Docs.doc!(Docs.Binding(A,:a), Docs.docstr(s))
+#
+# @doc(s, $sfn)
+
+
+
+
+
+
+
+
+#
+#
+# ds = mkdoc(ks,0)
+# s = reduce((a,b) -> a*b, "", ds)
+# @doc "$s" padding
+#
+#
 
 
 function wrapper(args...;kwargs...)

@@ -76,7 +76,9 @@ RefDef(spec::Dict)    = RefDef(get(spec, "description", ""),
 ArrayDef(spec::Dict)  = ArrayDef(get(spec, "description", ""),
                                  toDef(spec["items"]))
 
-type VoidDef <: SpecDef ; end
+type VoidDef <: SpecDef
+  desc::String
+end
 
 #####################################################
 
@@ -123,6 +125,7 @@ function ==(a::RefDef, b::RefDef)
 end
 
 function ==(a::VoidDef, b::VoidDef)
+  a.desc == b.desc || return false
   true
 end
 
@@ -137,7 +140,7 @@ function toDef(spec::Dict)
     isa(typ, Vector) && return UnionDef(spec)
 
     if isa(typ, String)
-      typ=="null"    && return VoidDef()
+      typ=="null"    && return VoidDef("")
       typ=="number"  && return NumberDef(spec)
       typ=="boolean" && return BoolDef(spec)
       typ=="integer" && return IntDef(spec)
@@ -147,7 +150,7 @@ function toDef(spec::Dict)
       if typ == "object"
         ret = ObjDef(get(spec, "description", ""),
                      Dict{String, SpecDef}(),
-                     VoidDef(),
+                     VoidDef(""),
                      Set{String}(get(spec, "required", String[])))
 
         if haskey(spec, "properties")
@@ -180,11 +183,11 @@ function toDef(spec::Dict)
                     toDef.(spec["anyOf"]))
 
   elseif length(spec) == 0
-    return VoidDef()
+    return VoidDef("")
 
   else
     warn("not a ref, 'AnyOf' and no type for $spec")
-    return VoidDef()
+    return VoidDef("")
   end
 end
 

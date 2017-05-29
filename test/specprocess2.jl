@@ -19,10 +19,13 @@ durl = "https://raw.githubusercontent.com/vega/new-editor/master/data/movies.jso
 
 plot(data(url=durl),
      mark="circle",
-     encoding(x(bin(maxbins=10), field="IMDB_Rating", typ="quantitative"),
-              y(bin(maxbins=10), field="Rotten_Tomatoes_Rating", typ="quantitative"),
-              size(aggregate="count", typ="quantitative"))
-     )
+     encoding(_x(_bin(maxbins=10), field="IMDB_Rating", _type="quantitative"),
+              _y(_bin(maxbins=10), field="Rotten_Tomatoes_Rating", _type="quantitative"),
+              _color(field="Rotten_Tomatoes_Rating", _type="quantitative"),
+              _size(aggregate="count", _type="quantitative")),
+     width=600, height=600)
+
+plot
 
 ##########################################################################
 
