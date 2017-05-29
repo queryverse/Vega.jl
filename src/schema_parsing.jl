@@ -4,7 +4,7 @@
 
 using JSON
 
-fn = joinpath(dirname(@__FILE__), "../deps/lib/""v2.json")
+fn = joinpath(dirname(@__FILE__), "../deps/lib/", "v2.json")
 spc = JSON.parsefile(fn)
 
 #####################################################
@@ -114,7 +114,7 @@ end
 
 function ==(a::UnionDef, b::UnionDef)
   a.desc == b.desc || return false
-  all( p -> p[1]==p[2], zip(a.items, b.items)) #TODO make order independant
+  all( p -> p[1]==p[2], zip(a.items, b.items)) #TODO make order independent
 end
 
 function ==(a::RefDef, b::RefDef)

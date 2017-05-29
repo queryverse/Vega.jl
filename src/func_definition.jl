@@ -1,3 +1,7 @@
+module A
+end
+
+include("schema_parsing.jl")
 
 ###################################################################
 #   function creation
@@ -12,7 +16,6 @@ vltype{T}(::VLSpec{T}) = T
 sp2jl = Dict(:type => :typ)
 jl2sp = Dict( (v,k) for (k,v) in sp2jl)
 
-
 # first step : list all the property names
 
 needsfunction(s::IntDef) = false
@@ -20,15 +23,10 @@ needsfunction(s::NumberDef) = false
 needsfunction(s::BoolDef) = false
 needsfunction(s::StringDef) = false
 needsfunction(s::VoidDef) = false
-
 needsfunction(s::ObjDef) = true
-
 needsfunction(s::RefDef) = needsfunction(defs[s.ref])
-
 needsfunction(s::UnionDef) = any(needsfunction, s.items)
-
 needsfunction(s::ArrayDef) = needsfunction(s.items)
-
 needsfunction(s::SpecDef) = error("unknown type $(typeof(s))")
 
 
@@ -108,7 +106,144 @@ for (sfn, def) in funcs
 
 
 end
+
+#####################################################################
+
+function mkdoc(spec::UnionDef, context::Symbol, padding)
+  docstr = String[]
+  spec.desc != "" && push!(docstr, spec.desc, "")
+  push!(docstr, "One of : ", "")
+  for (i,v) in enumerate(spec.items)
+    fs = needsfunction(v) ? "`$context(<keyword args..>)`" : "`$context=...`"
+    push!(docstr, "  - _case #$i_ $fs")
+    v.desc != "" && push!(docstr, "", v.desc)
+    push!(docstr, "")
+    append!(docstr, mkdoc(v, Symbol(""), 4))
+  end
+  repeat(" ", padding) .* docstr
+end
+
+function mkdoc(spec::ObjDef, context::Symbol, padding)
+  docstr = String[]
+  spec.desc != "" && push!(docstr, spec.desc, "")
+  for (k,v) in spec.props
+    dstrs = mkdoc(v, Symbol(k), 2)
+    dstrs[1] = "* `$k` : " * dstrs[1]
+    append!(docstr, dstrs)
+    # push!(docstr, "")
+  end
+  repeat(" ", padding) .* docstr
+end
+
+function mkdoc(spec::RefDef, context::Symbol, padding)
+  mkdoc(defs[spec.ref], context, padding)
+end
+
+function mkdoc(spec::IntDef, context::Symbol, padding)
+  docstr = String[]
+  push!(docstr, "(Int) ", spec.desc)
+  repeat(" ", padding) .* docstr
+end
+
+function mkdoc(spec::NumberDef, context::Symbol, padding)
+  docstr = String[]
+  push!(docstr, "(Number) ", spec.desc)
+  repeat(" ", padding) .* docstr
+end
+
+function mkdoc(spec::StringDef, context::Symbol, padding)
+  docstr = String[]
+  push!(docstr, "(String) ", spec.desc)
+  repeat(" ", padding) .* docstr
+end
+
+function mkdoc(spec::BoolDef, context::Symbol, padding)
+  docstr = String[]
+  push!(docstr, "(Boolean) ", spec.desc)
+  repeat(" ", padding) .* docstr
+end
+
+function mkdoc(spec::ArrayDef, context::Symbol, padding)
+  docstr = String[]
+  push!(docstr, "(Array of $(typeof(spec.items))) ", spec.desc)
+  repeat(" ", padding) .* docstr
+end
+
+function mkdoc(spec::VoidDef, context::Symbol, padding)
+  push!(docstr, "(Void) ", spec.desc)
+  repeat(" ", padding) .* docstr
+end
+
 (sfn, def) = first(funcs)
+ks = first(keys(def))
+
+ds = mkdoc(ks,:padding, 0)
+s = join(rstrip.(ds), "\n")
+
+@doc "$s" padding
+println(s)
+@doc(s, padding)
+
+for (sfn, dvs) in take(funcs,3)
+  println("documenting $sfn")
+  docstr = String[]
+  for (def, fns) in dvs
+    flist = join("`" .* unique(fns) .* "`", ", ", " and ")
+    push!(docstr, "## `$sfn` as in $flist")
+    append!(docstr, mkdoc(def, sfn, 0))
+    push!(docstr, "")
+  end
+  println( join(rstrip.(docstr), "\n") )
+end
+
+
+ds = ["abcd", "sdf"]
+
+broadcast(.*, "  ", ds)
+
+
+haskey(funcs, :broadcast)
+
+rpad
+
+s = """
+# `padding`
+The default visualization padding, in pixels, from the edge of the visualization canvas to the data rectangle. This can be a single number or an object with `"top"`, `"left"`, `"right"`, `"bottom"` properties.
+
+*Default value*: `5`
+
+One of :
+  * Case #1
+    - `left` (Number, default = 1)
+    - `bottom` (Number, default = 1)
+    - `right` (Number, default = 1)
+    - `top` (Number, default = 1)
+  * Case #2 :
+    Number
+"""
+
+a = 1
+@doc s a
+
+Docs.doc!(Docs.Binding(A,:a), s)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(sfn, def) = first(funcs)
+
+
+
 ks = first(keys(def))
 ds = " `$sfn` \n"
 ds *= "One of : \n"
