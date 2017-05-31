@@ -3,3 +3,5 @@ Compat 0.8
 JSON
 Requires
 NodeJS
+Cairo
+Rsvg

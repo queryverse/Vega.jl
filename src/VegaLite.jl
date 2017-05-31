@@ -2,7 +2,7 @@ VERSION >= v"0.4" && __precompile__()
 
 module VegaLite
 
-using JSON, Compat, Requires
+using JSON, Compat, Requires, NodeJS, Cairo, Rsvg
 
 import Base: +, *, scale, show
 
@@ -43,6 +43,7 @@ include("config.jl")
 include("data_values.jl")
 include("mark.jl")
 include("encoding.jl")
+include("conversions.jl")
 
 ### Integration with Escher (Escher does not seem to work in 0.5)
 # include("escher_integration.jl")
