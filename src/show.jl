@@ -10,31 +10,29 @@ function convert_to_svg(v::VegaLiteVis)
     return res
 end
 
-function savefig_svg(filename::AbstractString, v::VegaLiteVis)
-    svgHeader = """
+function Base.show(io::IO, m::MIME"image/svg+xml", v::VegaLiteVis)
+   svgHeader = """
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 """
 
-    open(filename, "w") do f
-        print(f, svgHeader)
-        print(f, convert_to_svg(v))
-    end
+    print(io, svgHeader)
+    print(io, convert_to_svg(v))
 end
 
-function savefig_pdf(filename::AbstractString, v::VegaLiteVis)
+function Base.show(io::IO, m::MIME"application/pdf", v::VegaLiteVis)
     svgstring = convert_to_svg(v)
 
     r = Rsvg.handle_new_from_data(svgstring)
     d = Rsvg.handle_get_dimensions(r)
 
-    cs = Cairo.CairoPDFSurface(filename, d.width,d.height)
+    cs = Cairo.CairoPDFSurface(io, d.width,d.height)
     c = Cairo.CairoContext(cs)
     Rsvg.handle_render_cairo(c,r)
     finish(cs)
 end
 
-function savefig_png(filename::AbstractString, v::VegaLiteVis)
+function Base.show(io::IO, m::MIME"image/png", v::VegaLiteVis)
     svgstring = convert_to_svg(v)
     
     r = Rsvg.handle_new_from_data(svgstring)
@@ -43,5 +41,5 @@ function savefig_png(filename::AbstractString, v::VegaLiteVis)
     cs = Cairo.CairoImageSurface(d.width,d.height,Cairo.FORMAT_ARGB32)
     c = Cairo.CairoContext(cs)
     Rsvg.handle_render_cairo(c,r)
-    Cairo.write_to_png(cs,filename)
+    Cairo.write_to_png(cs,io)
 end

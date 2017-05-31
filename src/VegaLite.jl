@@ -33,6 +33,8 @@ export encoding_x_quant, encoding_x_temp, encoding_x_ord, encoding_x_nominal,
     encoding_row_quant, encoding_row_temp, encoding_row_ord, encoding_row_nominal,
     encoding_column_quant, encoding_column_temp, encoding_column_ord, encoding_column_nominal
 
+export savefig
+
 
 include("utils.jl")
 include("render.jl")
@@ -43,7 +45,8 @@ include("config.jl")
 include("data_values.jl")
 include("mark.jl")
 include("encoding.jl")
-include("conversions.jl")
+include("io.jl")
+include("show.jl")
 
 ### Integration with Escher (Escher does not seem to work in 0.5)
 # include("escher_integration.jl")
