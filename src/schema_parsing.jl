@@ -186,7 +186,7 @@ function toDef(spec::Dict)
     return VoidDef("")
 
   else
-    warn("not a ref, 'AnyOf' and no type for $spec")
+    warn("not a ref, 'AnyOf' and no type")
     return VoidDef("")
   end
 end
@@ -208,7 +208,7 @@ end
 defs = Dict{String, SpecDef}()
 
 for (k,v) in spc["definitions"]
-  println(k)
+  # println(k)
   def = toDef(v)
   if def==nothing
     warn("no properties found for $k")

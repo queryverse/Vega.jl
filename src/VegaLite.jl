@@ -7,46 +7,73 @@ using PhantomJS
 
 import Base: show
 
-export svg, buttons
+export renderer, actionlinks
+
+
+###  Switch for plotting in SVGs or canvas  ###
+
+global RENDERER = :svg
+
+"""
+`renderer()`
+
+show current rendering mode (svg or canvas)
+
+`renderer(::Symbol)`
+
+set rendering mode (svg or canvas)
+"""
+renderer() = RENDERER
+function renderer(m::Symbol)
+  global RENDERER
+  m in [:svg, :canvas] || error("rendering mode should be either :svg or :canvas")
+  RENDERER = m
+end
+
+###  Switch for showing or not the buttons under the plot  ###
+
+global ACTIONSLINKS = true
+
+"""
+`actionlinks()::Bool`
+
+show if plots will have (true) or not (false) the action links shown
+
+`actionlinks(::Bool)`
+
+indicate if actions links should be shown under the plot
+"""
+actionlinks() = ACTIONSLINKS
+actionlinks(b::Bool) = (global ACTIONSLINKS ; ACTIONSLINKS = b)
 
 
 
-
-#  Switch for plotting in SVGs or canvas
-SVG = true
-svg() = SVG
-svg(b::Bool) = (global SVG ; SVG = b)
-
-
-
-
-#  Switch for showing or not the "save as PNG buttons"
-SAVE_BUTTONS = true
-buttons() = SAVE_BUTTONS
-buttons(b::Bool) = (global SAVE_BUTTONS ; SAVE_BUTTONS = b)
-
-
-
-include("utils.jl")
+include("schema_parsing.jl")
+include("func_definition.jl")
+include("func_documentation.jl")
 include("render.jl")
-include("axis.jl")
-include("scale.jl")
-include("legend.jl")
-include("config.jl")
-include("data_values.jl")
-include("mark.jl")
-include("encoding.jl")
-
-### Integration with Escher (Escher does not seem to work in 0.5)
-# include("escher_integration.jl")
 
 ### Integration with DataFrames
-include("dataframes_integration.jl")
+@require DataFrames begin
+  function _data(df::DataFrames.DataFrame)
+    adf = [ Dict(zip(names(df), vec(Array(df[i,:])))) for i in 1:size(df,1) ]
+    VegaLite.VLSpec{:data}(Dict(:values => adf))
+  end
+end
+
+### Integration with DataTables
+@require DataTables begin
+  function _data(dt::DataTables.DataTable)
+    adt = [ Dict(zip(names(dt), vec(Array(dt[i,:])))) for i in 1:size(dt,1) ]
+    VegaLite.VLSpec{:data}(Dict(:values => adt))
+  end
+end
+
 
 ### Integration with IJulia - Jupyter
-include("ijulia_integration.jl")
+# include("ijulia_integration.jl")
 
 ### Integration with Atom-Juno-Media
-include("atom_integration.jl")
+# include("atom_integration.jl")
 
 end

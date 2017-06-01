@@ -10,9 +10,6 @@ end
 
 asset(url...) = normpath(joinpath(dirname(@__FILE__), "..", "deps", "lib", url...))
 
-const SVG = true
-const SAVE_BUTTONS = false
-
 #Vega Scaffold: https://github.com/vega/vega/wiki/Runtime
 function writehtml(io::IO, v::VLPlot; title="VegaLite plot")
   divid = "vg" * randstring(3)
@@ -45,8 +42,8 @@ function writehtml(io::IO, v::VLPlot; title="VegaLite plot")
 
       var opt = {
         mode: "vega-lite",
-        renderer: "$(SVG ? "svg" : "canvas")",
-        actions: $SAVE_BUTTONS
+        renderer: "$RENDERER",
+        actions: $ACTIONSLINKS
       }
 
       var spec = $(v.json)

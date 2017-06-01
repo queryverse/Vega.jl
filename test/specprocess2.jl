@@ -10,6 +10,7 @@ end
 
 include("../src/schema_parsing.jl")
 include("../src/func_definition.jl")
+include("../src/func_documentation.jl")
 include("../src/render.jl")
 
 
@@ -19,13 +20,47 @@ durl = "https://raw.githubusercontent.com/vega/new-editor/master/data/movies.jso
 
 plot(data(url=durl),
      mark="circle",
-     encoding(_x(_bin(maxbins=10), field="IMDB_Rating", _type="quantitative"),
-              _y(_bin(maxbins=10), field="Rotten_Tomatoes_Rating", _type="quantitative"),
-              _color(field="Rotten_Tomatoes_Rating", _type="quantitative"),
-              _size(aggregate="count", _type="quantitative")),
+     encoding(x_(bin_(maxbins=10), field="IMDB_Rating", type_="quantitative"),
+              y_(bin_(maxbins=10), field="Rotten_Tomatoes_Rating", type_="quantitative"),
+              color_(field="Rotten_Tomatoes_Rating", type_="quantitative"),
+              size_(aggregate="count", type_="quantitative")),
      width=600, height=600)
 
-plot
+
+###################################
+
+durl = "file://c:/users/frtestar/downloads/etherprice.2.csv"
+
+using CSV
+
+df = CSV.read("c:/users/frtestar/downloads/etherprice.2.csv",
+              header=["date", "value"], delim=';')
+
+df2 = readdlm("c:/users/frtestar/downloads/etherprice.2.csv", ';', header=false)
+
+dfd = [ Dict(zip(names(df), vec(df2[i,:]))) for i in 1:size(df,1) ]
+
+# dv = get(df[1,1])
+# DateTime(round(Int, dv/1000000))
+# DateTime("1970-01-01") + Dates.Second(dv)
+dvs = DateTime("1970-01-01") + Dates.Second.(round(Int, df2[:,1]))
+
+dfd2 = [ Dict(zip([:date1, :value, :date2 ], [df2[i,1:2]; dvs[i]] )) for i in 1:size(df,1) ]
+
+plot(data(values=dfd2),
+     layer(mark="line",
+          encoding(x_(field="date2", type_="temporal",
+                      axis(labelAngle=-30, labelFont="Helvetica")),
+                   y_(field="value", type_="quantitative",
+                   scale_(type_="log")))),
+     layer(mark="area",
+          encoding(x_(field="date2", type_="temporal"),
+                   y_(field="value", type_="quantitative",
+                      scale_(type_="log")),
+                   opacity_(value=0.5))),
+     config(timeFormat="%b-%Y"),
+     width=600, height=300)
+
 
 ##########################################################################
 
@@ -36,15 +71,79 @@ durl = rooturl * "unemployment-across-industries.json"
 
 plot(data(url=durl),
      width=600, height=400,
-     mark="area",
-     encoding(x(timeUnit="yearmonth", field="date", typ="temporal",
-                scale(nice="month"),
+     mark_="area",
+     encoding(x_(timeUnit="yearmonth", field="date", type_="temporal",
+                scale_(nice="month"),
                 axis(domain=false, format="%Y", labelAngle=-45, tickSize=10)),
-              y(aggregate="sum", field="count", typ="quantitative",
+              y_(aggregate="sum", field="count", type_="quantitative",
                 stack="center"),
-              color(field="series", typ="nominal", scale(scheme="category20b"))
+              color_(field="series", type_="nominal", scale_(scheme="category20b"))
              )
      )
+
+plot(data(url=durl),
+    width=600, height=400,
+    mark_(type_="line", interpolate="step-before"),
+    transform(filter="datum.series=='Agriculture'"),
+    transform(),
+    encoding(x_(timeUnit="yearmonth", field="date", type_="temporal",
+               scale_(nice="month"),
+               axis(format="%Y", labelAngle=-45)),
+             y_(aggregate="sum", field="count", type_="quantitative"),
+             color_(field="series", type_="nominal", scale_(scheme="category20b"))
+            )
+    )
+
+############################################################################
+
+using DataFrames
+
+df  = DataFrame(x=[1:7;], y=rand(7))
+dfd = [ Dict(zip(names(df), vec(Array(df[i,:])))) for i in 1:size(df,1) ]
+
+encx = x_(field=:x, type_="quantitative")
+ency = y_(field=:y, type_="quantitative")
+
+plot(data(values_ = dfd), width=500,
+    #  transform(as=:o, calculate="datum.x * 2"),
+     layer(mark_(type_="line"), encoding(encx, ency, color_(value="green"))),
+     layer(mark_(type_="line", interpolate="cardinal"),
+           encoding(encx, ency, color_(value="blue"))),
+     layer(mark_(type_="line", interpolate="basis"),
+           encoding(encx, ency, color_(value="red"))),
+     layer(mark_ = "point",
+           encoding(encx, ency,
+                    color_(value="black"),
+                    size_(value=50)))
+   )
+
+
+###########################################################################
+
+r, nb = 5., 10
+df = DataFrame(n = [1:nb;],
+               x = r * (0.2 + rand(nb)) .* cos.(2π * linspace(0,1,nb)),
+               y = r * (0.2 + rand(nb)) .* sin.(2π * linspace(0,1,nb)))
+
+dfd = [ Dict(zip(names(df), vec(Array(df[i,:])))) for i in 1:size(df,1) ]
+
+encx = x_(field=:x, type_="quantitative", scale_(zero=false))
+ency = y_(field=:y, type_="quantitative", scale_(zero=false))
+encn = order_(field=:n, type_="quantitative", scale_(zero=false))
+
+plot(data(values_ = dfd),
+     layer(mark_(type_="line", interpolate="basis-closed"),
+           encoding(encx, ency, encn, color_(value="blue"))),
+     layer(mark_ = "point",
+           encoding(encx, ency,
+                    color_(value="black"),
+                    size_(value=50)))
+ )
+
+
+values_
+
+JSON.json(df)
 
 ############################################################################
 
@@ -78,99 +177,54 @@ plot(repeat(row    = ["Horsepower","Acceleration"],
 
 # brush pas encore définie
 
+###########################################################################
+ format
+
 
 ###########################################################################
 
-{
-  "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-  "description": "A error bar plot showing mean, min, and max in the US population distribution of age groups in 2000.",
-  "data": {"url": "data/population.json"},
-  "transform": [{"filter": "datum.year == 2000"}],
-  "layer": [
-    {
-      "mark": "rule",
-      "encoding": {
-        "x": {"field": "age","type": "ordinal"},
-        "y": {
-          "aggregate": "min",
-          "field": "people",
-          "type": "quantitative",
-          "axis": {"title": "population"}
-        },
-        "y2": {
-          "aggregate": "max",
-          "field": "people",
-          "type": "quantitative"
-        }
-      }
-    },
-    {
-      "mark": "tick",
-      "encoding": {
-        "x": {"field": "age","type": "ordinal"},
-        "y": {
-          "aggregate": "min",
-          "field": "people",
-          "type": "quantitative",
-          "axis": {"title": "population"}
-        },
-        "size": {"value": 5}
-      }
-    },
-    {
-      "mark": "tick",
-      "encoding": {
-        "x": {"field": "age","type": "ordinal"},
-        "y": {
-          "aggregate": "max",
-          "field": "people",
-          "type": "quantitative",
-          "axis": {"title": "population"}
-        },
-        "size": {"value": 5}
-      }
-    },
-    {
-      "mark": "point",
-      "encoding": {
-        "x": {"field": "age","type": "ordinal"},
-        "y": {
-          "aggregate": "mean",
-          "field": "people",
-          "type": "quantitative",
-          "axis": {"title": "population"}
-        },
-        "size": {"value": 2}
-      }
-    }
-  ]
-}
-
-
-
 rooturl = "https://raw.githubusercontent.com/vega/new-editor/master/"
 durl = rooturl * "data/population.json"
-println(durl)
-xchan = x(field="age", typ="ordinal", axis(labelAngle=-45))
-ychan = y(field="people", typ="quantitative")
 
-ymin = y(aggregate="min", field="people", typ="quantitative",
+xchan = x_(field="age", type_="ordinal", axis(labelAngle=-45))
+ychan = y_(field="people", type_="quantitative")
+
+ymin = y_(aggregate="min", field="people", type_="quantitative",
          axis(title="population"))
-ymax = y(aggregate="max", field="people", typ="quantitative",
+ymax = y_(aggregate="max", field="people", type_="quantitative",
         axis(title="population"))
-y2max = y2(aggregate="max", field="people", typ="quantitative",
+y2max = y2_(aggregate="max", field="people", type_="quantitative",
         axis(title="population"))
-ymean = y(aggregate="mean", field="people", typ="quantitative",
+ymean = y_(aggregate="mean", field="people", type_="quantitative",
                 axis(title="population"))
 
-
+line
 plot(data(url=durl),
      transform=[ Dict(filter => "datum.year==2000")],
-     layer(mark="tick",  encoding(xchan, ymin, size(value=5))),
-     layer(mark="tick",  encoding(xchan, ymax, size(value=5))),
-     layer(mark="point", encoding(xchan, ymean, size(value=5))),
+     layer(mark="tick",  encoding(xchan, ymin, size_(value=5))),
+     layer(mark="tick",  encoding(xchan, ymax, size_(value=5))),
+     layer(mark="point", encoding(xchan, ymean, size_(value=5))),
      layer(mark="rule",  encoding(xchan, ymin, y2max))
      )
+
+plot(data(url=durl),
+    transform(filter = "datum.year==2000"),
+    transform(),
+    layer(mark="tick",  encoding(xchan, ymin, size_(value=5))),
+    layer(mark="tick",  encoding(xchan, ymax, size_(value=5))),
+    layer(mark="point", encoding(xchan, ymean, size_(value=5))),
+    layer(mark="rule",  encoding(xchan, ymin, y2max))
+    )
+
+plot(data(url=durl),
+    transform(filter = "datum.year==2000"),
+    transform(),
+    vconcat(hconcat(mark="tick",  encoding(xchan, ymin, size_(value=5))),
+            hconcat(mark="tick",  encoding(xchan, ymax, size_(value=5)))),
+    vconcat(hconcat(mark="point", encoding(xchan, ymean, size_(value=5))),
+            hconcat(mark="rule",  encoding(xchan, ymin, y2max)))
+    )
+# marche pas pourquoi ?
 
 plot(data(url=durl),
      layer(mark="point", encoding(xchan, ychan)),
@@ -178,7 +232,7 @@ plot(data(url=durl),
      width=800, height=600
     )
 
-
+y_
 
 ###########################################################
 

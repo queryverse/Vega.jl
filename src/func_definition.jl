@@ -1,17 +1,6 @@
-# module A
-# end
-
-include("schema_parsing.jl")
-
 ###################################################################
 #   function creation
 ###################################################################
-
-type VLSpec{T}
-  params::Dict{Symbol, Any}
-end
-
-vltype{T}(::VLSpec{T}) = T
 
 const jl2sp = Dict{Symbol,Symbol}(:_range => :range,
                                   :_repeat => :repeat,
@@ -37,12 +26,37 @@ const jl2sp = Dict{Symbol,Symbol}(:_range => :range,
                                   :_x2 => :x2,
                                   :_y => :y,
                                   :_y2 => :y2,
-                                  :_type => :type
+                                  :_type => :type,
+                                  :_data => :data
                                   )
 
 const sp2jl = Dict( (v,k) for (k,v) in jl2sp)
 
-# first step : list all the property names
+### step 1 : list all the property names
+
+lookinto!(s::SpecDef, path) = nothing
+
+function lookinto!(s::ObjDef,  path)
+  for (k,v) in s.props
+    push!(ns, (path, k, v))
+    lookinto!(v, [path; k])
+  end
+end
+
+function lookinto!(s::UnionDef,  path)
+  for v in s.items
+    push!(ns, (path, "*", v))
+    lookinto!(v, [path; "*"])
+  end
+end
+
+ns = Any[]
+for (k,v) in defs
+  lookinto!(v, [k])
+end
+# ns
+
+### step 2 : identify functions to be created among all properties
 
 needsfunction(s::IntDef) = false
 needsfunction(s::NumberDef) = false
@@ -55,225 +69,41 @@ needsfunction(s::UnionDef) = any(needsfunction, s.items)
 needsfunction(s::ArrayDef) = needsfunction(s.items)
 needsfunction(s::SpecDef) = error("unknown type $(typeof(s))")
 
-
-lookinto!(s::SpecDef, pos) = nothing
-
-function lookinto!(s::ObjDef,  pos)
-  for (k,v) in s.props
-    push!(ns, (pos, k, v, typeof(v), needsfunction(v)))
-    lookinto!(v, "$pos-$k")
-  end
-end
-
-function lookinto!(s::UnionDef,  pos)
-  for v in s.items
-    push!(ns, (pos, "*", v, typeof(v), needsfunction(v)))
-    lookinto!(v, "$pos-*")
-  end
-end
-
-ns = Any[]
-for (k,v) in defs
-  lookinto!(v, k)
-end
-# ns
-ns
-
-# defs["plot"]
-
-######## list function to be created with their associated definitions
-
 funcs = Dict{Symbol,Any}()
-for (pos, name, spec, typ, needsfunc) in ns
-  sname = pos=="plot" ? :plot : Symbol(name)  # plot is for root def
+for (path, name, spc) in ns
+  # (path, name, spc) = ns2[2]
+  sname = path==["plot"] ? :plot : Symbol(name)  # plot is for root def
   sname == :* && continue
-  !needsfunc && continue
+  needsfunction(spc) || continue
 
   fn = get(sp2jl, sname, sname)
   sfn = Symbol(fn)
 
   if !haskey(funcs, sfn)
-    funcs[sfn] = Dict{SpecDef, Vector}( spec => [pos;])
+    funcs[sfn] = Dict{SpecDef, Vector}( spc => [path])
   else
     ss  = collect(keys(funcs[sfn]))
-    idx = findfirst( ss .== spec )
+    idx = findfirst( ss .== spc )
     if idx != 0  # defintion already seen
-      push!(funcs[sfn][ss[idx]], pos)
+      push!(funcs[sfn][ss[idx]], path)
     else
-      funcs[sfn][spec] = [pos;]
+      funcs[sfn][spc] = [path]
     end
   end
 end
 
-funcs[:plot]
+# showall(collect(keys(funcs)))
+# haskey(funcs, :mark)
+# length(funcs) # 68
+# sum(p -> length(p.second), collect(funcs)) # 148 definitions
+# sum(p -> length(p.second), collect(funcs)) # 83 definitions
 
-showall(collect(keys(funcs)))
-length(funcs) # 68
-sum(p -> length(p.second), collect(funcs)) # 148 definitions
-sum(p -> length(p.second), collect(funcs)) # 83 definitions
+### step 3 : declare functions
 
-for (sfn, def) in funcs
-  sfn == :plot && continue # different, defined later
-  println("defining $sfn")
-  if isdefined(sfn)
-    mt = @eval typeof($sfn).name.mt
-    if isdefined(mt, :module) && mt.module != current_module()
-      println("   importing $sfn from $(mt.module)")
-      eval( Expr(:import, Symbol(mt.module), sfn) )
-    end
-  end
-
-  try
-    @eval( function ($sfn)(args...;kwargs...)
-             $(Expr(:curly, :VLSpec, QuoteNode(sfn)))( wrapper(args...; kwargs...) )
-           end  )
-  catch e
-    println(e)
-  end
+type VLSpec{T}
+  params::Dict{Symbol, Any}
 end
-
-function plot(args...;kwargs...)
-  pars = wrapper(args...;kwargs...)
-  # conforms(pars, defs["plot"], "", false)
-  VLPlot(JSON.json(pars))
-end
-
-
-#####################################################################
-
-function mkdoc(spec::UnionDef, context::Symbol, indent)
-  docstr = String[]
-  spec.desc != "" && push!(docstr, spec.desc, "")
-  push!(docstr, "One of : ")
-  for (i,v) in enumerate(spec.items)
-    fs = needsfunction(v) ? "`$context(<keyword args..>)`" : "`$context=...`"
-    push!(docstr, "  - _case #$(i)_ $fs $(v.desc)")
-    # v.desc != "" && push!(docstr, "", v.desc)
-    # push!(docstr, "")
-    append!(docstr, mkdoc(v, Symbol(""), 4))
-  end
-  repeat(" ", indent) .* docstr
-end
-
-# haskey(funcs, :_bind)
-# get(sp2jl, :bind, :bind)
-function mkdoc(spec::ObjDef, context::Symbol, indent)
-  docstr = String[]
-  spec.desc != "" && push!(docstr, spec.desc, "")
-  for (k,v) in spec.props
-    sk = Symbol(k)
-    sk = get(sp2jl, sk, sk)
-    if haskey(funcs, sk)
-      push!(docstr, "* `$sk` : _see `?$sk`_")
-    else
-      dstrs = mkdoc(v, sk, 2)
-      dstrs[1] = "* `$sk` : " * dstrs[1]
-      append!(docstr, dstrs)
-    end
-    # push!(docstr, "")
-  end
-  repeat(" ", indent) .* docstr
-end
-
-function mkdoc(spec::RefDef, context::Symbol, indent)
-  mkdoc(defs[spec.ref], context, indent)
-end
-
-function mkdoc(spec::IntDef, context::Symbol, indent)
-  docstr = String[]
-  push!(docstr, "(Int) $(spec.desc)")
-  repeat(" ", indent) .* docstr
-end
-
-function mkdoc(spec::NumberDef, context::Symbol, indent)
-  docstr = String[]
-  push!(docstr, "(Number) $(spec.desc)")
-  repeat(" ", indent) .* docstr
-end
-
-function mkdoc(spec::StringDef, context::Symbol, indent)
-  docstr = String[]
-  push!(docstr, "(String) $(spec.desc)")
-  repeat(" ", indent) .* docstr
-end
-
-function mkdoc(spec::BoolDef, context::Symbol, indent)
-  docstr = String[]
-  push!(docstr, "(Boolean) $(spec.desc)")
-  repeat(" ", indent) .* docstr
-end
-
-function mkdoc(spec::ArrayDef, context::Symbol, indent)
-  docstr = String[]
-  push!(docstr, "(Array of $(typeof(spec.items))) $(spec.desc)")
-  repeat(" ", indent) .* docstr
-end
-
-function mkdoc(spec::VoidDef, context::Symbol, indent)
-  docstr = String[]
-  push!(docstr, "(Void) ")
-  repeat(" ", indent) .* docstr
-end
-
-# (sfn, dvs) = first(funcs)
-# ks = first(keys(def))
-#
-# ds = mkdoc(ks,:padding, 0)
-# s = join(rstrip.(ds), "\n")
-#
-# mkdoc(NumberDef(""), :test, 0)
-#
-# @doc "$s" padding
-# println(s)
-# @doc(s, padding)
-
-for (sfn, dvs) in funcs #take(funcs,10)
-  # println("documenting $sfn")
-  docstr = String[]
-  for (def, fns) in dvs
-    # (def, fns) = first(dvs)
-    flist = join("`" .* unique(fns) .* "`", ", ", " and ")
-    push!(docstr, "## `$sfn` as in $flist")
-    append!(docstr, mkdoc(def, sfn, 0))
-    push!(docstr, "")
-  end
-  # println( join(rstrip.(docstr), "\n") )
-  Docs.doc!(Docs.Binding(current_module(),sfn),
-            Docs.docstr(join(rstrip.(docstr), "\n")))
-  # println()
-  # println()
-end
-#
-# sfn = :plot
-# @doc "abcd" -> sfn
-#
-#
-# funcs[:plot]
-#
-#
-# a = 1
-# @doc s a
-#
-# s = "abcd"
-# Docs.doc!(Docs.Binding(A,:a), Docs.docstr(s))
-#
-# @doc(s, $sfn)
-
-
-
-
-
-
-
-
-#
-#
-# ds = mkdoc(ks,0)
-# s = reduce((a,b) -> a*b, "", ds)
-# @doc "$s" padding
-#
-#
-
+vltype{T}(::VLSpec{T}) = T
 
 function wrapper(args...;kwargs...)
   pars = Dict{Symbol,Any}()
@@ -308,3 +138,34 @@ function wrapper(args...;kwargs...)
 
   pars
 end
+
+for (sfn, def) in funcs
+  sfn == :plot && continue # different, defined later
+  # println("defining $sfn")
+  if isdefined(sfn)
+    mt = @eval typeof($sfn).name.mt
+    if isdefined(mt, :module) && mt.module != current_module()
+      println("   importing $sfn from $(mt.module)")
+      eval( Expr(:import, Symbol(mt.module), sfn) )
+    end
+  end
+
+  try
+    @eval( function ($sfn)(args...;kwargs...)
+             $(Expr(:curly, :VLSpec, QuoteNode(sfn)))( wrapper(args...; kwargs...) )
+           end  )
+  catch e
+    println(e)
+  end
+
+  # export
+  eval( Expr(:export, sfn) )
+end
+
+function plot(args...;kwargs...)
+  pars = wrapper(args...;kwargs...)
+  # conforms(pars, defs["plot"], "", false)
+  VLPlot(JSON.json(pars))
+end
+
+export plot
