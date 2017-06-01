@@ -32,6 +32,30 @@ function Base.show(io::IO, m::MIME"application/pdf", v::VegaLiteVis)
     finish(cs)
 end
 
+function Base.show(io::IO, m::MIME"application/eps", v::VegaLiteVis)
+    svgstring = convert_to_svg(v)
+
+    r = Rsvg.handle_new_from_data(svgstring)
+    d = Rsvg.handle_get_dimensions(r)
+
+    cs = Cairo.CairoEPSSurface(io, d.width,d.height)
+    c = Cairo.CairoContext(cs)
+    Rsvg.handle_render_cairo(c,r)
+    finish(cs)
+end
+
+# function Base.show(io::IO, m::MIME"application/postscript", v::VegaLiteVis)
+#     svgstring = convert_to_svg(v)
+
+#     r = Rsvg.handle_new_from_data(svgstring)
+#     d = Rsvg.handle_get_dimensions(r)
+
+#     cs = Cairo.CairoPSSurface(io, d.width,d.height)
+#     c = Cairo.CairoContext(cs)
+#     Rsvg.handle_render_cairo(c,r)
+#     finish(cs)
+# end
+
 function Base.show(io::IO, m::MIME"image/png", v::VegaLiteVis)
     svgstring = convert_to_svg(v)
     

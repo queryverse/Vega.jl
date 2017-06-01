@@ -5,7 +5,11 @@ function savefig(filename::AbstractString, v::VegaLiteVis)
     elseif file_ext == ".pdf"
         mime = "application/pdf"
     elseif file_ext == ".png"
-        mime = "image/png"
+        mime = "image/png"        
+    elseif file_ext == ".eps"
+        mime = "application/eps"
+    # elseif file_ext == ".ps"
+    #     mime = "application/postscript"
     else
         throw(ArgumentError("Unknown file type."))
     end
