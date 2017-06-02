@@ -7,7 +7,7 @@ using PhantomJS
 
 import Base: show
 
-export renderer, actionlinks
+export renderer, actionlinks, png, svg, jgp, pdf
 
 
 ###  Switch for plotting in SVGs or canvas  ###
@@ -52,20 +52,21 @@ include("schema_parsing.jl")
 include("func_definition.jl")
 include("func_documentation.jl")
 include("render.jl")
+include("output.jl")
 
 ### Integration with DataFrames
 @require DataFrames begin
-  function _data(df::DataFrames.DataFrame)
-    adf = [ Dict(zip(names(df), vec(Array(df[i,:])))) for i in 1:size(df,1) ]
-    VegaLite.VLSpec{:data}(Dict(:values => adf))
+  function _data(d::DataFrames.DataFrame)
+    recs = [ Dict(r) for r in DataFrames.eachrow(d) ]
+    VegaLite.VLSpec{:data}(Dict(:values => recs))
   end
 end
 
 ### Integration with DataTables
 @require DataTables begin
   function _data(dt::DataTables.DataTable)
-    adt = [ Dict(zip(names(dt), vec(Array(dt[i,:])))) for i in 1:size(dt,1) ]
-    VegaLite.VLSpec{:data}(Dict(:values => adt))
+    recs = [ Dict(r) for r in DataTables.eachrow(d) ]
+    VegaLite.VLSpec{:data}(Dict(:values => recs))
   end
 end
 

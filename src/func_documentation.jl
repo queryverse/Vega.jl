@@ -8,8 +8,8 @@ function mkdoc(spec::UnionDef, context::Symbol, indent)
   push!(docstr, "One of : ")
   for (i,v) in enumerate(spec.items)
     fs = needsfunction(v) ? "`$context(<keyword args..>)`" : "`$context=...`"
-    push!(docstr, "  - _case #$(i)_ $fs $(v.desc)")
-    append!(docstr, mkdoc(v, Symbol(""), 4))
+    push!(docstr, "   • _case #$(i)_ $fs $(v.desc)")
+    append!(docstr, mkdoc(v, Symbol(""), 6))
   end
   repeat(" ", indent) .* docstr
 end
@@ -21,10 +21,10 @@ function mkdoc(spec::ObjDef, context::Symbol, indent)
     sk = Symbol(k)
     sk = get(sp2jl, sk, sk)
     if haskey(funcs, sk)
-      push!(docstr, "* `$sk` : *see `?$sk` *")
+      push!(docstr, "• `$sk` : *see help for `$sk()`*", "")
     else
-      dstrs = mkdoc(v, sk, 2)
-      dstrs[1] = "* `$sk` : " * dstrs[1]
+      dstrs = mkdoc(v, sk, 3)
+      dstrs[1] = "• `$sk` : " * dstrs[1]
       append!(docstr, dstrs)
     end
   end
