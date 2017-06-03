@@ -33,7 +33,7 @@ export encoding_x_quant, encoding_x_temp, encoding_x_ord, encoding_x_nominal,
     encoding_row_quant, encoding_row_temp, encoding_row_ord, encoding_row_nominal,
     encoding_column_quant, encoding_column_temp, encoding_column_ord, encoding_column_nominal
 
-export savefig
+export savefig, svg, png, pdf, eps
 
 
 include("utils.jl")
