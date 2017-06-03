@@ -49,37 +49,27 @@ function writehtml(io::IO, v::VegaLiteVis; title="VegaLite plot")
   """)
 end
 
+import Base.display, Base.REPL.REPLDisplay
 
-function show(io::IO, v::VegaLiteVis)
-    if displayable("text/html")
-        v
-    else
-        # create a temporary file
-        tmppath = string(tempname(), ".vegalite.html")
-        io = open(tmppath, "w")
-        writehtml(io, v)
-        close(io)
-
-        # println("show :")
-        # Base.show_backtrace(STDOUT, backtrace())
-        # println()
-
-        # Open the browser
-        @static if VERSION < v"0.5.0-"
-          @osx_only run(`open $tmppath`)
-          @windows_only run(`cmd /c start $tmppath`)
-          @linux_only   run(`xdg-open $tmppath`)
-        else
-          if is_apple()
-            run(`open $tmppath`)
-          elseif is_windows()
-            run(`cmd /c start $tmppath`)
-          elseif is_linux()
-            run(`xdg-open $tmppath`)
-          end
-        end
-
+function display(d::REPLDisplay, v::VegaLiteVis)
+    # create a temporary file
+    tmppath = string(tempname(), ".vegalite.html")
+    open(tmppath, "w") do io
+      writehtml(io, v)
     end
 
-    return
+    # Open the browser
+    @static if VERSION < v"0.5.0-"
+        @osx_only run(`open $tmppath`)
+        @windows_only run(`cmd /c start $tmppath`)
+        @linux_only   run(`xdg-open $tmppath`)
+    else
+        if is_apple()
+            run(`open $tmppath`)
+        elseif is_windows()
+            run(`cmd /c start $tmppath`)
+        elseif is_linux()
+            run(`xdg-open $tmppath`)
+        end
+    end
 end
