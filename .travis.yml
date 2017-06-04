@@ -6,9 +6,13 @@ os:
 julia:
   - 0.4
   - 0.5
-  - nightly
+  - 0.6
 notifications:
   email: false
+addons:
+    apt:
+        packages:
+            - libgtk-3-0
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
   - julia --check-bounds=yes -e 'Pkg.clone(pwd()); Pkg.build("VegaLite"); Pkg.test("VegaLite"; coverage=true)'
