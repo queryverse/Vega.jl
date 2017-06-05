@@ -4,7 +4,9 @@ module VegaLite
 
 using JSON, Compat, Requires, NodeJS, Cairo, Rsvg
 
-import Base: +, *, scale, show
+import Base: +, *, scale
+
+@compat import Base.show
 
 export VegaLiteVis, scale, axis, legend
 

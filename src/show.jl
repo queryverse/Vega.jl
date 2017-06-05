@@ -10,7 +10,7 @@ function convert_to_svg(v::VegaLiteVis)
     return res
 end
 
-function Base.show(io::IO, m::MIME"image/svg+xml", v::VegaLiteVis)
+@compat function Base.show(io::IO, m::MIME"image/svg+xml", v::VegaLiteVis)
    svgHeader = """
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
@@ -20,7 +20,7 @@ function Base.show(io::IO, m::MIME"image/svg+xml", v::VegaLiteVis)
     print(io, convert_to_svg(v))
 end
 
-function Base.show(io::IO, m::MIME"application/pdf", v::VegaLiteVis)
+@compat function Base.show(io::IO, m::MIME"application/pdf", v::VegaLiteVis)
     svgstring = convert_to_svg(v)
 
     r = Rsvg.handle_new_from_data(svgstring)
@@ -32,7 +32,7 @@ function Base.show(io::IO, m::MIME"application/pdf", v::VegaLiteVis)
     finish(cs)
 end
 
-function Base.show(io::IO, m::MIME"application/eps", v::VegaLiteVis)
+@compat function Base.show(io::IO, m::MIME"application/eps", v::VegaLiteVis)
     svgstring = convert_to_svg(v)
 
     r = Rsvg.handle_new_from_data(svgstring)
@@ -56,7 +56,7 @@ end
 #     finish(cs)
 # end
 
-function Base.show(io::IO, m::MIME"image/png", v::VegaLiteVis)
+@compat function Base.show(io::IO, m::MIME"image/png", v::VegaLiteVis)
     svgstring = convert_to_svg(v)
     
     r = Rsvg.handle_new_from_data(svgstring)
