@@ -1,4 +1,5 @@
 using Base.Test
+using Compat
 using VegaLite
 
 p = data_values(x = [1,2,3], y=[1,2,3]) +
