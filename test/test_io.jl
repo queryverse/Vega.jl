@@ -7,7 +7,7 @@ p = data_values(x = [1,2,3], y=[1,2,3]) +
     encoding_x_quant(:x) +
     encoding_y_quant(:y)
 
-Base.Filesystem.mktempdir() do folder   
+Compat.Filesystem.mktempdir() do folder   
     svg(joinpath(folder,"test1.svg"), p)
     @test isfile(joinpath(folder,"test1.svg"))
 
