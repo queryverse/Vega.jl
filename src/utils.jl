@@ -9,6 +9,10 @@ end
 +(a::VegaLiteVis, b::VegaLiteVis) = VegaLiteVis(softmerge(a.vis, b.vis))
 *(a::VegaLiteVis, b::VegaLiteVis) = VegaLiteVis(merge(a.vis, b.vis))
 
+function (a::VegaLiteVis)(b::VegaLiteVis)
+    return a + b
+end
+
 function softmerge(a::Dict, b::Dict)
     ck = intersect(keys(a), keys(b))
     nd = merge(a, b)
