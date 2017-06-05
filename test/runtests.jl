@@ -42,7 +42,6 @@ mpg = dataset("ggplot2", "mpg")
 @test isa(encoding_text_quant(:Displ, aggregate="mean"), VegaLiteVis)
 @test isa(config_mark(fontStyle="italic", fontSize=12, font="courier"), VegaLiteVis)
 
-
-
+include("test_io.jl")
 
 println("Finished")
