@@ -15,6 +15,12 @@ addons:
             - xvfb
             - xauth        
             - libgtk-3-0
+            - libcairo2-dev
+            - libjpeg8-dev
+            - libpango1.0-dev
+            - libgif-dev
+            - build-essential
+            - g++
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
   - if [[ `uname` = "Linux" ]]; then TESTCMD="xvfb-run julia"; else TESTCMD="julia"; fi
