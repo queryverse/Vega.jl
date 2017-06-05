@@ -2,29 +2,39 @@
 #   function documentation
 ###################################################################
 
+function prettydesc(desc::String)
+  res = replace(desc, "\n\n__Default value:__", " *Default:*")
+  res = replace(res, "\n\n__Note:__", " *Note:*")
+  res = replace(res, "\n\n__Applicable for:__", " *Applicable for:* ")
+  res
+end
+
 function mkdoc(spec::UnionDef, context::Symbol, indent)
   docstr = String[]
   spec.desc != "" && push!(docstr, spec.desc, "")
   push!(docstr, "One of : ")
   for (i,v) in enumerate(spec.items)
     fs = needsfunction(v) ? "`$context(<keyword args..>)`" : "`$context=...`"
-    push!(docstr, "   • _case #$(i)_ $fs $(v.desc)")
-    append!(docstr, mkdoc(v, Symbol(""), 6))
+    push!(docstr, "- _case #$(i)_ $fs $(prettydesc(v.desc))")
+    append!(docstr, mkdoc(v, Symbol(""), 2))
   end
   repeat(" ", indent) .* docstr
 end
 
+# spec = def
+# context, indent = :test , 0
 function mkdoc(spec::ObjDef, context::Symbol, indent)
   docstr = String[]
   spec.desc != "" && push!(docstr, spec.desc, "")
   for (k,v) in spec.props
     sk = Symbol(k)
+    # println(sk)
     sk = get(sp2jl, sk, sk)
     if haskey(funcs, sk)
-      push!(docstr, "• `$sk` : *see help for `$sk()`*", "")
+      push!(docstr, "- `$sk` : *see help for `$sk()`*")
     else
-      dstrs = mkdoc(v, sk, 3)
-      dstrs[1] = "• `$sk` : " * dstrs[1]
+      dstrs = mkdoc(v, sk, 2)
+      dstrs[1] = "- `$sk` : " * dstrs[1]
       append!(docstr, dstrs)
     end
   end
@@ -37,31 +47,31 @@ end
 
 function mkdoc(spec::IntDef, context::Symbol, indent)
   docstr = String[]
-  push!(docstr, "(Int) $(spec.desc)")
+  push!(docstr, "(Int) $(prettydesc(spec.desc))")
   repeat(" ", indent) .* docstr
 end
 
 function mkdoc(spec::NumberDef, context::Symbol, indent)
   docstr = String[]
-  push!(docstr, "(Number) $(spec.desc)")
+  push!(docstr, "(Number) $(prettydesc(spec.desc))")
   repeat(" ", indent) .* docstr
 end
 
 function mkdoc(spec::StringDef, context::Symbol, indent)
   docstr = String[]
-  push!(docstr, "(String) $(spec.desc)")
+  push!(docstr, "(String) $(prettydesc(spec.desc))")
   repeat(" ", indent) .* docstr
 end
 
 function mkdoc(spec::BoolDef, context::Symbol, indent)
   docstr = String[]
-  push!(docstr, "(Boolean) $(spec.desc)")
+  push!(docstr, "(Boolean) $(prettydesc(spec.desc))")
   repeat(" ", indent) .* docstr
 end
 
 function mkdoc(spec::ArrayDef, context::Symbol, indent)
   docstr = String[]
-  push!(docstr, "(Array of $(typeof(spec.items))) $(spec.desc)")
+  push!(docstr, "(Array of $(typeof(spec.items))) $(prettydesc(spec.desc))")
   repeat(" ", indent) .* docstr
 end
 
@@ -71,33 +81,27 @@ function mkdoc(spec::VoidDef, context::Symbol, indent)
   repeat(" ", indent) .* docstr
 end
 
-# (sfn, dvs) = first(funcs)
-# (def, fns) = first(dvs)
-# unique(fns)
-# ks = first(keys(def))
+# (sfn, dvs) = first(filter((k,v) -> k == :plot, funcs))
+# (def, fns) = first(drop(dvs,4))
+# typeof(def)
+# mkdoc(def, sfn, 0)
 #
-# ds = mkdoc(ks,:padding, 0)
-# s = join(rstrip.(ds), "\n")
+# for (sfn, dvs) in funcs
+#   sfn == :plot && continue  # FIXME : circular ref in plot definition
 #
-# mkdoc(NumberDef(""), :test, 0)
-#
-# @doc "$s" padding
-# println(s)
-# @doc(s, padding)
-
-for (sfn, dvs) in funcs #take(funcs,3)
-  docstr = String[]
-  for (def, fns) in dvs
-    fns2 = [ a==["plot","*"] ? "plot" : lcfirst(a[end]) for a in fns]
-    fns2 = [ get(sp2jl, s, s) for s in fns2 ]
-    flist = join("`" .* unique(fns2) .* "()`", ", ", " and ")
-    push!(docstr, "## `$sfn` when in $flist")
-    append!(docstr, mkdoc(def, sfn, 0))
-    push!(docstr, "")
-  end
-  fulldoc = join(rstrip.(docstr), "\n")
-  # println(fulldoc)
-  # println()
-  # println()
-  eval(:( @doc $fulldoc $sfn ))
-end
+#   println(sfn)
+#   docstr = String[]
+#   for (def, fns) in dvs
+#     fns2 = [ a==["plot","*"] ? "plot" : lcfirst(a[end]) for a in fns]
+#     fns2 = [ get(sp2jl, s, s) for s in fns2 ]
+#     flist = join("`" .* unique(fns2) .* "()`", ", ", " and ")
+#     push!(docstr, "## `$sfn` when in $flist")
+#     append!(docstr, mkdoc(def, sfn, 0))
+#     push!(docstr, "")
+#   end
+#   fulldoc = join(rstrip.(docstr), "\n")
+#   # println(fulldoc)
+#   # println()
+#   # println()
+#   eval(:( @doc $fulldoc $sfn ))
+# end

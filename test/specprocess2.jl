@@ -2,30 +2,71 @@
 module A
 end
 
+reload("VegaLite")
 
-###################################################################
-#   function creation
-###################################################################
+module A
+
+using VegaLite
+
+############################################################
+
+durl = "https://raw.githubusercontent.com/vega/new-editor/master/data/movies.json"
+
+p = plot(_data(url=durl),
+     mark="circle",
+     _encoding(_x(_bin(maxbins=10), field="IMDB_Rating", typ="quantitative"),
+               _y(_bin(maxbins=10), field="Rotten_Tomatoes_Rating", typ="quantitative"),
+               _color(field="Rotten_Tomatoes_Rating", typ="quantitative"),
+               _size(aggregate="count", typ="quantitative")),
+     width=300, height=300) ;
+
+fieldnames(p)
+
+using JSON
+
+function tst(p)
+  pd = JSON.parse(p.json)
+  VegaLite.conforms(pd, "plot(..", VegaLite.defs["plot"])
+end
 
 
-include("../src/schema_parsing.jl")
-include("../src/func_definition.jl")
-include("../src/func_documentation.jl")
-include("../src/render.jl")
+tst(p)
+
+tst( plot(_data(url=durl),
+     mark="circlo",
+     _encoding(_x(_bin(maxbins=10), field="IMDB_Rating", typ="quantitative"),
+               _y(_bin(maxbins=10), field="Rotten_Tomatoes_Rating", typ="quantitative"),
+               _color(field="Rotten_Tomatoes_Rating", typ="quantitative"),
+               _size(aggregate="count", typ="quantitative")),
+     width=300, height=300) )
+
+
+showall(keys(VegaLite.defs))
 
 
 ###################################
 
 durl = "https://raw.githubusercontent.com/vega/new-editor/master/data/movies.json"
 
-plot(data(url=durl),
+plot(_data(url=durl),
      mark="circle",
-     encoding(x_(bin_(maxbins=10), field="IMDB_Rating", type_="quantitative"),
-              y_(bin_(maxbins=10), field="Rotten_Tomatoes_Rating", type_="quantitative"),
-              color_(field="Rotten_Tomatoes_Rating", type_="quantitative"),
-              size_(aggregate="count", type_="quantitative")),
-     width=600, height=600)
+     _encoding(_x(_bin(maxbins=10), field="IMDB_Rating", typ="quantitative"),
+               _y(_bin(maxbins=10), field="Rotten_Tomatoes_Rating", typ="quantitative"),
+               _color(field="Rotten_Tomatoes_Rating", typ="quantitative"),
+               _size(aggregate="count", typ="quantitative")),
+     width=300, height=300)
 
+p = plot(_data(url=durl),
+     mark="circle",
+     _encoding(_x(_bin(maxbins=10), field="IMDB_Rating", typ="quantitative"),
+               _y(_bin(maxbins=10), field="Rotten_Tomatoes_Rating", typ="quantitative"),
+               _color(field="Rotten_Tomatoes_Rating", typ="quantitative"),
+               _size(aggregate="count", typ="quantitative")),
+     width=300, height=300) ;
+
+p
+
+show(p)
 
 ###################################
 
@@ -33,7 +74,9 @@ durl = "file://c:/users/frtestar/downloads/etherprice.2.csv"
 
 using CSV
 
-df = CSV.read("c:/users/frtestar/downloads/etherprice.2.csv",
+download(, "/tmp/etherprice.2.csv")
+
+df = CSV.read("/tmp/etherprice.2.csv",
               header=["date", "value"], delim=';')
 
 df2 = readdlm("c:/users/frtestar/downloads/etherprice.2.csv", ';', header=false)

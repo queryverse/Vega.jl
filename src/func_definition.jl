@@ -2,35 +2,38 @@
 #   function creation
 ###################################################################
 
-const jl2sp = Dict{Symbol,Symbol}(:_range => :range,
-                                  :_repeat => :repeat,
-                                  :_mark => :mark,
-                                  :_scale => :scale,
-                                  :_bind => :bind,
-                                  :_bin => :bin,
-                                  :_filter => :filter,
-                                  :_equal => :equal,
-                                  :_values => :values,
-                                  :_cell => :cell,
-                                  :_sort => :sort,
-                                  :_color => :color,
-                                  :_column => :column,
-                                  :_detail => :detail,
-                                  :_opacity => :opacity,
-                                  :_order => :order,
-                                  :_row => :row,
-                                  :_shape => :shape,
-                                  :_size => :size,
-                                  :_text => :text,
-                                  :_x => :x,
-                                  :_x2 => :x2,
-                                  :_y => :y,
-                                  :_y2 => :y2,
-                                  :_type => :type,
-                                  :_data => :data
-                                  )
+# const jl2sp = Dict{Symbol,Symbol}(:_range => :range,
+#                                   :_repeat => :repeat,
+#                                   :_mark => :mark,
+#                                   :_scale => :scale,
+#                                   :_bind => :bind,
+#                                   :_bin => :bin,
+#                                   :_filter => :filter,
+#                                   :_equal => :equal,
+#                                   :_values => :values,
+#                                   :_cell => :cell,
+#                                   :_sort => :sort,
+#                                   :_color => :color,
+#                                   :_column => :column,
+#                                   :_detail => :detail,
+#                                   :_opacity => :opacity,
+#                                   :_order => :order,
+#                                   :_row => :row,
+#                                   :_shape => :shape,
+#                                   :_size => :size,
+#                                   :_text => :text,
+#                                   :_x => :x,
+#                                   :_x2 => :x2,
+#                                   :_y => :y,
+#                                   :_y2 => :y2,
+#                                   :_type => :type,
+#                                   :_data => :data
+#                                   )
 
-const sp2jl = Dict( (v,k) for (k,v) in jl2sp)
+### list of field names that need a new denomination in Julia
+const sp2jl = Dict{Symbol,Symbol}(:type => :typ)
+const jl2sp = Dict( (v,k) for (k,v) in sp2jl)
+
 
 ### step 1 : list all the property names
 
@@ -71,22 +74,23 @@ needsfunction(s::SpecDef) = error("unknown type $(typeof(s))")
 
 funcs = Dict{Symbol,Any}()
 for (path, name, spc) in ns
-  # (path, name, spc) = ns2[2]
-  sname = path==["plot"] ? :plot : Symbol(name)  # plot is for root def
-  sname == :* && continue
   needsfunction(spc) || continue
 
-  fn = get(sp2jl, sname, sname)
-  sfn = Symbol(fn)
+  if path==["plot"] # plot is for root def
+    sfn = :plot
+  else
+    name == "*" && continue
+    sfn = Symbol("_" * name)
+  end
 
   if !haskey(funcs, sfn)
     funcs[sfn] = Dict{SpecDef, Vector}( spc => [path])
   else
     ss  = collect(keys(funcs[sfn]))
     idx = findfirst( ss .== spc )
-    if idx != 0  # defintion already seen
+    if idx != 0  # new definition
       push!(funcs[sfn][ss[idx]], path)
-    else
+    else # equivalent definition already seen
       funcs[sfn][spc] = [path]
     end
   end
@@ -96,7 +100,7 @@ end
 # haskey(funcs, :mark)
 # length(funcs) # 68
 # sum(p -> length(p.second), collect(funcs)) # 148 definitions
-# sum(p -> length(p.second), collect(funcs)) # 83 definitions
+sum(p -> length(p.second), collect(funcs)) # 89 definitions
 
 ### step 3 : declare functions
 
@@ -110,7 +114,7 @@ function wrapper(args...;kwargs...)
 
   # first map the kw args to the fields in the definitions
   for (f,v) in kwargs
-    jf = get(jl2sp, f, f)
+    jf = get(jl2sp, f, f)  # recover VegaLite name if different
     if isa(v, VLSpec)
       (vltype(v) == f) || error("expecting function $f for keyword arg $f, got $(vltype(v))")
       pars[jf] = v.params
@@ -122,8 +126,8 @@ function wrapper(args...;kwargs...)
   # now the other arguments
   for v in args
     isa(v, VLSpec) || error("non keyword args should be using a VegaLite function, not $v")
-    f = vltype(v)
-    jf = get(jl2sp, f, f)
+    jf = vltype(v)
+    # jf = get(jl2sp, f, f)
     # if multiple arguments of the same type (eg layers) transform to an array
     if haskey(pars, jf)
       if isa(pars[jf], Vector)
@@ -151,8 +155,9 @@ for (sfn, def) in funcs
   end
 
   try
+    specnm = Symbol(string(sfn)[2:end]) # strip leading underscore
     @eval( function ($sfn)(args...;kwargs...)
-             $(Expr(:curly, :VLSpec, QuoteNode(sfn)))( wrapper(args...; kwargs...) )
+             $(Expr(:curly, :VLSpec, QuoteNode(specnm)))( wrapper(args...; kwargs...) )
            end  )
   catch e
     println(e)
@@ -164,7 +169,7 @@ end
 
 function plot(args...;kwargs...)
   pars = wrapper(args...;kwargs...)
-  # conforms(pars, defs["plot"], "", false)
+  conforms(pars, "plot(..", defs["plot"])
   VLPlot(JSON.json(pars))
 end
 

@@ -51,6 +51,7 @@ actionlinks(b::Bool) = (global ACTIONSLINKS ; ACTIONSLINKS = b)
 include("schema_parsing.jl")
 include("func_definition.jl")
 include("func_documentation.jl")
+include("spec_validation.jl")
 include("render.jl")
 include("output.jl")
 
