@@ -100,21 +100,21 @@ end
 # haskey(funcs, :mark)
 # length(funcs) # 68
 # sum(p -> length(p.second), collect(funcs)) # 148 definitions
-sum(p -> length(p.second), collect(funcs)) # 89 definitions
+# sum(p -> length(p.second), collect(funcs)) # 98 definitions
 
 ### step 3 : declare functions
 
 type VLSpec{T}
-  params::Dict{Symbol, Any}
+  params::Dict{String, Any}
 end
 vltype{T}(::VLSpec{T}) = T
 
 function wrapper(args...;kwargs...)
-  pars = Dict{Symbol,Any}()
+  pars = Dict{String,Any}()
 
   # first map the kw args to the fields in the definitions
   for (f,v) in kwargs
-    jf = get(jl2sp, f, f)  # recover VegaLite name if different
+    jf = string(get(jl2sp, f, f))  # recover VegaLite name if different
     if isa(v, VLSpec)
       (vltype(v) == f) || error("expecting function $f for keyword arg $f, got $(vltype(v))")
       pars[jf] = v.params
@@ -126,8 +126,7 @@ function wrapper(args...;kwargs...)
   # now the other arguments
   for v in args
     isa(v, VLSpec) || error("non keyword args should be using a VegaLite function, not $v")
-    jf = vltype(v)
-    # jf = get(jl2sp, f, f)
+    jf = string(vltype(v))
     # if multiple arguments of the same type (eg layers) transform to an array
     if haskey(pars, jf)
       if isa(pars[jf], Vector)

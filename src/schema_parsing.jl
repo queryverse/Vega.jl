@@ -191,17 +191,6 @@ function toDef(spec::Dict)
   end
 end
 
-# toDef(spc["definitions"]["BaseSelectionDef"])
-
-# tspc = spc["definitions"]["BaseSelectionDef"]["properties"]["bind"]["anyOf"][6]
-#
-# haskey(tspc, "additionalProperties")
-# isa(tspc["additionalProperties"], Dict)
-# toDef(tspc["additionalProperties"])
-# haskey(tspc, "type")
-#
-# isa(get(tspc, "additionalProperties", false), Dict)
-# toDef(tspc["additionalProperties"])
 
 ############
 

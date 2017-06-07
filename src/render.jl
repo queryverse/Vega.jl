@@ -189,6 +189,5 @@ import Atom, Media
 
 function Media.render(e::Atom.Editor, plt::VLPlot)
   Media.render(e, nothing)
-  println("hello")
   show(plt)
 end
