@@ -4,7 +4,7 @@
 #
 ######################################################################
 
-asset(url...) = @compat readstring(joinpath(dirname(@__FILE__), "..", "assets", "bower_components", url...))
+asset(url...) = @compat readstring(joinpath(dirname(@__FILE__), "..", "deps", "node_modules", url...))
 
 #Vega Scaffold: https://github.com/vega/vega/wiki/Runtime
 function writehtml(io::IO, v::VegaLiteVis; title="VegaLite plot")
@@ -17,9 +17,9 @@ function writehtml(io::IO, v::VegaLiteVis; title="VegaLite plot")
       <title>$title</title>
       <meta charset="UTF-8">
       <script>$(asset("d3","d3.min.js"))</script>
-      <script>$(asset("vega", "vega.js"))</script>
-      <script>$(asset("vega-lite", "vega-lite.js"))</script>
-      <script>$(asset("vega-embed", "vega-embed.js"))</script>
+      <script>$(asset("vega", "build", "vega.min.js"))</script>
+      <script>$(asset("vega-lite", "build", "vega-lite.min.js"))</script>
+      <script>$(asset("vega-embed", "vega-embed.min.js"))</script>
     </head>
     <body>
       <div id="$divid"></div>
@@ -36,17 +36,13 @@ function writehtml(io::IO, v::VegaLiteVis; title="VegaLite plot")
 
     <script type="text/javascript">
 
-      var embedSpec = {
+      var opt = {
         mode: "vega-lite",
         renderer: "$(SVG ? "svg" : "canvas")",
-        actions: $SAVE_BUTTONS,
-        spec: $(JSON.json(v.vis))
+        actions: $SAVE_BUTTONS
       }
-
-      vg.embed("#$divid", embedSpec, function(error, result) {
-        result.view.renderer("svg")
-      });
-
+      var spec = $(JSON.json(v.vis))
+      vega.embed('#$divid', spec, opt);    
     </script>
 
   </html>
