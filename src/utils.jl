@@ -9,8 +9,10 @@ end
 +(a::VegaLiteVis, b::VegaLiteVis) = VegaLiteVis(softmerge(a.vis, b.vis))
 *(a::VegaLiteVis, b::VegaLiteVis) = VegaLiteVis(merge(a.vis, b.vis))
 
-function (a::VegaLiteVis)(b::VegaLiteVis)
-    return a + b
+if VERSION>=v"0.5.0"
+    function (a::VegaLiteVis)(b::VegaLiteVis)
+        return a + b
+    end
 end
 
 function softmerge(a::Dict, b::Dict)
