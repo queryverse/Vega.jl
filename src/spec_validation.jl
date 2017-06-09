@@ -33,7 +33,6 @@ function conforms(x, ps::String, d::ArrayDef)
   nothing
 end
 
-
 function conforms(d, ps::String, spec::ObjDef)
   isa(d, Dict) || throw("expected object got '$d' in $ps")
   for (k,v) in d

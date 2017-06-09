@@ -68,6 +68,27 @@ p
 
 show(p)
 
+###################################################################
+
+using Distributions
+
+xs = rand(Normal(), 100, 3)
+dt = DataTable(a = xs[:,1] + xs[:,2] .^ 2,
+               b = xs[:,3] .* xs[:,2],
+               c = xs[:,3] .+ xs[:,2])
+
+plot(_data(dt),
+     _repeat(column = [:a, :b, :c],
+             row    = [:a, :b, :c]),
+     _spec(
+       mark=:point,
+       _encoding( _x(_field(repeat=:column), typ=:quantitative),
+                  _y(_field(repeat=:row), typ=:quantitative),
+                  _color(field=:a, typ=:quantitative))
+     )
+   )
+
+
 ###################################
 
 durl = "file://c:/users/frtestar/downloads/etherprice.2.csv"

@@ -84,7 +84,7 @@ for (path, name, spc) in ns
   end
 
   if !haskey(funcs, sfn)
-    funcs[sfn] = Dict{SpecDef, Vector}( spc => [path])
+    funcs[sfn] = Dict{SpecDef, Vector}( spc => [path] )
   else
     ss  = collect(keys(funcs[sfn]))
     idx = findfirst( ss .== spc )
@@ -168,7 +168,21 @@ end
 
 function plot(args...;kwargs...)
   pars = wrapper(args...;kwargs...)
-  conforms(pars, "plot(..", defs["plot"])
+
+  # of six possible plot objects (unit, layer, repeat, hconcat, etc..),
+  # identify which one applies by their required properties to simplify
+  # error messages (i.e. to avoid too many "possible causes" )
+  onematch = false
+  for spec in defs["plot"].items
+    if all(r in keys(pars) for r in spec.required)
+      conforms(pars, "plot(..", spec)
+      onematch = true
+    end
+  end
+
+  # if no match print full error message
+  onematch || conforms(pars, "plot(..", defs["plot"])
+
   VLPlot(JSON.json(pars))
 end
 

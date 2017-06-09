@@ -3,15 +3,25 @@
 ###################################################################
 
 function prettydesc(desc::String)
-  res = replace(desc, "\n\n__Default value:__", " *Default:*")
-  res = replace(res, "\n\n__Note:__", " *Note:*")
-  res = replace(res, "\n\n__Applicable for:__", " *Applicable for:* ")
+  res = replace(desc, "\n__Default value:__",  " *Default value:*")
+  res = replace(res, "\n__Note:__",            " *Note:*")
+  res = replace(res, "\n__Warning:__",         " *Warning:*")
+  res = replace(res, "\n__Required:__",        " *Required:*")
+  res = replace(res, "\n__Default Rule:__",    " *Default rule:*")
+  res = replace(res, "\n__Applicable for:__",  " *Applicable for:* ")
+  res = replace(res, "\n__Supported types:__", " *Supported types:* ")
   res
 end
 
+
+# There are circular references (in LayerSpec and RepeatSpec) that we
+# should not get stuck into. Doc creation will keep track of definitions
+# explored and stop when a RefSpec has already been seen
+refpath = String[]
+
 function mkdoc(spec::UnionDef, context::Symbol, indent)
   docstr = String[]
-  spec.desc != "" && push!(docstr, spec.desc, "")
+  spec.desc != "" && push!(docstr, prettydesc(spec.desc), "")
   push!(docstr, "One of : ")
   for (i,v) in enumerate(spec.items)
     fs = needsfunction(v) ? "`$context(<keyword args..>)`" : "`$context=...`"
@@ -25,7 +35,7 @@ end
 # context, indent = :test , 0
 function mkdoc(spec::ObjDef, context::Symbol, indent)
   docstr = String[]
-  spec.desc != "" && push!(docstr, spec.desc, "")
+  spec.desc != "" && push!(docstr, prettydesc(spec.desc), "")
   for (k,v) in spec.props
     sk = Symbol(k)
     # println(sk)
@@ -42,7 +52,11 @@ function mkdoc(spec::ObjDef, context::Symbol, indent)
 end
 
 function mkdoc(spec::RefDef, context::Symbol, indent)
-  mkdoc(defs[spec.ref], context, indent)
+  spec.ref in refpath && return ["... see above ..."]
+  push!(refpath, spec.ref)
+  docstr = mkdoc(defs[spec.ref], context, indent)
+  pop!(refpath)
+  docstr
 end
 
 function mkdoc(spec::IntDef, context::Symbol, indent)
@@ -81,27 +95,20 @@ function mkdoc(spec::VoidDef, context::Symbol, indent)
   repeat(" ", indent) .* docstr
 end
 
-# (sfn, dvs) = first(filter((k,v) -> k == :plot, funcs))
-# (def, fns) = first(drop(dvs,4))
-# typeof(def)
-# mkdoc(def, sfn, 0)
-#
-# for (sfn, dvs) in funcs
-#   sfn == :plot && continue  # FIXME : circular ref in plot definition
-#
-#   println(sfn)
-#   docstr = String[]
-#   for (def, fns) in dvs
-#     fns2 = [ a==["plot","*"] ? "plot" : lcfirst(a[end]) for a in fns]
-#     fns2 = [ get(sp2jl, s, s) for s in fns2 ]
-#     flist = join("`" .* unique(fns2) .* "()`", ", ", " and ")
-#     push!(docstr, "## `$sfn` when in $flist")
-#     append!(docstr, mkdoc(def, sfn, 0))
-#     push!(docstr, "")
-#   end
-#   fulldoc = join(rstrip.(docstr), "\n")
-#   # println(fulldoc)
-#   # println()
-#   # println()
-#   eval(:( @doc $fulldoc $sfn ))
-# end
+
+for (sfn, dvs) in funcs
+  docstr = String[]
+  for (def, fns) in dvs
+    fns2 = [ a==["plot","*"] ? "plot" : lcfirst(a[end]) for a in fns]
+    fns2 = [ get(sp2jl, s, s) for s in fns2 ]
+    flist = join("`" .* unique(fns2) .* "()`", ", ", " and ")
+    push!(docstr, "## `$sfn` when in $flist")
+    append!(docstr, mkdoc(def, sfn, 0))
+    push!(docstr, "")
+  end
+  fulldoc = join(rstrip.(docstr), "\n")
+  # println(fulldoc)
+  # println()
+  # println()
+  eval(:( @doc $fulldoc $sfn ))
+end
