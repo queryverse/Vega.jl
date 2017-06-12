@@ -30,9 +30,14 @@
 #                                   :_data => :data
 #                                   )
 
-### list of field names that need a new denomination in Julia
+### list of VegaLite property names that need a new denomination in Julia
 const sp2jl = Dict{Symbol,Symbol}(:type => :typ)
 const jl2sp = Dict( (v,k) for (k,v) in sp2jl)
+
+### conversion between property name in VegaLite and julia function name
+jlfunc(vln::String) = jlfunc(Symbol(vln))
+jlfunc(vln::Symbol) = Symbol("vl" * string(vln))
+vlname(fn::Symbol)  = (string(fn))[3:end]
 
 
 ### step 1 : list all the property names
@@ -80,7 +85,7 @@ for (path, name, spc) in ns
     sfn = :plot
   else
     name == "*" && continue
-    sfn = Symbol("_" * name)
+    sfn = jlfunc(name)
   end
 
   if !haskey(funcs, sfn)
@@ -109,7 +114,7 @@ type VLSpec{T}
 end
 vltype{T}(::VLSpec{T}) = T
 
-function wrapper(args...;kwargs...)
+function wrapper(sfn::Symbol, args...;kwargs...)
   pars = Dict{String,Any}()
 
   # first map the kw args to the fields in the definitions
@@ -139,12 +144,18 @@ function wrapper(args...;kwargs...)
     end
   end
 
+  # check if at least one of the SpecDef associated to this function match
+  fdefs = collect(keys(funcs[sfn]))
+  conforms(pars, "$sfn()", UnionDef("", fdefs))
+
   pars
 end
 
+# keys(funcs)
+
 for (sfn, def) in funcs
-  sfn == :plot && continue # different, defined later
-  # println("defining $sfn")
+  sfn == :plot && continue # treated differently, see below
+
   if isdefined(sfn)
     mt = @eval typeof($sfn).name.mt
     if isdefined(mt, :module) && mt.module != current_module()
@@ -153,21 +164,17 @@ for (sfn, def) in funcs
     end
   end
 
-  try
-    specnm = Symbol(string(sfn)[2:end]) # strip leading underscore
-    @eval( function ($sfn)(args...;kwargs...)
-             $(Expr(:curly, :VLSpec, QuoteNode(specnm)))( wrapper(args...; kwargs...) )
-           end  )
-  catch e
-    println(e)
-  end
+  specnm = Symbol(vlname(sfn)) # VegaLite property name
+  @eval( function ($sfn)(args...;kwargs...)
+           $(Expr(:curly, :VLSpec, QuoteNode(specnm)))( wrapper($(QuoteNode(sfn)), args...; kwargs...) )
+         end  )
 
   # export
   eval( Expr(:export, sfn) )
 end
 
 function plot(args...;kwargs...)
-  pars = wrapper(args...;kwargs...)
+  pars = wrapper(:plot, args...;kwargs...)
 
   # of six possible plot objects (unit, layer, repeat, hconcat, etc..),
   # identify which one applies by their required properties to simplify

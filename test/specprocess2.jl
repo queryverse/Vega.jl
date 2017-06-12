@@ -2,6 +2,7 @@
 module A
 end
 
+
 reload("VegaLite")
 
 module A
@@ -12,13 +13,32 @@ using VegaLite
 
 durl = "https://raw.githubusercontent.com/vega/new-editor/master/data/movies.json"
 
-p = plot(_data(url=durl),
+plot(vldata(url=durl),
      mark="circle",
-     _encoding(_x(_bin(maxbins=10), field="IMDB_Rating", typ="quantitative"),
-               _y(_bin(maxbins=10), field="Rotten_Tomatoes_Rating", typ="quantitative"),
-               _color(field="Rotten_Tomatoes_Rating", typ="quantitative"),
-               _size(aggregate="count", typ="quantitative")),
-     width=300, height=300) ;
+     vlencoding(vlx(vlbin(maxbins=10), field=:IMDB_Rating, typ=:quantitative),
+                vly(vlbin(maxbins=10), field=:Rotten_Tomatoes_Rating, typ=:quantitative),
+                vlcolor(field=:Rotten_Tomatoes_Rating, typ=:quantitative),
+                vlsize(aggregate=:count, typ=:quantitative)),
+     width=300, height=300)
+
+
+plot(vldata(url=durl),
+     markcircle(),
+     vlencoding(xquantitative(vlbin(maxbins=10), field=:IMDB_Rating),
+                yquantitative(vlbin(maxbins=10), field=:Rotten_Tomatoes_Rating),
+                colorquantitative(field=:Rotten_Tomatoes_Rating),
+                sizequantitative(aggregate=:count)),
+     width=300, height=300) 
+
+import VegaLite: |>
+
+vldata(url=durl) |>
+  markcircle() |>
+  vlencoding(xquantitative(vlbin(maxbins=10), field=:IMDB_Rating),
+             yquantitative(vlbin(maxbins=10), field=:Rotten_Tomatoes_Rating),
+             colorquantitative(field=:Rotten_Tomatoes_Rating),
+             sizequantitative(aggregate=:count))
+
 
 fieldnames(p)
 

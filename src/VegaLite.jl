@@ -52,12 +52,13 @@ include("schema_parsing.jl")
 include("func_definition.jl")
 include("func_documentation.jl")
 include("spec_validation.jl")
+include("utils.jl")
 include("render.jl")
 include("output.jl")
 
 ### Integration with DataFrames
 @require DataFrames begin
-  function _data(d::DataFrames.DataFrame)
+  function vldata(d::DataFrames.DataFrame)
     recs = [ Dict(r) for r in DataFrames.eachrow(d) ]
     VegaLite.VLSpec{:data}(Dict("values" => recs))
   end
@@ -65,7 +66,7 @@ end
 
 ### Integration with DataTables
 @require DataTables begin
-  function _data(d::DataTables.DataTable)
+  function vldata(d::DataTables.DataTable)
     recs = [ Dict(r) for r in DataTables.eachrow(d) ]
     VegaLite.VLSpec{:data}(Dict("values" => recs))
   end
