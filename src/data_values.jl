@@ -6,7 +6,9 @@ data_values(*sym1*=*vec1*, *sym2*=*vec2*, ...)
 Adds data vectors (`vec1`, `vec1`,..) and binds each of them to a symbol (`sym1`, `sym2`, ...)
 """
 function data_values(;values...)
-  length(values)==0 && error("no values given")
+  if length(values)==0
+    return i->data_values(i)
+  end
 
   ks = [v[1] for v in values]
   vs = [v[2] for v in values]
