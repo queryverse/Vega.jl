@@ -59,7 +59,7 @@ include("dataframes_integration.jl")
 ### Integration with IJulia - Jupyter
 include("ijulia_integration.jl")
 
-### Integration with Atom-Juno-Media
-include("atom_integration.jl")
+### Integration with Juno
+include("juno_integration.jl")
 
 end

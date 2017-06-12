@@ -58,7 +58,7 @@ end
 
 @compat function Base.show(io::IO, m::MIME"image/png", v::VegaLiteVis)
     svgstring = convert_to_svg(v)
-    
+
     r = Rsvg.handle_new_from_data(svgstring)
     d = Rsvg.handle_get_dimensions(r)
 
