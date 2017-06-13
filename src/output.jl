@@ -2,7 +2,7 @@
 #    Conversion to SVG, PNG, JPG files
 ######################################################################
 
-function tofile(path::String, plt::VLPlot, format::String)
+function tofile(path::String, plt::VLSpec{:plot}, format::String)
   pio = IOBuffer()
   VegaLite.writehtml(pio, A.plt)
 
@@ -10,11 +10,9 @@ function tofile(path::String, plt::VLPlot, format::String)
                              clipToSelector=".marks",
                              format=format)
 
-
-
 end
 
-png(path::String, plt::VLPlot) = tofile(path, plt, "png")
-svg(path::String, plt::VLPlot) = tofile(path, plt, "svg")
-jpg(path::String, plt::VLPlot) = tofile(path, plt, "jpg")
-pdf(path::String, plt::VLPlot) = tofile(path, plt, "pdf")
+png(path::String, plt::VLSpec{:plot}) = tofile(path, plt, "png")
+svg(path::String, plt::VLSpec{:plot}) = tofile(path, plt, "svg")
+jpg(path::String, plt::VLSpec{:plot}) = tofile(path, plt, "jpg")
+pdf(path::String, plt::VLSpec{:plot}) = tofile(path, plt, "pdf")

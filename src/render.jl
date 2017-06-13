@@ -1,17 +1,18 @@
 ######################################################################
 #
-#     Default plotting using browser tab
+#     Rendering
 #
 ######################################################################
-
-type VLPlot
-  json::String
-end
 
 asset(url...) = normpath(joinpath(dirname(@__FILE__), "..", "deps", "lib", url...))
 
 #Vega Scaffold: https://github.com/vega/vega/wiki/Runtime
-function writehtml(io::IO, v::VLPlot; title="VegaLite plot")
+
+"""
+Creates standalone html file for showing the plot (typically in a browser tab).
+VegaLite js files are references to local copies.
+"""
+function writehtml_full(io::IO, spec::String; title="VegaLite plot")
   divid = "vg" * randstring(3)
 
   println(io,
@@ -46,7 +47,7 @@ function writehtml(io::IO, v::VLPlot; title="VegaLite plot")
         actions: $ACTIONSLINKS
       }
 
-      var spec = $(v.json)
+      var spec = $spec
 
       vega.embed('#$divid', spec, opt);
 
@@ -55,139 +56,124 @@ function writehtml(io::IO, v::VLPlot; title="VegaLite plot")
   </html>
   """)
 end
-#
-# function writehtml(io::IO, v::VLPlot; title="VegaLite plot")
-#   divid = "vg" * randstring(3)
-#
-#   println(io,
-#   """
-#   <html>
-#     <head>
-#       <title>$title</title>
-#       <meta charset="UTF-8">
-#     </head>
-#
-#     <body>
-#       <div id="$divid"></div>
-#     </body>
-#
-#     <style media="screen">
-#       .vega-actions a {
-#         margin-right: 10px;
-#         font-family: sans-serif;
-#         font-size: x-small;
-#         font-style: italic;
-#       }
-#     </style>
-#
-#     <script type="text/javascript">
-#
-#     requirejs.config({
-#         paths: {
-#           d3: "file://$(asset("d3.v3.min.js"))",
-#           vg: "file://$(asset("vega.min.js"))",
-#           vl: "file://$(asset("vega-lite.min.js"))",
-#           vg_embed: "file://$(asset("vega-embed.min.js"))"
-#         },
-#         shim: {
-#           vg_embed: {deps: ["vg.global", "vl.global"]},
-#           vl: {deps: ["vg"]},
-#           vg: {deps: ["d3"]}
-#         }
-#     });
-#
-#     define('vg.global', ['vg'], function(vgGlobal) {
-#         window.vg = vgGlobal;
-#     });
-#
-#     define('vl.global', ['vl'], function(vlGlobal) {
-#         window.vl = vlGlobal;
-#     });
-#
-#     require(["vg_embed"], function(vg_embed) {
-# //      var vlSpec = $(JSON.json(v.vis));
-#
-# //      var embedSpec = {
-# //        mode: "vega-lite",
-# //        renderer: "$(SVG ? "svg" : "canvas")",
-# //        actions: $SAVE_BUTTONS,
-# //        spec: vlSpec
-# //      };
-# //
-# //      vg_embed("#$divid", embedSpec, function(error, result) {});
-#
-#       var opt = {
-#         mode: "vega-lite",
-#         renderer: "$RENDERER",
-#         actions: $ACTIONSLINKS
-#       }
-#
-#       var spec = $(v.json)
-#
-#       vega.embed('#$divid', spec, opt);
-#     })
-#
-#
-#
-#
-#
-#     </script>
-#
-#   </html>
-#   """)
-# end
 
+function writehtml_full(spec::String; title="VegaLite plot")
+  tmppath = string(tempname(), ".vegalite.html")
 
+  open(tmppath, "w") do io
+    writehtml_full(io, spec, title=title)
+  end
 
-import Base.show
-
-function show(io::IO, v::VLPlot)
-  # if displayable("text/html")
-  #   println("plotting as html")
-  #   writehtml(io,v)
-  # else
-    # create a temporary file
-    tmppath = string(tempname(), ".vegalite.html")
-    io = open(tmppath, "w")
-    writehtml(io, v)
-    close(io)
-
-    # println("show :")
-    # Base.show_backtrace(STDOUT, backtrace())
-    # println()
-
-    # Open the browser
-    @static if VERSION < v"0.5.0-"
-      @osx_only run(`open $tmppath`)
-      @windows_only run(`cmd /c start $tmppath`)
-      @linux_only   run(`xdg-open $tmppath`)
-    else
-      if is_apple()
-        run(`open $tmppath`)
-      elseif is_windows()
-        run(`cmd /c start $tmppath`)
-      elseif is_linux()
-        run(`xdg-open $tmppath`)
-      end
-    end
-
-  # end
-
-  return
+  tmppath
 end
 
 
-# function show(io::IO, m::MIME"text/html", v::VLPlot)
-#   writehtml(io, v)
-# end
+
+"""
+Creates a HTML script + div block for showing the plot (typically for IJulia).
+VegaLite js files are loaded from the web (to accommodate the security model of
+IJulia) using requirejs.
+"""
+function writehtml_partial(io::IO, spec::String; title="VegaLite plot")
+  divid = "vg" * randstring(3)
+
+  println(io,
+  """
+  <html>
+    <body>
+      <div id="$divid"></div>
+    </body>
+
+    <style media="screen">
+      .vega-actions a {
+        margin-right: 10px;
+        font-family: sans-serif;
+        font-size: x-small;
+        font-style: italic;
+      }
+    </style>
+
+    <script type="text/javascript">
+
+    requirejs.config({
+        paths: {
+          d3: "https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.16/d3.min.js?noext",
+          vg: "https://cdnjs.cloudflare.com/ajax/libs/vega/2.5.1/vega.min.js?noext",
+          vl: "https://cdnjs.cloudflare.com/ajax/libs/vega-lite/1.2.0/vega-lite.js?noext",
+          vg_embed: "https://cdnjs.cloudflare.com/ajax/libs/vega-embed/2.2.0/vega-embed.js?noext"
+        },
+        shim: {
+          vg_embed: {deps: ["vg.global", "vl.global"]},
+          vl: {deps: ["vg"]},
+          vg: {deps: ["d3"]}
+        }
+    });
+
+    define('vg.global', ['vg'], function(vgGlobal) {
+        window.vg = vgGlobal;
+    });
+
+    define('vl.global', ['vl'], function(vlGlobal) {
+        window.vl = vlGlobal;
+    });
+
+    require(["vg_embed"], function(vg_embed) {
+      var vlSpec = $(JSON.json(v.vis));
+      var embedSpec = {
+        mode: "vega-lite",
+        renderer: "$(SVG ? "svg" : "canvas")",
+        actions: $SAVE_BUTTONS,
+        spec: $spec
+      };
+
+      vg_embed("#$divid", embedSpec, function(error, result) {});
+
+//      var opt = {
+//        mode: "vega-lite",
+//        renderer: "$RENDERER",
+//        actions: $ACTIONSLINKS
+//      }
+//
+//      var spec = $(v.json)
+//
+//      vega.embed('#$divid', spec, opt);
+    })
+
+    </script>
+
+  </html>
+  """)
+
+end
+
+@compat import Base.show
+@compat show(io::IO, m::MIME"text/html", plt::VLSpec{:plot}) =
+  writehtml_partial(io, JSON.json(plt.params))
 
 
+"""
+opens a browser tab with the given html file
+"""
+function launch_browser(tmppath::String)
+  # Open the browser
+  @static if VERSION < v"0.5.0-"
+    @osx_only run(`open $tmppath`)
+    @windows_only run(`cmd /c start $tmppath`)
+    @linux_only   run(`xdg-open $tmppath`)
+  else
+    if is_apple()
+      run(`open $tmppath`)
+    elseif is_windows()
+      run(`cmd /c start $tmppath`)
+    elseif is_linux()
+      run(`xdg-open $tmppath`)
+    end
+  end
+end
 
 
-
-import Atom, Media
-
-function Media.render(e::Atom.Editor, plt::VLPlot)
-  Media.render(e, nothing)
-  show(plt)
+function display(d::REPLDisplay, plt::VLSpec{:plot})
+  checkplot(plt)
+  tmppath = writehtml_full(JSON.json(plt.params))
+  launch_browser(tmppath) # Open the browser
 end

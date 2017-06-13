@@ -186,7 +186,7 @@ function toDef(spec::Dict)
     return VoidDef("")
 
   else
-    warn("not a ref, 'AnyOf' and no type")
+    # warn("not a ref, 'AnyOf' and no type")
     return VoidDef("")
   end
 end

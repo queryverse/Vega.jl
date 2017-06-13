@@ -4,7 +4,7 @@
 
 function _conforms(x, ps::String, t::Type)
   isa(x, t) && return
-  throw("expected '$t' got '$(typeof(x))' in $ps")
+  throw("expected '$t' got '$(typeof(x))' in $ps..)")
 end
 
 conforms(x, ps::String, d::IntDef)    = _conforms(x, ps, Int)
@@ -19,7 +19,7 @@ function conforms(x, ps::String, d::StringDef)
   if length(d.enum) > 0
     if ! (x in d.enum)
       svalid = "[" * join(collect(d.enum),",") * "]"
-      throw("'$x' is not one of $svalid in $ps")
+      throw("'$x' is not one of $svalid in $ps..)")
     end
   end
   nothing
@@ -34,13 +34,13 @@ function conforms(x, ps::String, d::ArrayDef)
 end
 
 function conforms(d, ps::String, spec::ObjDef)
-  isa(d, Dict) || throw("expected object got '$d' in $ps")
+  isa(d, Dict) || throw("expected object got '$d' in $ps..)")
   for (k,v) in d
-    haskey(spec.props, k) || throw("unexpected param '$k' in $ps")
-    conforms(v, ps * k * "(..", spec.props[k])
+    haskey(spec.props, k) || throw("unexpected param '$k' in $ps..)")
+    conforms(v, ps * k * "(", spec.props[k])
   end
   for k in spec.required
-    haskey(d, k) || throw("required param '$k' missing in $ps")
+    haskey(d, k) || throw("required param '$k' missing in $ps..)")
   end
 end
 
@@ -64,5 +64,28 @@ function conforms(d, ps::String, spec::UnionDef)
     end
   end
   scauses = join(unique(causes), ", ")
-  throw("no matching specification found for $ps , possibles causes : $scauses")
+  throw("no matching spec found for $ps..) , possible causes : $scauses")
+end
+
+"""
+perform final check of plot before rendering
+"""
+function checkplot(plt::VLSpec{:plot})
+  pars = plt.params
+
+  # Of six possible plot specs (unit, layer, repeat, hconcat, vconcat, facet),
+  # identify which one applies by their required properties to simplify
+  # error messages (i.e. to avoid too many "possible causes" )
+  onematch = false
+  for spec in defs["plot"].items
+    if all(r in keys(pars) for r in spec.required)
+      conforms(pars, "plot(", spec)
+      onematch = true
+    end
+  end
+
+  # if no match print full error message
+  onematch || conforms(pars, "plot(", defs["plot"])
+
+  nothing
 end

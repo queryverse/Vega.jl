@@ -2,7 +2,6 @@
 module A
 end
 
-
 reload("VegaLite")
 
 module A
@@ -22,24 +21,25 @@ plot(vldata(url=durl),
      width=300, height=300)
 
 
-plot(vldata(url=durl),
+plot(data(url=durl),
      markcircle(),
-     vlencoding(xquantitative(vlbin(maxbins=10), field=:IMDB_Rating),
+     encoding(xquantitative(vlbin(maxbins=10), field=:IMDB_Rating),
                 yquantitative(vlbin(maxbins=10), field=:Rotten_Tomatoes_Rating),
                 colorquantitative(field=:Rotten_Tomatoes_Rating),
                 sizequantitative(aggregate=:count)),
-     width=300, height=300) 
+     width=300, height=300)
 
-import VegaLite: |>
-
-vldata(url=durl) |>
+data(url=durl) |>
+  plot(width=200, height=100) |>
   markcircle() |>
   vlencoding(xquantitative(vlbin(maxbins=10), field=:IMDB_Rating),
              yquantitative(vlbin(maxbins=10), field=:Rotten_Tomatoes_Rating),
              colorquantitative(field=:Rotten_Tomatoes_Rating),
              sizequantitative(aggregate=:count))
 
+p.params
 
+p
 fieldnames(p)
 
 using JSON
@@ -62,6 +62,21 @@ tst( plot(_data(url=durl),
 
 
 showall(keys(VegaLite.defs))
+##################################################################
+
+using Distributions
+using DataTables
+xs = rand(Normal(), 100, 3)
+dt = DataTable(a = xs[:,1] + xs[:,2] .^ 2,
+               b = xs[:,3] .* xs[:,2],
+               c = xs[:,3] .+ xs[:,2])
+
+data(dt) |>
+  repeat(column = [:a, :b, :c], row = [:a, :b, :c]) |>
+  spec(markpoint(),
+       encoding(xquantitative(vlfield(repeat=:column)),
+                yquantitative(vlfield(repeat=:row))))
+
 
 
 ###################################

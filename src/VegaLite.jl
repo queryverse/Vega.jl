@@ -5,12 +5,15 @@ module VegaLite
 using JSON, Compat, Requires
 using PhantomJS
 
-import Base: show
+# import Base: show
+import Base: display, REPL.REPLDisplay
 
-export renderer, actionlinks, png, svg, jgp, pdf
+export renderer, actionlinks, junoplotpane, png, svg, jgp, pdf
 
 
-###  Switch for plotting in SVGs or canvas  ###
+########################  settings functions  ###############################
+
+# Switch for plotting in SVGs or canvas
 
 global RENDERER = :svg
 
@@ -30,23 +33,43 @@ function renderer(m::Symbol)
   RENDERER = m
 end
 
-###  Switch for showing or not the buttons under the plot  ###
+
+# Switch for showing or not the buttons under the plot
 
 global ACTIONSLINKS = true
 
 """
 `actionlinks()::Bool`
 
-show if plots will have (true) or not (false) the action links shown
+show if plots will have (true) or not (false) the action links displayed
 
 `actionlinks(::Bool)`
 
-indicate if actions links should be shown under the plot
+indicate if actions links should be dislpayed under the plot
 """
 actionlinks() = ACTIONSLINKS
 actionlinks(b::Bool) = (global ACTIONSLINKS ; ACTIONSLINKS = b)
 
 
+# Switch for showing plots in a browser or in the plotpane when in Juno
+
+global JUNOPLOTPANE = false
+
+"""
+`junoplotpane()::Bool`
+
+when using Juno, show if plots will be rendered in plotpane or not
+
+`junoplotpane(::Bool)`
+
+set if plots should be rendered in Juno's plotpane or not
+"""
+junoplotpane() = JUNOPLOTPANE
+junoplotpane(b::Bool) = (global JUNOPLOTPANE ; JUNOPLOTPANE = b)
+
+
+
+########################  includes  #####################################
 
 include("schema_parsing.jl")
 include("func_definition.jl")
@@ -54,7 +77,12 @@ include("func_documentation.jl")
 include("spec_validation.jl")
 include("utils.jl")
 include("render.jl")
+include("juno_integration.jl")
 include("output.jl")
+
+
+
+########################  conditional definitions  #######################
 
 ### Integration with DataFrames
 @require DataFrames begin
@@ -73,10 +101,5 @@ end
 end
 
 
-### Integration with IJulia - Jupyter
-# include("ijulia_integration.jl")
-
-### Integration with Atom-Juno-Media
-# include("atom_integration.jl")
 
 end

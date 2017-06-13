@@ -1,34 +1,6 @@
 ###################################################################
-#   function creation
+#   VegaLite public API definition
 ###################################################################
-
-# const jl2sp = Dict{Symbol,Symbol}(:_range => :range,
-#                                   :_repeat => :repeat,
-#                                   :_mark => :mark,
-#                                   :_scale => :scale,
-#                                   :_bind => :bind,
-#                                   :_bin => :bin,
-#                                   :_filter => :filter,
-#                                   :_equal => :equal,
-#                                   :_values => :values,
-#                                   :_cell => :cell,
-#                                   :_sort => :sort,
-#                                   :_color => :color,
-#                                   :_column => :column,
-#                                   :_detail => :detail,
-#                                   :_opacity => :opacity,
-#                                   :_order => :order,
-#                                   :_row => :row,
-#                                   :_shape => :shape,
-#                                   :_size => :size,
-#                                   :_text => :text,
-#                                   :_x => :x,
-#                                   :_x2 => :x2,
-#                                   :_y => :y,
-#                                   :_y2 => :y2,
-#                                   :_type => :type,
-#                                   :_data => :data
-#                                   )
 
 ### list of VegaLite property names that need a new denomination in Julia
 const sp2jl = Dict{Symbol,Symbol}(:type => :typ)
@@ -37,7 +9,7 @@ const jl2sp = Dict( (v,k) for (k,v) in sp2jl)
 ### conversion between property name in VegaLite and julia function name
 jlfunc(vln::String) = jlfunc(Symbol(vln))
 jlfunc(vln::Symbol) = Symbol("vl" * string(vln))
-vlname(fn::Symbol)  = (string(fn))[3:end]
+vlname(fn::Symbol)  = replace(string(fn), r"^vl", "")
 
 
 ### step 1 : list all the property names
@@ -107,6 +79,16 @@ end
 # sum(p -> length(p.second), collect(funcs)) # 148 definitions
 # sum(p -> length(p.second), collect(funcs)) # 98 definitions
 
+for (sfn, def) in funcs
+  any( isa(d, ArrayDef) for d in keys(def) ) || continue
+  println(sfn)
+  if all( isa(d, ArrayDef) for d in keys(def) ) # all are arrays
+  else
+    println("problem")
+  end
+end
+
+
 ### step 3 : declare functions
 
 type VLSpec{T}
@@ -114,6 +96,11 @@ type VLSpec{T}
 end
 vltype{T}(::VLSpec{T}) = T
 
+
+"""
+process arguments (regular and keyword) and wrap in a VLSpec type
++ check conformity against schema
+"""
 function wrapper(sfn::Symbol, args...;kwargs...)
   pars = Dict{String,Any}()
 
@@ -145,17 +132,18 @@ function wrapper(sfn::Symbol, args...;kwargs...)
   end
 
   # check if at least one of the SpecDef associated to this function match
-  fdefs = collect(keys(funcs[sfn]))
-  conforms(pars, "$sfn()", UnionDef("", fdefs))
+  # except if 1st level because it can be built incrementally (with the pipe operator)
+  # and can be incomplete at intermediate stages
+  if sfn != :plot
+    fdefs = collect(keys(funcs[sfn]))
+    conforms(pars, "$sfn()", UnionDef("", fdefs))
+  end
 
   pars
 end
 
-# keys(funcs)
 
 for (sfn, def) in funcs
-  sfn == :plot && continue # treated differently, see below
-
   if isdefined(sfn)
     mt = @eval typeof($sfn).name.mt
     if isdefined(mt, :module) && mt.module != current_module()
@@ -172,25 +160,3 @@ for (sfn, def) in funcs
   # export
   eval( Expr(:export, sfn) )
 end
-
-function plot(args...;kwargs...)
-  pars = wrapper(:plot, args...;kwargs...)
-
-  # of six possible plot objects (unit, layer, repeat, hconcat, etc..),
-  # identify which one applies by their required properties to simplify
-  # error messages (i.e. to avoid too many "possible causes" )
-  onematch = false
-  for spec in defs["plot"].items
-    if all(r in keys(pars) for r in spec.required)
-      conforms(pars, "plot(..", spec)
-      onematch = true
-    end
-  end
-
-  # if no match print full error message
-  onematch || conforms(pars, "plot(..", defs["plot"])
-
-  VLPlot(JSON.json(pars))
-end
-
-export plot
