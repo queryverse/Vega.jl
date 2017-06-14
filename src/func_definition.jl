@@ -79,68 +79,25 @@ end
 # sum(p -> length(p.second), collect(funcs)) # 148 definitions
 # sum(p -> length(p.second), collect(funcs)) # 98 definitions
 
-for (sfn, def) in funcs
-  any( isa(d, ArrayDef) for d in keys(def) ) || continue
-  println(sfn)
-  if all( isa(d, ArrayDef) for d in keys(def) ) # all are arrays
-  else
-    println("problem")
-  end
-end
+# for (sfn, def) in funcs
+#   any( isa(d, ArrayDef) for d in keys(def) ) || continue
+#   println(sfn)
+#   if all( isa(d, ArrayDef) for d in keys(def) ) # all are arrays
+#   else
+#     println("problem")
+#   end
+# end
+# 'range' prop can be an object or an array => will parse badly
+# funcs[:vlrange]
 
+const arrayprops = Symbol[:layer, :transform, :hconcat, :vconcat]
 
 ### step 3 : declare functions
 
 type VLSpec{T}
-  params::Dict{String, Any}
+  params::Union{Dict, Vector}
 end
 vltype{T}(::VLSpec{T}) = T
-
-
-"""
-process arguments (regular and keyword) and wrap in a VLSpec type
-+ check conformity against schema
-"""
-function wrapper(sfn::Symbol, args...;kwargs...)
-  pars = Dict{String,Any}()
-
-  # first map the kw args to the fields in the definitions
-  for (f,v) in kwargs
-    jf = string(get(jl2sp, f, f))  # recover VegaLite name if different
-    if isa(v, VLSpec)
-      (vltype(v) == f) || error("expecting function $f for keyword arg $f, got $(vltype(v))")
-      pars[jf] = v.params
-    else
-      pars[jf] = v
-    end
-  end
-
-  # now the other arguments
-  for v in args
-    isa(v, VLSpec) || error("non keyword args should be using a VegaLite function, not $v")
-    jf = string(vltype(v))
-    # if multiple arguments of the same type (eg layers) transform to an array
-    if haskey(pars, jf)
-      if isa(pars[jf], Vector)
-        push!(pars[jf], v.params)
-      else
-        pars[jf] = [pars[jf], v.params]
-      end
-    else
-      pars[jf] = v.params
-    end
-  end
-
-  # check if at least one of the SpecDef associated to this function match
-  # except if 1st level because it can be built incrementally (with the pipe operator)
-  # and can be incomplete at intermediate stages
-  if sfn != :plot
-    fdefs = collect(keys(funcs[sfn]))
-    conforms(pars, "$sfn()", UnionDef("", fdefs))
-  end
-
-  pars
-end
 
 
 for (sfn, def) in funcs

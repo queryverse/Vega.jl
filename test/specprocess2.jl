@@ -12,6 +12,9 @@ using VegaLite
 
 durl = "https://raw.githubusercontent.com/vega/new-editor/master/data/movies.json"
 
+tstf(;kwargs...) = foreach( t -> println("$(t[1]) -> $(t[2])"), kwargs)
+tstf(url=durl)
+
 plot(vldata(url=durl),
      mark="circle",
      vlencoding(vlx(vlbin(maxbins=10), field=:IMDB_Rating, typ=:quantitative),
@@ -52,13 +55,15 @@ end
 
 tst(p)
 
-tst( plot(_data(url=durl),
-     mark="circlo",
-     _encoding(_x(_bin(maxbins=10), field="IMDB_Rating", typ="quantitative"),
-               _y(_bin(maxbins=10), field="Rotten_Tomatoes_Rating", typ="quantitative"),
-               _color(field="Rotten_Tomatoes_Rating", typ="quantitative"),
-               _size(aggregate="count", typ="quantitative")),
-     width=300, height=300) )
+data(url=durl) |>
+  transform(vlfilter(field=:IMDB_Rating, oneOf= [1,2])) |>
+  # transform(filter=" datum.Scope2 == 'Hedged'") |>
+  markcircle() |>
+  encoding(xquantitative(vlbin(maxbins=10), field=:IMDB_Rating),
+           yquantitative(vlbin(maxbins=10), field=:Rotten_Tomatoes_Rating),
+           colorquantitative(field=:Rotten_Tomatoes_Rating),
+           sizequantitative(aggregate="count")) |>
+  plot(width=300, height=300)
 
 
 showall(keys(VegaLite.defs))
@@ -106,23 +111,25 @@ show(p)
 ###################################################################
 
 using Distributions
+using DataTables
 
 xs = rand(Normal(), 100, 3)
 dt = DataTable(a = xs[:,1] + xs[:,2] .^ 2,
                b = xs[:,3] .* xs[:,2],
                c = xs[:,3] .+ xs[:,2])
 
-plot(_data(dt),
-     _repeat(column = [:a, :b, :c],
-             row    = [:a, :b, :c]),
-     _spec(
-       mark=:point,
-       _encoding( _x(_field(repeat=:column), typ=:quantitative),
-                  _y(_field(repeat=:row), typ=:quantitative),
-                  _color(field=:a, typ=:quantitative))
-     )
-   )
+recs = [ Dict(r) for r in DataTables.eachrow(dt) ]
+VegaLite.VLSpec{:data}(Dict("values" => recs))
 
+
+data(dt) |>
+  repeat(column = [:a, :b, :c], row = [:a, :b, :c]) |>
+  spec(markpoint(),
+       encoding(xquantitative(vlfield(repeat=:column)),
+                yquantitative(vlfield(repeat=:row)),
+                colorquantitative(field=:a)) )
+
+methods(data)
 
 ###################################
 

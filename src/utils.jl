@@ -10,9 +10,6 @@ for chan in keys(defs["EncodingWithFacet"].props)
     @eval(function ($sfn)(args...;kwargs...)
             nkw = [kwargs ; (:type, $typ)]
             ($schan)(args...;nkw...)
-            # pars = wrapper(args...; kwargs...)
-            # pars["type"] = $typ
-            # $(Expr(:curly, :VLSpec, QuoteNode(schan)))( pars )
           end)
     eval( Expr(:export, sfn) )
 
@@ -60,37 +57,95 @@ for sfn in [:config, :data, :transform, :selection, :encoding,
 end
 
 
+### arguments processing
+
+function pushpars!(pars::Dict{String,Any}, val,
+                   prop::Symbol=Symbol())
+  if prop == Symbol()
+    isa(val, VLSpec) || error("non keyword args should use VegaLite function, not $val")
+    sprop = vltype(val)
+  else
+    sprop = get(jl2sp, prop, prop) # recover VegaLite name if different (typ => type)
+    isa(val, VLSpec) && sprop!=vltype(v) &&
+      error("expecting function $(jlfunc(sprop)) for keyword arg $prop, got $(vltype(val))")
+  end
+
+  cprop = string(sprop)
+  rval = isa(val, VLSpec) ? val.params : val
+  if sprop in arrayprops  # treat array of objects differently
+    if haskey(pars, string(sprop))
+      append!(pars[cprop], rval)
+    else
+      pars[cprop] = rval
+    end
+  else
+    pars[cprop] = rval
+  end
+
+  pars
+end
+
+
+"""
+process arguments (regular and keyword), check conformity against schema and
+wrap in a VLSpec type
+"""
+# sfn, args, kwargs = :vltransform, [], [(:filte, " datum.Scope2 == 'Hedged'")]
+#
+# transform(vlfilter(field=:Scope1, oneOf= ["External", "Internal"])) |>
+# transform(filter=" datum.Scope2 == 'Hedged'") |>
+#
+# wrapper(:vltransform, filter=" datum.Scope2 == 'Hedged'")
+# vltransform(filter=" datum.Scope2 == 'Hedged'")
+# transform(filter=" datum.Scope2 == 'Hedged'")
+
+function wrapper(sfn::Symbol, args...;kwargs...)
+  pars = Dict{String,Any}()
+
+  # first map the kw args to the fields in the definitions
+  foreach(t -> pushpars!(pars, t[2], t[1]), kwargs)
+
+  # now the other arguments
+  foreach(v -> pushpars!(pars, v), args)
+
+  if Symbol(vlname(sfn)) in arrayprops
+    pars = [pars]
+  end
+
+  # check if at least one of the SpecDef associated to this function match
+  # except if 1st level because it can be built incrementally (with the pipe operator)
+  # and can be incomplete at intermediate stages
+  if sfn != :plot
+    fdefs = collect(keys(funcs[sfn]))
+    conforms(pars, "$sfn()", UnionDef("", fdefs))
+  end
+
+  pars
+end
+
+
 
 ### pipe operator definition
 import Base: |>
 
 function |>(a::VLSpec, b::VLSpec)
-  parsa = isa(a,VLSpec{:plot}) ? a.params :
-           Dict{String, Any}(string(vltype(a)) => a.params)
+  parsa = if isa(a,VLSpec{:plot})
+            a.params
+          else
+            Dict{String, Any}(string(vltype(a)) => a.params)
+          end
 
-  parsb = isa(b,VLSpec{:plot}) ? b.params :
-          Dict{String, Any}(string(vltype(b)) => b.params)
+  parsb = if isa(b,VLSpec{:plot})
+            b.params
+          else
+            Dict{String, Any}(string(vltype(b)) => b.params)
+          end
 
   pars = copy(parsa)
-  for (k,v) in parsb
-    # if multiple arguments of the same type (eg layers) transform to an array
-    if haskey(pars, k)
-      if isa(pars[k], Vector)
-        push!(pars[k], v)
-      else
-        pars[k] = [pars[k], v]
-      end
-    else
-      pars[k] = v
-    end
-  end
+  foreach( t -> pushpars!(pars, t[2], Symbol(t[1])), parsb )
 
   VLSpec{:plot}(pars)
 end
 
-# function |>(a::VLSpec, b::VLSpec)
-#   pars = merge(a.params, b.params)
-#   VLSpec{:plot}(pars)
-# end
 
 export |>
