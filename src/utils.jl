@@ -113,10 +113,12 @@ function wrapper(sfn::Symbol, args...;kwargs...)
   end
 
   # check if at least one of the SpecDef associated to this function match
-  # except if 1st level because it can be built incrementally (with the pipe operator)
-  # and can be incomplete at intermediate stages
+  # except if 1st level (i.e.  :plot) because this level can be built
+  # incrementally (with the pipe operator) and can be incomplete at
+  #  intermediate stages
   if sfn != :plot
-    fdefs = collect(keys(funcs[sfn]))
+    fdefs = collect( d[1] for d in funcs2[sfn] )
+    # fdefs = collect(keys(funcs[sfn]))
     conforms(pars, "$sfn()", UnionDef("", fdefs))
   end
 

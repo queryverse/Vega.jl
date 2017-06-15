@@ -6,6 +6,16 @@ reload("VegaLite")
 
 module A
 
+type dummy ; end
+
+dummy()
+
+import Base: show
+show(io::IO, m::MIME"text/html", v::dummy) = println(io, "html show")
+
+dummy()
+
+
 using VegaLite
 
 ############################################################

@@ -4,11 +4,6 @@
 
 using JSON
 
-fn = joinpath(dirname(@__FILE__), "../deps/lib/", "v2.json")
-spc = JSON.parsefile(fn)
-
-#####################################################
-
 abstract SpecDef
 
 type ObjDef <: SpecDef
@@ -131,7 +126,7 @@ end
 
 
 
-#####################################################
+###########  Schema parsing  ##############
 
 function toDef(spec::Dict)
   if haskey(spec, "type")
@@ -191,11 +186,10 @@ function toDef(spec::Dict)
   end
 end
 
-
-############
-
 defs = Dict{String, SpecDef}()
 
+fn = joinpath(dirname(@__FILE__), "../deps/lib/", "v2.json")
+spc = JSON.parsefile(fn)
 for (k,v) in spc["definitions"]
   # println(k)
   def = toDef(v)
@@ -211,3 +205,37 @@ end
 # and now the definition of the root plot function
 haskey(defs, "plot") && error("def 'plot' already defined")
 defs["plot"] = toDef(spc)
+
+
+
+
+###########  SpecDef tree creation (for function creation)  ##############
+
+lookinto!(s::SpecDef, parent::SpecDef, prop="*") = deftree[s] = [(prop, parent)]
+
+function lookinto!(s::RefDef, parent::SpecDef, prop="*")
+  reals = defs[s.ref]
+  if haskey(deftree,reals) # refdef already seen
+    push!(deftree[reals], (prop, parent))
+    return
+  end
+  deftree[reals] = [(prop, parent)]
+  lookinto!(reals, parent, prop)
+end
+
+function lookinto!(s::ObjDef, parent::SpecDef, prop="*")
+  deftree[s] = [(prop, parent)]
+  for (k,v) in s.props
+    lookinto!(v, s, k)
+  end
+end
+
+function lookinto!(s::UnionDef, parent::SpecDef, prop="*")
+  deftree[s] = [(prop, parent)]
+  for v in s.items
+    lookinto!(v, s)
+  end
+end
+
+deftree = Dict{SpecDef, Vector{Tuple{String, SpecDef}}}()
+lookinto!(defs["plot"], VoidDef(""), "plot")
