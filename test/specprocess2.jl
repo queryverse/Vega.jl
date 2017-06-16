@@ -6,24 +6,12 @@ reload("VegaLite")
 
 module A
 
-type dummy ; end
-
-dummy()
-
-import Base: show
-show(io::IO, m::MIME"text/html", v::dummy) = println(io, "html show")
-
-dummy()
-
-
 using VegaLite
 
 ############################################################
 
 durl = "https://raw.githubusercontent.com/vega/new-editor/master/data/movies.json"
 
-tstf(;kwargs...) = foreach( t -> println("$(t[1]) -> $(t[2])"), kwargs)
-tstf(url=durl)
 
 plot(vldata(url=durl),
      mark="circle",
@@ -75,6 +63,7 @@ data(url=durl) |>
            sizequantitative(aggregate="count")) |>
   plot(width=300, height=300)
 
+vlfilter
 
 showall(keys(VegaLite.defs))
 ##################################################################
@@ -94,52 +83,6 @@ data(dt) |>
 
 
 
-###################################
-
-durl = "https://raw.githubusercontent.com/vega/new-editor/master/data/movies.json"
-
-plot(_data(url=durl),
-     mark="circle",
-     _encoding(_x(_bin(maxbins=10), field="IMDB_Rating", typ="quantitative"),
-               _y(_bin(maxbins=10), field="Rotten_Tomatoes_Rating", typ="quantitative"),
-               _color(field="Rotten_Tomatoes_Rating", typ="quantitative"),
-               _size(aggregate="count", typ="quantitative")),
-     width=300, height=300)
-
-p = plot(_data(url=durl),
-     mark="circle",
-     _encoding(_x(_bin(maxbins=10), field="IMDB_Rating", typ="quantitative"),
-               _y(_bin(maxbins=10), field="Rotten_Tomatoes_Rating", typ="quantitative"),
-               _color(field="Rotten_Tomatoes_Rating", typ="quantitative"),
-               _size(aggregate="count", typ="quantitative")),
-     width=300, height=300) ;
-
-p
-
-show(p)
-
-###################################################################
-
-using Distributions
-using DataTables
-
-xs = rand(Normal(), 100, 3)
-dt = DataTable(a = xs[:,1] + xs[:,2] .^ 2,
-               b = xs[:,3] .* xs[:,2],
-               c = xs[:,3] .+ xs[:,2])
-
-recs = [ Dict(r) for r in DataTables.eachrow(dt) ]
-VegaLite.VLSpec{:data}(Dict("values" => recs))
-
-
-data(dt) |>
-  repeat(column = [:a, :b, :c], row = [:a, :b, :c]) |>
-  spec(markpoint(),
-       encoding(xquantitative(vlfield(repeat=:column)),
-                yquantitative(vlfield(repeat=:row)),
-                colorquantitative(field=:a)) )
-
-methods(data)
 
 ###################################
 
@@ -149,8 +92,11 @@ using CSV
 
 download(, "/tmp/etherprice.2.csv")
 
-df = CSV.read("/tmp/etherprice.2.csv",
-              header=["date", "value"], delim=';')
+fn = "c:/users/frtestar/downloads/etherprice.2.csv"
+fn = "/tmp/etherprice.2.csv"
+
+df = CSV.read(fn, header=["date", "value"], delim=';')
+df[:date2] = DateTime("1970-01-01") + Dates.Second.(Array(df[:date]))
 
 df2 = readdlm("c:/users/frtestar/downloads/etherprice.2.csv", ';', header=false)
 
@@ -163,19 +109,18 @@ dvs = DateTime("1970-01-01") + Dates.Second.(round(Int, df2[:,1]))
 
 dfd2 = [ Dict(zip([:date1, :value, :date2 ], [df2[i,1:2]; dvs[i]] )) for i in 1:size(df,1) ]
 
-plot(data(values=dfd2),
-     layer(mark="line",
-          encoding(x_(field="date2", type_="temporal",
-                      axis(labelAngle=-30, labelFont="Helvetica")),
-                   y_(field="value", type_="quantitative",
-                   scale_(type_="log")))),
-     layer(mark="area",
-          encoding(x_(field="date2", type_="temporal"),
-                   y_(field="value", type_="quantitative",
-                      scale_(type_="log")),
-                   opacity_(value=0.5))),
-     config(timeFormat="%b-%Y"),
-     width=600, height=300)
+data(df) |>
+  layer(markline(),
+        encoding(xtemporal(field=:date2, vlaxis(labelAngle=-30)), #labelFont="Helvetica")),
+                 yquantitative(field="value", vlscale(typ=:log)))
+       ) |>
+  layer(markarea(),
+        encoding(xtemporal(field="date2"),
+                 yquantitative(field="value", vlscale(typ=:log)),
+                 vlopacity(value=0.5))
+       ) |>
+  config(timeFormat="%b-%Y") |>
+  plot(width=600, height=300)
 
 
 ##########################################################################
@@ -185,30 +130,16 @@ plot(data(values=dfd2),
 rooturl = "https://raw.githubusercontent.com/vega/new-editor/master/data/"
 durl = rooturl * "unemployment-across-industries.json"
 
-plot(data(url=durl),
-     width=600, height=400,
-     mark_="area",
-     encoding(x_(timeUnit="yearmonth", field="date", type_="temporal",
-                scale_(nice="month"),
-                axis(domain=false, format="%Y", labelAngle=-45, tickSize=10)),
-              y_(aggregate="sum", field="count", type_="quantitative",
-                stack="center"),
-              color_(field="series", type_="nominal", scale_(scheme="category20b"))
-             )
-     )
-
-plot(data(url=durl),
-    width=600, height=400,
-    mark_(type_="line", interpolate="step-before"),
-    transform(filter="datum.series=='Agriculture'"),
-    transform(),
-    encoding(x_(timeUnit="yearmonth", field="date", type_="temporal",
-               scale_(nice="month"),
-               axis(format="%Y", labelAngle=-45)),
-             y_(aggregate="sum", field="count", type_="quantitative"),
-             color_(field="series", type_="nominal", scale_(scheme="category20b"))
-            )
-    )
+data(url=durl) |>
+  plot(width=600, height=400) |>
+  markline(interpolate="step-before") |>
+  transform(filter="datum.series=='Agriculture'") |>
+  encoding(xtemporal(timeUnit="yearmonth", field="date",
+                     vlscale(nice="month"),
+                     vlaxis(format="%Y", labelAngle=-45)),
+           yquantitative(aggregate=:sum, field=:count),
+           colornominal(field=:series, vlscale(scheme="category20b"))
+           )
 
 ############################################################################
 
@@ -217,21 +148,19 @@ using DataFrames
 df  = DataFrame(x=[1:7;], y=rand(7))
 dfd = [ Dict(zip(names(df), vec(Array(df[i,:])))) for i in 1:size(df,1) ]
 
-encx = x_(field=:x, type_="quantitative")
-ency = y_(field=:y, type_="quantitative")
+encx = xquantitative(field=:x)
+ency = yquantitative(field=:y)
 
-plot(data(values_ = dfd), width=500,
-    #  transform(as=:o, calculate="datum.x * 2"),
-     layer(mark_(type_="line"), encoding(encx, ency, color_(value="green"))),
-     layer(mark_(type_="line", interpolate="cardinal"),
-           encoding(encx, ency, color_(value="blue"))),
-     layer(mark_(type_="line", interpolate="basis"),
-           encoding(encx, ency, color_(value="red"))),
-     layer(mark_ = "point",
-           encoding(encx, ency,
-                    color_(value="black"),
-                    size_(value=50)))
-   )
+data(values=dfd) |>
+  plot(width=500) |>
+  layer(markline(),
+        encoding(encx, ency, vlcolor(value="green"))) |>
+  layer(markline(interpolate="cardinal"),
+        encoding(encx, ency, vlcolor(value="blue"))) |>
+  layer(markline(interpolate="basis"),
+        encoding(encx, ency, vlcolor(value="red"))) |>
+  layer(markpoint(),
+        encoding(encx, ency, vlcolor(value="black"), vlsize(value=50)))
 
 
 ###########################################################################
@@ -243,23 +172,23 @@ df = DataFrame(n = [1:nb;],
 
 dfd = [ Dict(zip(names(df), vec(Array(df[i,:])))) for i in 1:size(df,1) ]
 
-encx = x_(field=:x, type_="quantitative", scale_(zero=false))
-ency = y_(field=:y, type_="quantitative", scale_(zero=false))
-encn = order_(field=:n, type_="quantitative", scale_(zero=false))
+encx = xquantitative(field=:x, vlscale(zero=false))
+ency = yquantitative(field=:y, vlscale(zero=false))
+encn = orderquantitative(field=:n)
 
-plot(data(values_ = dfd),
-     layer(mark_(type_="line", interpolate="basis-closed"),
-           encoding(encx, ency, encn, color_(value="blue"))),
-     layer(mark_ = "point",
-           encoding(encx, ency,
-                    color_(value="black"),
-                    size_(value=50)))
- )
+data(values=dfd) |>
+  layer(markline(interpolate="basis-closed"),
+        encoding(encx, ency, encn, vlcolor(value="blue"))) |>
+  layer(markpoint(),
+        encoding(encx, ency, vlcolor(value="black"), vlsize(value=50)))
 
 
-values_
+data(values=dfd) |>
+  layer(markline(interpolate="basis-closed"),
+        encoding(encx, ency, encn, vlcolor(value="blue"))) |>
+  layer(markpoint(),
+        encoding(encx, ency, vlcolor(value="black"), vlsize(value=50)))
 
-JSON.json(df)
 
 ############################################################################
 
@@ -293,107 +222,39 @@ plot(repeat(row    = ["Horsepower","Acceleration"],
 
 # brush pas encore définie
 
-###########################################################################
- format
-
 
 ###########################################################################
 
 rooturl = "https://raw.githubusercontent.com/vega/new-editor/master/"
 durl = rooturl * "data/population.json"
 
-xchan = x_(field="age", type_="ordinal", axis(labelAngle=-45))
-ychan = y_(field="people", type_="quantitative")
+xchan = xordinal(field=:age, vlaxis(labelAngle=-45))
+ychan = yquantitative(field=:people)
 
-ymin = y_(aggregate="min", field="people", type_="quantitative",
-         axis(title="population"))
-ymax = y_(aggregate="max", field="people", type_="quantitative",
-        axis(title="population"))
-y2max = y2_(aggregate="max", field="people", type_="quantitative",
-        axis(title="population"))
-ymean = y_(aggregate="mean", field="people", type_="quantitative",
-                axis(title="population"))
+tpop = vlaxis(title="population")
+ymin = yquantitative(aggregate=:min, field=:people, tpop)
+ymax = yquantitative(aggregate=:max, field=:people, tpop)
+y2max = y2quantitative(aggregate=:max, field=:people)
+ymean = yquantitative(aggregate=:mean, field=:people, tpop)
 
-line
-plot(data(url=durl),
-     transform=[ Dict(filter => "datum.year==2000")],
-     layer(mark="tick",  encoding(xchan, ymin, size_(value=5))),
-     layer(mark="tick",  encoding(xchan, ymax, size_(value=5))),
-     layer(mark="point", encoding(xchan, ymean, size_(value=5))),
-     layer(mark="rule",  encoding(xchan, ymin, y2max))
-     )
-
-plot(data(url=durl),
-    transform(filter = "datum.year==2000"),
-    transform(),
-    layer(mark="tick",  encoding(xchan, ymin, size_(value=5))),
-    layer(mark="tick",  encoding(xchan, ymax, size_(value=5))),
-    layer(mark="point", encoding(xchan, ymean, size_(value=5))),
-    layer(mark="rule",  encoding(xchan, ymin, y2max))
-    )
-
-plot(data(url=durl),
-    transform(filter = "datum.year==2000"),
-    transform(),
-    vconcat(hconcat(mark="tick",  encoding(xchan, ymin, size_(value=5))),
-            hconcat(mark="tick",  encoding(xchan, ymax, size_(value=5)))),
-    vconcat(hconcat(mark="point", encoding(xchan, ymean, size_(value=5))),
-            hconcat(mark="rule",  encoding(xchan, ymin, y2max)))
-    )
-# marche pas pourquoi ?
-
-plot(data(url=durl),
-     layer(mark="point", encoding(xchan, ychan)),
-     layer(mark="line",  encoding(xchan, ymean)),
-     width=800, height=600
-    )
-
-y_
+data(url=durl) |>
+  transform(filter="datum.year==2000") |>
+  layer(marktick(),  encoding(xchan, ymin, vlsize(value=5))) |>
+  layer(marktick(),  encoding(xchan, ymax, vlsize(value=5))) |>
+  layer(markpoint(), encoding(xchan, ymean, vlsize(value=5))) |>
+  layer(markrule(),  encoding(xchan, ymin, y2max))
 
 ###########################################################
 
 rooturl = "https://raw.githubusercontent.com/vega/new-editor/master/"
 durl = rooturl * "data/cars.json"
 
-plot(data(url=durl),
-     mark="rect",
-     encoding(x(field="Origin", typ="ordinal"),
-              y(field="Cylinders", typ="ordinal"),
-              color(aggregate="mean", field="Horsepower", typ="quantitative")),
-     width=200, height=200,
-    )
+data(url=durl) |>
+  markrect() |>
+  encoding(xordinal(field=:Origin),
+           yordinal(field=:Cylinders),
+           colorquantitative(aggregate=:mean, field=:Horsepower)) |>
+  plot(width=200, height=200)
 
 
 ############################################################
-
-
-defs["plot"]
-
-getdesc(s::RefDef) = s.desc * "\n" * getdesc(defs[s.ref])
-getdesc(s::SpecDef) = s.desc
-getdesc(s::VoidDef) = ""
-
-function getdesc(s::ObjDef)
-  ret = s.desc
-  ret *= "\n\n# Arguments\n\n"
-  for (k,v) in s.props
-    vs = "`$k` ($(typeof(v)))"
-    ret *= "  * $vs : " * getdesc(v) * "\n\n"
-  end
-  return ret
-end
-
-function getdesc(s::UnionDef)
-  ret = s.desc
-  ret *= "\n\n# One of :\n\n"
-  for v in s.items
-    ret *= "  * " * getdesc(v) * "\n\n"
-  end
-  return ret
-end
-
-
-println(getdesc(defs["EncodingWithFacet<Field>"]))
-
-
-println(getdesc(defs["EqualFilter"]))

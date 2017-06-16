@@ -117,8 +117,7 @@ function wrapper(sfn::Symbol, args...;kwargs...)
   # incrementally (with the pipe operator) and can be incomplete at
   #  intermediate stages
   if sfn != :plot
-    fdefs = collect( d[1] for d in funcs2[sfn] )
-    # fdefs = collect(keys(funcs[sfn]))
+    fdefs = collect(keys(funcs2[sfn]))
     conforms(pars, "$sfn()", UnionDef("", fdefs))
   end
 

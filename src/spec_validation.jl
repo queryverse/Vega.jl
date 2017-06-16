@@ -11,7 +11,8 @@ conforms(x, ps::String, d::IntDef)    = _conforms(x, ps, Int)
 conforms(x, ps::String, d::NumberDef) = _conforms(x, ps, Number)
 conforms(x, ps::String, d::BoolDef)   = _conforms(x, ps, Bool)
 conforms(x, ps::String, d::RefDef)    = conforms(x, ps, defs[d.ref])
-conforms(x, ps::String, d::VoidDef)   = nothing
+conforms(x, ps::String, d::VoidDef)   = _conforms(x, ps, Void)
+conforms(x, ps::String, d::AnyDef)    = nothing
 
 function conforms(x, ps::String, d::StringDef)
   x = isa(x,Symbol) ? string(x) : x

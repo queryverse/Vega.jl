@@ -45,6 +45,15 @@ type RefDef <: SpecDef
   ref::String
 end
 
+type VoidDef <: SpecDef
+  desc::String
+end
+
+type AnyDef <: SpecDef
+  desc::String
+end
+
+
 function elemtype(typ::String)
   typ=="number"  && return NumberDef("")
   typ=="boolean" && return BoolDef("")
@@ -71,59 +80,56 @@ RefDef(spec::Dict)    = RefDef(get(spec, "description", ""),
 ArrayDef(spec::Dict)  = ArrayDef(get(spec, "description", ""),
                                  toDef(spec["items"]))
 
-type VoidDef <: SpecDef
-  desc::String
-end
 
 #####################################################
 
-import Base.==
-
-function ==(a::ObjDef, b::ObjDef)
-  a.desc == b.desc || return false
-  Set(keys(a.props)) == Set(keys(b.props)) || return false
-  all( a.props[k] == b.props[k] for k in keys(a.props) ) || return false
-  a.addprops == b.addprops || return false
-  a.required == b.required
-end
-
-function ==(a::NumberDef, b::NumberDef)
-  a.desc == b.desc || return false
-end
-
-function ==(a::IntDef, b::IntDef)
-  a.desc == b.desc || return false
-end
-
-function ==(a::StringDef, b::StringDef)
-  a.desc == b.desc || return false
-  a.enum == b.enum
-end
-
-function ==(a::BoolDef, b::BoolDef)
-  a.desc == b.desc || return false
-end
-
-function ==(a::ArrayDef, b::ArrayDef)
-  a.desc == b.desc || return false
-  a.items == b.items
-end
-
-function ==(a::UnionDef, b::UnionDef)
-  a.desc == b.desc || return false
-  all( p -> p[1]==p[2], zip(a.items, b.items)) #TODO make order independent
-end
-
-function ==(a::RefDef, b::RefDef)
-  a.desc == b.desc || return false
-  a.ref == b.ref
-end
-
-function ==(a::VoidDef, b::VoidDef)
-  a.desc == b.desc || return false
-  true
-end
-
+# import Base.==
+#
+# function ==(a::ObjDef, b::ObjDef)
+#   a.desc == b.desc || return false
+#   Set(keys(a.props)) == Set(keys(b.props)) || return false
+#   all( a.props[k] == b.props[k] for k in keys(a.props) ) || return false
+#   a.addprops == b.addprops || return false
+#   a.required == b.required
+# end
+#
+# function ==(a::NumberDef, b::NumberDef)
+#   a.desc == b.desc || return false
+# end
+#
+# function ==(a::IntDef, b::IntDef)
+#   a.desc == b.desc || return false
+# end
+#
+# function ==(a::StringDef, b::StringDef)
+#   a.desc == b.desc || return false
+#   a.enum == b.enum
+# end
+#
+# function ==(a::BoolDef, b::BoolDef)
+#   a.desc == b.desc || return false
+# end
+#
+# function ==(a::ArrayDef, b::ArrayDef)
+#   a.desc == b.desc || return false
+#   a.items == b.items
+# end
+#
+# function ==(a::UnionDef, b::UnionDef)
+#   a.desc == b.desc || return false
+#   all( p -> p[1]==p[2], zip(a.items, b.items)) #TODO make order independent
+# end
+#
+# function ==(a::RefDef, b::RefDef)
+#   a.desc == b.desc || return false
+#   a.ref == b.ref
+# end
+#
+# function ==(a::VoidDef, b::VoidDef)
+#   a.desc == b.desc || return false
+#   true
+# end
+#
 
 
 ###########  Schema parsing  ##############
@@ -178,11 +184,11 @@ function toDef(spec::Dict)
                     toDef.(spec["anyOf"]))
 
   elseif length(spec) == 0
-    return VoidDef("")
+    return AnyDef("")
 
   else
     # warn("not a ref, 'AnyOf' and no type")
-    return VoidDef("")
+    return AnyDef("")
   end
 end
 
@@ -191,15 +197,7 @@ defs = Dict{String, SpecDef}()
 fn = joinpath(dirname(@__FILE__), "../deps/lib/", "v2.json")
 spc = JSON.parsefile(fn)
 for (k,v) in spc["definitions"]
-  # println(k)
-  def = toDef(v)
-  if def==nothing
-    warn("no properties found for $k")
-    continue
-  end
-
-  haskey(defs, k) && error("def $k already defined")
-  defs[k] = def
+  defs[k] = toDef(v)
 end
 
 # and now the definition of the root plot function
@@ -223,6 +221,11 @@ function lookinto!(s::RefDef, parent::SpecDef, prop="*")
   lookinto!(reals, parent, prop)
 end
 
+function lookinto!(s::ArrayDef, parent::SpecDef, prop="*")
+  deftree[s] = [(prop, parent)]
+  isa(s.items, UnionDef) && lookinto!(s.items, parent, prop)
+end
+
 function lookinto!(s::ObjDef, parent::SpecDef, prop="*")
   deftree[s] = [(prop, parent)]
   for (k,v) in s.props
@@ -239,3 +242,5 @@ end
 
 deftree = Dict{SpecDef, Vector{Tuple{String, SpecDef}}}()
 lookinto!(defs["plot"], VoidDef(""), "plot")
+
+# length(deftree)
