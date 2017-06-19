@@ -20,7 +20,7 @@ needsfunction(s::StringDef) = false
 needsfunction(s::VoidDef)   = false
 needsfunction(s::AnyDef)    = false
 needsfunction(s::ObjDef)    = true
-needsfunction(s::RefDef)    = needsfunction(defs[s.ref])
+# needsfunction(s::RefDef)    = needsfunction(defs[s.ref])
 needsfunction(s::UnionDef)  = any(needsfunction, s.items)
 needsfunction(s::ArrayDef)  = needsfunction(s.items)
 needsfunction(s::SpecDef)   = error("unknown type $(typeof(s))")
@@ -36,7 +36,7 @@ for (def, ns) in deftree
     realdef = def
   end
 
-  realdef = isa(realdef, RefDef) ? defs[realdef.ref] : realdef
+  # realdef = isa(realdef, RefDef) ? defs[realdef.ref] : realdef
 
   for (name, parentdef) in ns
     if name=="*" # if UnionDef look up one level
@@ -57,15 +57,31 @@ for (def, ns) in deftree
   end
 end
 
+# length(funcs2)
+# showall(keys(funcs2))
+
 def2funcs = Dict{SpecDef,Any}()
 for (k,v) in funcs2
   for def in keys(v)
     def2funcs[def] = push!( get(def2funcs, def, []), k )
   end
 end
+k,v = :vllayer, funcs2[:vllayer]
+def = first(keys(v))
+haskey(def2funcs, def)
+length(def2funcs)
 
-# length(funcs2)
-# showall(keys(funcs2))
+def2funcs[first(keys(v))]
+collect
+
+# k,v = first(funcs2)
+# k,v = :vllayer, funcs2[:vllayer]
+# for (k,v) in funcs2
+#   v2 = filter(needsfunction, keys(v))
+#   na  = sum( isa(d, ArrayDef) for d in v2 )
+#   nna = sum( !isa(d, ArrayDef) for d in v2 )
+#   (na > 0 ) && println("$k : $na $nna")
+# end
 
 const arrayprops = Symbol[:layer, :transform, :hconcat, :vconcat]
 

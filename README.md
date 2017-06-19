@@ -2,91 +2,97 @@
 
 _Julia bindings to Vega-Lite_
 
-|Julia 0.4 | Julia 0.5 | master (on nightly + release) | Coverage |
-|:--------:|:---------:|:-----------------------------:|:-----------:|
-|[![VegaLite](http://pkg.julialang.org/badges/VegaLite_0.4.svg)](http://pkg.julialang.org/?pkg=VegaLite&ver=0.4) | [![VegaLite](http://pkg.julialang.org/badges/VegaLite_0.5.svg)](http://pkg.julialang.org/?pkg=VegaLite&ver=0.5) | [![Build Status](https://travis-ci.org/fredo-dedup/VegaLite.jl.svg?branch=master)](https://travis-ci.org/fredo-dedup/VegaLite.jl) | [![Coverage Status](https://coveralls.io/repos/github/fredo-dedup/VegaLite.jl/badge.svg?branch=master)](https://coveralls.io/github/fredo-dedup/VegaLite.jl?branch=master) |
+|Julia versions | master build | Coverage |
+|:-------------:|:---------:|:-----------------------------:|:-----------:|
+|[![VegaLite](http://pkg.julialang.org/badges/VegaLite_0.5.svg)](http://pkg.julialang.org/?pkg=VegaLite&ver=0.5) [![VegaLite](http://pkg.julialang.org/badges/VegaLite_0.6.svg)](http://pkg.julialang.org/?pkg=VegaLite&ver=0.6) | [![Build Status](https://travis-ci.org/fredo-dedup/VegaLite.jl.svg?branch=master)](https://travis-ci.org/fredo-dedup/VegaLite.jl) [![Build status](https://ci.appveyor.com/api/projects/status/b9cmmaquuc08n6uc/branch/master?svg=true)](https://ci.appveyor.com/project/fredo-dedup/vegalite-jl/branch/master) | [![Coverage Status](https://coveralls.io/repos/github/fredo-dedup/VegaLite.jl/badge.svg?branch=master)](https://coveralls.io/github/fredo-dedup/VegaLite.jl?branch=master) |
 
 
-This package provides access to the Vega-Lite high-level visualization grammar (http://vega.github.io/vega-lite/) from Julia.
+This package provides access to the VegaLite v2 high-level visualization grammar from Julia.
 
-`Vega-Lite` is a simpler version of the Vega grammar allowing smaller and more expressive chart specifications. `Vega-Lite` is intentionaly more limited than Vega, if you need a finer control over the produced graph you can turn instead to the Vega.jl package (https://github.com/johnmyleswhite/Vega.jl). Parts of the VegaLite package (rendering functions, IJulia integration) are based on Vega.jl (thanks !).
+`Vega-Lite` (http://vega.github.io/vega-lite/) is a simpler version of the Vega grammar (see https://vega.github.io/vega/ and its associated Julia API https://github.com/johnmyleswhite/Vega.jl) allowing smaller and more expressive chart specifications. Parts of the VegaLite package (rendering functions, IJulia integration) are based on Vega.jl (thanks !).
 
-Install with `Pkg.add("VegaLite")` (or `Pkg.clone("https://github.com/fredo-dedup/VegaLite.jl.git")`
-until it reaches the official repository). Most functions are documented, with the full list of their properties listed and explained, e.g. type `? config_mark` to get the full list of properties of the `config_mark` function, etc.
-
-The julia functions follow pretty closely the Vega-Lite JSON format: `data_values()` creates the `{"data": {values: { ...} }}` part of the spec file, etc.
-
-Only two functions are added:
-- `svg(Bool)` : sets the drawing mode of the plots, SVG if `true`, canvas if `false`. Default = `true`
-- `buttons(Bool)` : indicates if the plot should be accompanied with links 'Save as PNG', 'View source' and 'Open in Vega Editor'. Default = `true`.
-
-Currently, VegaLite.jl works with :
-- IJulia
-- the standard REPL (a browser window will open)
-- Juno (a browser window will open, with experimental support of Juno's PlotPane if you have `wkhtmltoimage` installed and in the path)
+Install with `Pkg.add("VegaLite")`. Most functions are documented, with the full list of their properties listed and explained, e.g. type `? vlconfig` to get the full list of properties of the `vlconfig` function.
 
 All contributions, PR or issue, are welcome !
 
+This package is essentially a thin layer between Julia and VegaLite that translates Julia statements into a JSON graph specification. Statements such as :
 
-##Examples:
-
-- Plotting a simple line chart:
 ```julia
-using VegaLite
-
-ts = sort(rand(10))
-ys = Float64[ rand()*0.1 + cos(x) for x in ts]
-
-v = data_values(time=ts, res=ys) +    # add the data vectors & assign to symbols 'time' and 'res'
-      mark_line() +                   # mark type = line
-      encoding_x_quant(:time) +       # bind x dimension to :time, quantitative scale
-      encoding_y_quant(:res)          # bind y dimension to :res, quantitative scale
+data(url="https://raw.githubusercontent.com/vega/new-editor/master/data/movies.json") |>
+  markcircle() |>
+  encoding(xquantitative(vlbin(maxbins=10), field=:IMDB_Rating),
+           yquantitative(vlbin(maxbins=10), field=:Rotten_Tomatoes_Rating),
+           sizequantitative(aggregate=:count))
 ```
 
-![plot1](examples/png/vegalite1.png)
+are translated to :
+```JSON
+{
+  "encoding": {
+    "x": {
+      "bin": {
+        "maxbins": 10
+      },
+      "field": "IMDB_Rating",
+      "type": "quantitative"
+    },
+    "size": {
+      "aggregate": "count",
+      "type": "quantitative"
+    },
+    "y": {
+      "bin": {
+        "maxbins": 10
+      },
+      "field": "Rotten_Tomatoes_Rating",
+      "type": "quantitative"
+    }
+  },
+  "data": {
+    "url": "https://raw.githubusercontent.com/vega/new-editor/master/data/movies.json"
+  },
+  "mark": {
+    "type": "circle"
+  }
+}
+```
 
-- Scatterplot, using a DataFrame as the source:
+Giving the plot :
+
+![plot1](examples/png/example1.png)
+
+For a more detailed walk through of the Julia syntax see documentation.
+
+When evaluated in the REPL, or in the Juno IDE, VegaLite statements trigger the opening of a browser window showing the plot. In IJulia the plot is shown in the result block below.
+
+It is possible to render the plots to file (supported formats are svg, png and pdf) by calling :
+- `savefig(filename, plot)` with the file format guesssed form the file extension of `filename`
+- or svg(filename, plot), pdf(filename, plot) or pdf(filename, plot)
+
+
+## Examples:
+
+### Simple scatter plot
+
 ```julia
+using VegaLite
 using RDatasets
 
 mpg = dataset("ggplot2", "mpg") # load the 'mpg' dataframe
 
-data_values(mpg) +            # add values
-  mark_point() +              # mark type = points
-  encoding_x_quant(:Cty) +    # bind x dimension to :Cty field in mpg
-  encoding_y_quant(:Hwy)      # bind y dimension to :Hwy field in mpg
-```
-
-![plot1](examples/png/vegalite2.png)
-
-- A scatterplot, with colors and size settings for the plot:
-```julia
-data_values(mpg) +
-  mark_point() +
-  encoding_x_quant(:Cty, axis=false) +
-  encoding_y_quant(:Hwy, scale=scale(zero=false)) +
-  encoding_color_nominal(:Manufacturer) +    # bind color to :Manufacturer, nominal scale
-  config_cell(width=350, height=400)
-
+VegaLite.data(mpg) |> # add values ('data' need the VegaLite module qualification because it is exported by RDatasets too)
+  markpoint() |>
+  encoding(xquantitative(field=:Cty, axis=nothing),
+           yquantitative(field=:Hwy, vlscale(zero=false)),
+           colornominal(field=:Manufacturer)) |>    # bind color to :Manufacturer, nominal scale
+  config(vlcell(width=350, height=400))
 ```
 
 ![plot1](examples/png/vegalite3.png)
 
-- A slope graph:
-```julia
-data_values(mpg) +
-  mark_line() +
-  encoding_x_ord(:Year,
-                 axis  = axis(labelAngle=-45, labelAlign="right"),
-                 scale = scale(bandSize=50)) +
-  encoding_y_quant(:Hwy, aggregate="mean") +
-  encoding_color_nominal(:Manufacturer)
 
-```
+### Stack multiple plots with `hconcat` and `vconcat`
 
-![plot1](examples/png/vegalite4.png)
-
-- A trellis plot:
 ```julia
 data_values(mpg) +
   mark_point() +
@@ -99,16 +105,27 @@ data_values(mpg) +
 
 ```
 
-![plot1](examples/png/vegalite5.png)
 
-- A table:
+
+### Using the `repeat` statement to facet a plot by fields
+
 ```julia
-data_values(mpg) +
-  mark_text() +
-  encoding_column_ord(:Cyl) +
-  encoding_row_ord(:Year) +
-  encoding_text_quant(:Displ, aggregate="mean") +
-  config_mark(fontStyle="italic", fontSize=12, font="courier")
-```
+using Distributions
+using DataTables
+using VegaLite
 
-![plot1](examples/png/vegalite6.png)
+renderer(:canvas)
+
+xs = rand(Normal(), 100, 3)
+dt = DataTable(a = xs[:,1] + xs[:,2] .^ 2,
+               b = xs[:,3] .* xs[:,2],
+               c = xs[:,3] .+ xs[:,2])
+
+VegaLite.data(dt) |>
+  repeat(column = [:a, :b, :c], row = [:a, :b, :c]) |>
+  config(vlcell(width=100, height=100)) |>
+  spec(markpoint(),
+       encoding(xquantitative(vlfield(repeat=:column)),
+                yquantitative(vlfield(repeat=:row))))```
+
+![plot1](examples/png/example2.png)

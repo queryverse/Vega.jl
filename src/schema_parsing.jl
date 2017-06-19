@@ -16,34 +16,39 @@ end
 type NumberDef <: SpecDef
   desc::String
 end
+NumberDef(spec::Dict) = NumberDef(get(spec, "description", ""))
 
 type IntDef <: SpecDef
   desc::String
 end
+IntDef(spec::Dict)    = IntDef(get(spec, "description", ""))
 
 type StringDef <: SpecDef
   desc::String
   enum::Set{String}
 end
+StringDef(spec::Dict) =
+  StringDef(get(spec, "description", ""),
+            Set{String}(get(spec, "enum", String[])))
 
 type BoolDef <: SpecDef
   desc::String
 end
+BoolDef(spec::Dict)   = BoolDef(get(spec, "description", ""))
 
 type ArrayDef <: SpecDef
   desc::String
   items::SpecDef
 end
+ArrayDef(spec::Dict) =
+  ArrayDef(get(spec, "description", ""), toDef(spec["items"]))
 
 type UnionDef <: SpecDef
   desc::String
   items::Vector
 end
-
-type RefDef <: SpecDef
-  desc::String
-  ref::String
-end
+# UnionDef(spec::Dict) =
+#   UnionDef(get(spec, "description", ""), elemtype.(spec["type"]))
 
 type VoidDef <: SpecDef
   desc::String
@@ -62,75 +67,6 @@ function elemtype(typ::String)
   error("unknown elementary type $typ")
 end
 
-UnionDef(spec::Dict)  = UnionDef(get(spec, "description", ""),
-                                 elemtype.(spec["type"]))
-
-NumberDef(spec::Dict) = NumberDef(get(spec, "description", ""))
-
-IntDef(spec::Dict)    = IntDef(get(spec, "description", ""))
-
-StringDef(spec::Dict) = StringDef(get(spec, "description", ""),
-                                  Set{String}(get(spec, "enum", String[])))
-
-BoolDef(spec::Dict)   = BoolDef(get(spec, "description", ""))
-
-RefDef(spec::Dict)    = RefDef(get(spec, "description", ""),
-                               split(spec["\$ref"], "/")[3])
-
-ArrayDef(spec::Dict)  = ArrayDef(get(spec, "description", ""),
-                                 toDef(spec["items"]))
-
-
-#####################################################
-
-# import Base.==
-#
-# function ==(a::ObjDef, b::ObjDef)
-#   a.desc == b.desc || return false
-#   Set(keys(a.props)) == Set(keys(b.props)) || return false
-#   all( a.props[k] == b.props[k] for k in keys(a.props) ) || return false
-#   a.addprops == b.addprops || return false
-#   a.required == b.required
-# end
-#
-# function ==(a::NumberDef, b::NumberDef)
-#   a.desc == b.desc || return false
-# end
-#
-# function ==(a::IntDef, b::IntDef)
-#   a.desc == b.desc || return false
-# end
-#
-# function ==(a::StringDef, b::StringDef)
-#   a.desc == b.desc || return false
-#   a.enum == b.enum
-# end
-#
-# function ==(a::BoolDef, b::BoolDef)
-#   a.desc == b.desc || return false
-# end
-#
-# function ==(a::ArrayDef, b::ArrayDef)
-#   a.desc == b.desc || return false
-#   a.items == b.items
-# end
-#
-# function ==(a::UnionDef, b::UnionDef)
-#   a.desc == b.desc || return false
-#   all( p -> p[1]==p[2], zip(a.items, b.items)) #TODO make order independent
-# end
-#
-# function ==(a::RefDef, b::RefDef)
-#   a.desc == b.desc || return false
-#   a.ref == b.ref
-# end
-#
-# function ==(a::VoidDef, b::VoidDef)
-#   a.desc == b.desc || return false
-#   true
-# end
-#
-
 
 ###########  Schema parsing  ##############
 
@@ -138,7 +74,9 @@ function toDef(spec::Dict)
   if haskey(spec, "type")
     typ = spec["type"]
 
-    isa(typ, Vector) && return UnionDef(spec)
+    if isa(typ, Vector)  # parse as UnionDef
+      return UnionDef(get(spec, "description", ""), elemtype.(spec["type"]))
+    end
 
     if isa(typ, String)
       typ=="null"    && return VoidDef("")
@@ -146,7 +84,7 @@ function toDef(spec::Dict)
       typ=="boolean" && return BoolDef(spec)
       typ=="integer" && return IntDef(spec)
       typ=="string"  && return StringDef(spec)
-      typ=="array"  && return ArrayDef(spec)
+      typ=="array"   && return ArrayDef(spec)
 
       if typ == "object"
         ret = ObjDef(get(spec, "description", ""),
@@ -177,7 +115,22 @@ function toDef(spec::Dict)
     error("type $typ is neither an array nor a string")
 
   elseif haskey(spec, "\$ref")
-    return RefDef(spec)
+    rname = split(spec["\$ref"], "/")[3] # name of definition
+    # if this ref has already been seen (it is in the 'refs' dict) fetch its
+    # SpecDef. Otherwise create.
+    if !haskey(refs, rname)
+      # Some refs are auto-referential. We need to create a dummy def to avoid
+      # infinite recursion.
+      refs[rname] = VoidDef("")
+      refs[rname] = toDef(schema["definitions"][rname])
+      # reparse a second time to set correctly auto-referential children props
+      temp = toDef(schema["definitions"][rname])
+      # and update refs[rname]
+      for field in fieldnames(refs[rname])
+        setfield!(refs[rname], field, getfield(temp, field))
+      end
+    end
+    return refs[rname]
 
   elseif haskey(spec, "anyOf")
     return UnionDef(get(spec, "description", ""),
@@ -192,55 +145,56 @@ function toDef(spec::Dict)
   end
 end
 
-defs = Dict{String, SpecDef}()
-
 fn = joinpath(dirname(@__FILE__), "../deps/lib/", "v2.json")
-spc = JSON.parsefile(fn)
-for (k,v) in spc["definitions"]
-  defs[k] = toDef(v)
-end
+schema = JSON.parsefile(fn)
+refs = Dict{String, SpecDef}()
+rootSpec = toDef(schema)
 
-# and now the definition of the root plot function
-haskey(defs, "plot") && error("def 'plot' already defined")
-defs["plot"] = toDef(spc)
+# length(refs) # 74
+# dl = rootSpec.items[2].props["layer"]
+# dl2 = dl.items.items[2]
+# dl2 === dl2.props["layer"].items.items[2] # true, OK
+# deftree[dl2]
+# Base.summarysize(deftree) # 311k
+# Base.summarysize(rootSpec) # 222k
 
 
+###  Build a dict linking SpecDefs to (possibly several) parent SpecDef
+###   with their property name (used for function creation)
 
+lookinto!(s::SpecDef, parent::SpecDef, prop="*") =
+  deftree[s] = [(prop, parent)]
 
-###########  SpecDef tree creation (for function creation)  ##############
-
-lookinto!(s::SpecDef, parent::SpecDef, prop="*") = deftree[s] = [(prop, parent)]
-
-function lookinto!(s::RefDef, parent::SpecDef, prop="*")
-  reals = defs[s.ref]
-  if haskey(deftree,reals) # refdef already seen
-    push!(deftree[reals], (prop, parent))
-    return
-  end
-  deftree[reals] = [(prop, parent)]
-  lookinto!(reals, parent, prop)
+function _addtodeftree(s::SpecDef, parent::SpecDef, prop::String)
+  push!(alreadyseen, (s, parent))
+  deftree[s] = push!(get(deftree, s, Tuple{String, SpecDef}[]), (prop, parent))
 end
 
 function lookinto!(s::ArrayDef, parent::SpecDef, prop="*")
-  deftree[s] = [(prop, parent)]
+  (s, parent) in alreadyseen && return
+  _addtodeftree(s, parent, prop)
   isa(s.items, UnionDef) && lookinto!(s.items, parent, prop)
 end
 
 function lookinto!(s::ObjDef, parent::SpecDef, prop="*")
-  deftree[s] = [(prop, parent)]
+  (s, parent) in alreadyseen && return
+  _addtodeftree(s, parent, prop)
   for (k,v) in s.props
     lookinto!(v, s, k)
   end
 end
 
 function lookinto!(s::UnionDef, parent::SpecDef, prop="*")
-  deftree[s] = [(prop, parent)]
+  (s, parent) in alreadyseen && return
+  _addtodeftree(s, parent, prop)
   for v in s.items
     lookinto!(v, s)
   end
 end
 
+alreadyseen = []  # to avoid infinite recursion
 deftree = Dict{SpecDef, Vector{Tuple{String, SpecDef}}}()
-lookinto!(defs["plot"], VoidDef(""), "plot")
+lookinto!(rootSpec, VoidDef(""), "plot")
 
-# length(deftree)
+# length(deftree) # 716
+# extrema(length(v) for v in values(deftree)) # 1 to 9

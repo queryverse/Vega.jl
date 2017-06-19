@@ -73,7 +73,7 @@ junoplotpane(b::Bool) = (global JUNOPLOTPANE ; JUNOPLOTPANE = b)
 
 include("schema_parsing.jl")
 include("func_definition.jl")
-include("func_documentation.jl")
+# include("func_documentation.jl")
 include("spec_validation.jl")
 include("utils.jl")
 include("render.jl")

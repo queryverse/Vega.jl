@@ -1,8 +1,8 @@
 ### Shorcut functions
 
 # ... x(typ=:quantitative, .. ))  => xquantitative()
-for chan in keys(defs["EncodingWithFacet"].props)
-  for typ in defs["Type"].enum
+for chan in keys(refs["EncodingWithFacet<Field>"].props)
+  for typ in refs["Type"].enum
     sfn = Symbol(chan * typ)
 
     # function declaration and export
@@ -20,7 +20,7 @@ for chan in keys(defs["EncodingWithFacet"].props)
 end
 
 # ... mark(typ=:line .. ))  => markline()
-for typ in defs["Mark"].enum
+for typ in refs["Mark"].enum
   sfn = Symbol("mark" * typ)
 
   # function declaration and export

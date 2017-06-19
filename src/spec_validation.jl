@@ -10,7 +10,7 @@ end
 conforms(x, ps::String, d::IntDef)    = _conforms(x, ps, Int)
 conforms(x, ps::String, d::NumberDef) = _conforms(x, ps, Number)
 conforms(x, ps::String, d::BoolDef)   = _conforms(x, ps, Bool)
-conforms(x, ps::String, d::RefDef)    = conforms(x, ps, defs[d.ref])
+# conforms(x, ps::String, d::RefDef)    = conforms(x, ps, defs[d.ref])
 conforms(x, ps::String, d::VoidDef)   = _conforms(x, ps, Void)
 conforms(x, ps::String, d::AnyDef)    = nothing
 
@@ -78,7 +78,7 @@ function checkplot(plt::VLSpec{:plot})
   # identify which one applies by their required properties to simplify
   # error messages (i.e. to avoid too many "possible causes" )
   onematch = false
-  for spec in defs["plot"].items
+  for spec in rootSpec.items
     if all(r in keys(pars) for r in spec.required)
       conforms(pars, "plot(", spec)
       onematch = true
@@ -86,7 +86,7 @@ function checkplot(plt::VLSpec{:plot})
   end
 
   # if no match print full error message
-  onematch || conforms(pars, "plot(", defs["plot"])
+  onematch || conforms(pars, "plot(", rootSpec)
 
   nothing
 end

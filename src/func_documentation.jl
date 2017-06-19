@@ -20,6 +20,8 @@ function prettytype(typ::SpecDef)
 end
 
 function mkdoc(spec::UnionDef, context::Symbol, indent)
+  spec in refpath && return ["... see above ..."]
+  
   docstr = String[]
 
   # if all are simple types use a short format
@@ -66,13 +68,13 @@ end
 # explored and stop when a RefSpec has already been seen
 refpath = String[]
 
-function mkdoc(spec::RefDef, context::Symbol, indent)
-  spec.ref in refpath && return ["... see above ..."]
-  push!(refpath, spec.ref)
-  docstr = mkdoc(defs[spec.ref], context, indent)
-  pop!(refpath)
-  docstr
-end
+# function mkdoc(spec::RefDef, context::Symbol, indent)
+#   spec.ref in refpath && return ["... see above ..."]
+#   push!(refpath, spec.ref)
+#   docstr = mkdoc(defs[spec.ref], context, indent)
+#   pop!(refpath)
+#   docstr
+# end
 
 function _mkdoc(spec::SpecDef, indent)
   docstr = String[]

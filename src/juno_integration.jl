@@ -12,7 +12,7 @@ function Juno.render(i::Juno.Inline, plt::VLSpec{:plot})
   checkplot(plt)
   tmppath = writehtml_full(JSON.json(plt.params))
   launch_browser(tmppath) # Open the browser
-  Juno.render(i, nothing) # print nothing in the editor pane
+  Juno.render(i, "VegaLite plot") # print nothing in the editor pane
 end
 
 # TODO : plotpane rendering
