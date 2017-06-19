@@ -28,9 +28,6 @@ for typ in refs["Mark"].enum
   @eval(function ($sfn)(args...;kwargs...)
           nkw = [kwargs ; (:type, $typ)]
           vlmark(args...;nkw...)
-          # pars = wrapper(args...; kwargs...)
-          # pars["type"] = $typ
-          # $(Expr(:curly, :VLSpec, QuoteNode(:mark)))( pars )
         end)
   eval( Expr(:export, sfn) )
 
@@ -78,6 +75,8 @@ function pushpars!(pars::Dict{String,Any}, val,
     else
       pars[cprop] = rval
     end
+  elseif sprop == :plot # bag of key-values
+    merge!(pars, rval)
   else
     pars[cprop] = rval
   end
@@ -90,15 +89,6 @@ end
 process arguments (regular and keyword), check conformity against schema and
 wrap in a VLSpec type
 """
-# sfn, args, kwargs = :vltransform, [], [(:filte, " datum.Scope2 == 'Hedged'")]
-#
-# transform(vlfilter(field=:Scope1, oneOf= ["External", "Internal"])) |>
-# transform(filter=" datum.Scope2 == 'Hedged'") |>
-#
-# wrapper(:vltransform, filter=" datum.Scope2 == 'Hedged'")
-# vltransform(filter=" datum.Scope2 == 'Hedged'")
-# transform(filter=" datum.Scope2 == 'Hedged'")
-
 function wrapper(sfn::Symbol, args...;kwargs...)
   pars = Dict{String,Any}()
 
@@ -117,8 +107,8 @@ function wrapper(sfn::Symbol, args...;kwargs...)
   # incrementally (with the pipe operator) and can be incomplete at
   #  intermediate stages
   if sfn != :plot
-    fdefs = collect(keys(funcs2[sfn]))
-    conforms(pars, "$sfn()", UnionDef("", fdefs))
+    fdefs = collect(keys(funcs[sfn]))
+    conforms(pars, "$sfn", UnionDef("", fdefs))
   end
 
   pars

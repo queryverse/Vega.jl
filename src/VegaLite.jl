@@ -73,7 +73,7 @@ junoplotpane(b::Bool) = (global JUNOPLOTPANE ; JUNOPLOTPANE = b)
 
 include("schema_parsing.jl")
 include("func_definition.jl")
-# include("func_documentation.jl")
+include("func_documentation.jl")
 include("spec_validation.jl")
 include("utils.jl")
 include("render.jl")
@@ -90,6 +90,8 @@ include("output.jl")
     recs = [ Dict(r) for r in DataFrames.eachrow(d) ]
     VegaLite.VLSpec{:data}(Dict("values" => recs))
   end
+
+  |>(a::DataFrames.DataFrame, b::VLSpec) = vldata(a) |> b
 end
 
 ### Integration with DataTables
@@ -98,6 +100,8 @@ end
     recs = [ Dict(r) for r in DataTables.eachrow(d) ]
     VegaLite.VLSpec{:data}(Dict("values" => recs))
   end
+
+  |>(a::DataTables.DataTable, b::VLSpec) = vldata(a) |> b
 end
 
 

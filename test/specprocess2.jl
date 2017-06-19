@@ -12,6 +12,13 @@ using VegaLite
 
 durl = "https://raw.githubusercontent.com/vega/new-editor/master/data/movies.json"
 
+plot(vldata(url=durl),
+     mark="circle",
+     vlencoding(vlx(vlbin(maxbins=10), field=:IMDB_Rating, typ=:quantitative),
+                vly(vlbin(maxbins=10), field=:Rotten_Tomatoes_Rating, typ=:quantitative),
+                vlsize(aggregate=:count, typ=:quantitative)),
+     width=300, height=300)
+
 
 plot(vldata(url=durl),
      mark="circle",
@@ -31,11 +38,9 @@ plot(data(url=durl),
      width=300, height=300)
 
 data(url=durl) |>
-  plot(width=200, height=100) |>
   markcircle() |>
   vlencoding(xquantitative(vlbin(maxbins=10), field=:IMDB_Rating),
              yquantitative(vlbin(maxbins=10), field=:Rotten_Tomatoes_Rating),
-             colorquantitative(field=:Rotten_Tomatoes_Rating),
              sizequantitative(aggregate=:count))
 
 p.params
@@ -81,7 +86,17 @@ data(dt) |>
        encoding(xquantitative(vlfield(repeat=:column)),
                 yquantitative(vlfield(repeat=:row))))
 
+data(dt) |>
+  repeat(column = [:a, :b, :c], row = [:a, :b, :c]) |>
+  spec(markpoint() |>
+       encoding(xquantitative(vlfield(repeat=:column)),
+                yquantitative(vlfield(repeat=:row))))
 
+dt |>
+  repeat(column = [:a, :b, :c], row = [:a, :b, :c]) |>
+  spec(markpoint() |>
+       encoding(xquantitative(vlfield(repeat=:column)),
+                yquantitative(vlfield(repeat=:row))))
 
 
 ###################################
@@ -125,7 +140,6 @@ data(df) |>
 
 ##########################################################################
 
-# TODO : comment faire le "axis": null ???
 
 rooturl = "https://raw.githubusercontent.com/vega/new-editor/master/data/"
 durl = rooturl * "unemployment-across-industries.json"

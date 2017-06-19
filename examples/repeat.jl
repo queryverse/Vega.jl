@@ -9,7 +9,7 @@ dt = DataTable(a = xs[:,1] + xs[:,2] .^ 2,
                b = xs[:,3] .* xs[:,2],
                c = xs[:,3] .+ xs[:,2])
 
-VegaLite.data(dt) |>
+dt |>
   repeat(column = [:a, :b, :c], row = [:a, :b, :c]) |>
   config(vlcell(width=100, height=100)) |>
   spec(markpoint(),

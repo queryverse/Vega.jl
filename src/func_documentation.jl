@@ -20,8 +20,6 @@ function prettytype(typ::SpecDef)
 end
 
 function mkdoc(spec::UnionDef, context::Symbol, indent)
-  spec in refpath && return ["... see above ..."]
-  
   docstr = String[]
 
   # if all are simple types use a short format
@@ -30,10 +28,7 @@ function mkdoc(spec::UnionDef, context::Symbol, indent)
     push!(docstr, "($tstr) $(prettydesc(spec.desc))")
 
   else # case 1, case 2 format
-    # items = filter(s -> !isa(s, VoidDef), spec.items) # skip voids
-    # length(items) == 1 && return mkdoc(items[1], context, indent)
-    # items = filter(s -> !isa(s, VoidDef), spec.items) # skip voids
-    length(spec.items) == 1 && return mkdoc(items[1], context, indent)
+    length(spec.items) == 1 && return mkdoc(spec.items[1], context, indent)
 
     spec.desc != "" && push!(docstr, prettydesc(spec.desc), "")
     push!(docstr, "One of : ")
@@ -52,8 +47,8 @@ function mkdoc(spec::ObjDef, context::Symbol, indent)
   spec.desc != "" && push!(docstr, prettydesc(spec.desc), "")
   for (k,v) in spec.props
     sk = get(sp2jl, Symbol(k), Symbol(k))
-    if haskey(funcs2, jlfunc(sk))
-      push!(docstr, "- `$sk` : *see help for `$(jlfunc(sk))()`*")
+    if haskey(funcs, jlfunc(sk))
+      push!(docstr, "- `$sk` : $(prettydesc(v.desc)) *see help for `$(jlfunc(sk))()`*")
     else
       dstrs = mkdoc(v, sk, 2)
       dstrs[1] = "- `$sk` : " * dstrs[1]
@@ -67,14 +62,6 @@ end
 # should not get stuck into. Doc creation will keep track of definitions
 # explored and stop when a RefSpec has already been seen
 refpath = String[]
-
-# function mkdoc(spec::RefDef, context::Symbol, indent)
-#   spec.ref in refpath && return ["... see above ..."]
-#   push!(refpath, spec.ref)
-#   docstr = mkdoc(defs[spec.ref], context, indent)
-#   pop!(refpath)
-#   docstr
-# end
 
 function _mkdoc(spec::SpecDef, indent)
   docstr = String[]
@@ -99,19 +86,69 @@ end
 
 ########################################################
 
-for (sfn, dvs) in funcs2
-  docstr = String[]
+# lookup dict for finding of the function associated to spec
+def2funcs = Dict{SpecDef,Any}()
+for (k,v) in funcs
+  for def in keys(v)
+    def2funcs[def] = push!( get(def2funcs, def, []), k )
+  end
+end
+
+flatten(s::SpecDef)  = [s]
+flatten(s::UnionDef) = vcat(flatten.(s.items)...)
+
+# sfn, dvs = :plot, funcs[:plot]
+for (sfn, dvs) in funcs
+  # organize defs of function by enclosing parent functions
+  pfuncs = Dict{Symbol,Any}()
   for (def, pset) in dvs
-    fns2 = mapfoldl(e -> get(def2funcs, e, "???"), append!, [], collect(pset))
-    fns2 = unique(string.(fns2))
-    flist = join("`" .* unique(fns2) .* "()`", ", ", " and ")
-    push!(docstr, "## `$sfn` when in $flist")
-    append!(docstr, mkdoc(def, sfn, 0))
+    # skip array defs for special functions (arrayprops)
+    Symbol(vlname(sfn)) in arrayprops &&
+      isa(def, ArrayDef) && continue
+
+    # unfold unions to find more factorizations of docs
+    vdef = flatten(def)
+    for pdef in pset
+      pfns = get(def2funcs, pdef, [:unknown])
+      for pfn in pfns
+        for d in vdef
+          # println(pfn)
+          pfuncs[pfn] = push!(get(pfuncs, pfn, Set()), d)
+        end
+      end
+    end
+  end
+
+  # gather docs by enclosing funcs having same defs
+  docdict = Dict()
+  for (pfn, defset) in pfuncs
+    docdict[defset] = push!(get(docdict, defset, []), pfn)
+  end
+
+  # create doc string
+  docstr = String[]
+  for (defset, pfnset) in docdict
+    header = "## `$sfn`"
+    pfns = filter(f -> f != :unknown, collect(pfnset))
+    if length(pfns) > 0
+      flist = join("`" .* string.(pfns) .* "()`", ", ", " and ")
+      header *= " in $flist"
+    end
+    push!(docstr, header)
+    append!(docstr, mkdoc(UnionDef("", collect(defset)), sfn, 0))
     push!(docstr, "")
   end
+
   fulldoc = join(rstrip.(docstr), "\n")
-  # println(fulldoc)
-  # println()
-  # println()
   eval(:( @doc $fulldoc $sfn ))
 end
+
+# vllayer
+# plot
+# vlorder
+# vlvalues
+# vlcell
+# vlequal
+# vlx2
+# vlaxis
+# vlvconcat

@@ -11,7 +11,48 @@ jlfunc(vln::String) = jlfunc(Symbol(vln))
 jlfunc(vln::Symbol) = Symbol("vl" * string(vln))
 vlname(fn::Symbol)  = replace(string(fn), r"^vl", "")
 
-### step 1 : identify functions to be created among all properties
+
+### step 1 : build a dict linking SpecDefs to (possibly several) parent SpecDef
+#             with their property name
+
+lookinto!(s::SpecDef, parent::SpecDef, prop="*") =
+  deftree[s] = [(prop, parent)]
+
+function _addtodeftree(s::SpecDef, parent::SpecDef, prop::String)
+  push!(alreadyseen, (s, parent))
+  deftree[s] = push!(get(deftree, s, Tuple{String, SpecDef}[]), (prop, parent))
+end
+
+function lookinto!(s::ArrayDef, parent::SpecDef, prop="*")
+  (s, parent) in alreadyseen && return
+  _addtodeftree(s, parent, prop)
+  isa(s.items, UnionDef) && lookinto!(s.items, parent, prop)
+end
+
+function lookinto!(s::ObjDef, parent::SpecDef, prop="*")
+  (s, parent) in alreadyseen && return
+  _addtodeftree(s, parent, prop)
+  for (k,v) in s.props
+    lookinto!(v, s, k)
+  end
+end
+
+function lookinto!(s::UnionDef, parent::SpecDef, prop="*")
+  (s, parent) in alreadyseen && return
+  _addtodeftree(s, parent, prop)
+  for v in s.items
+    lookinto!(v, s)
+  end
+end
+
+alreadyseen = []  # to avoid infinite recursion
+deftree = Dict{SpecDef, Vector{Tuple{String, SpecDef}}}()
+lookinto!(rootSpec, VoidDef(""), "plot")
+
+# length(deftree) # 716
+# extrema(length(v) for v in values(deftree)) # 1 to 9
+
+### step 2 : identify functions to be created among all properties
 
 needsfunction(s::IntDef)    = false
 needsfunction(s::NumberDef) = false
@@ -25,7 +66,7 @@ needsfunction(s::UnionDef)  = any(needsfunction, s.items)
 needsfunction(s::ArrayDef)  = needsfunction(s.items)
 needsfunction(s::SpecDef)   = error("unknown type $(typeof(s))")
 
-funcs2 = Dict{Symbol,Dict}()
+funcs = Dict{Symbol,Dict}()
 for (def, ns) in deftree
   needsfunction(def) || continue
 
@@ -35,8 +76,6 @@ for (def, ns) in deftree
   else
     realdef = def
   end
-
-  # realdef = isa(realdef, RefDef) ? defs[realdef.ref] : realdef
 
   for (name, parentdef) in ns
     if name=="*" # if UnionDef look up one level
@@ -51,32 +90,20 @@ for (def, ns) in deftree
     end
 
     sfn2 = sfn == :plot ? :plot : jlfunc(sfn)
-    haskey(funcs2, sfn2)          || (funcs2[sfn2]          = Dict())
-    haskey(funcs2[sfn2], realdef) || (funcs2[sfn2][realdef] = Set())
-    push!( funcs2[sfn2][realdef] , realparent )
+    haskey(funcs, sfn2)          || (funcs[sfn2]          = Dict())
+    haskey(funcs[sfn2], realdef) || (funcs[sfn2][realdef] = Set())
+    push!( funcs[sfn2][realdef] , realparent )
   end
 end
 
-# length(funcs2)
-# showall(keys(funcs2))
+# length(funcs) # 51
+# showall(keys(funcs))
 
-def2funcs = Dict{SpecDef,Any}()
-for (k,v) in funcs2
-  for def in keys(v)
-    def2funcs[def] = push!( get(def2funcs, def, []), k )
-  end
-end
-k,v = :vllayer, funcs2[:vllayer]
-def = first(keys(v))
-haskey(def2funcs, def)
-length(def2funcs)
 
-def2funcs[first(keys(v))]
-collect
 
-# k,v = first(funcs2)
-# k,v = :vllayer, funcs2[:vllayer]
-# for (k,v) in funcs2
+# k,v = first(funcs)
+# k,v = :vllayer, funcs[:vllayer]
+# for (k,v) in funcs
 #   v2 = filter(needsfunction, keys(v))
 #   na  = sum( isa(d, ArrayDef) for d in v2 )
 #   nna = sum( !isa(d, ArrayDef) for d in v2 )
@@ -85,14 +112,14 @@ collect
 
 const arrayprops = Symbol[:layer, :transform, :hconcat, :vconcat]
 
-### step 2 : declare functions
+### step 3 : declare functions
 
 type VLSpec{T}
   params::Union{Dict, Vector}
 end
 vltype{T}(::VLSpec{T}) = T
 
-for sfn in keys(funcs2)
+for sfn in keys(funcs)
   if isdefined(sfn)
     mt = @eval typeof($sfn).name.mt
     if isdefined(mt, :module) && mt.module != current_module()

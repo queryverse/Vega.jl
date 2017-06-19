@@ -12,7 +12,7 @@ VegaLite.data(mpg) |>                   # add values (qualify 'data' because it 
 
 # Scatter plot with color encoding manufacturer
 
-VegaLite.data(mpg) |>
+mpg |>
   markpoint() |>
   encoding(xquantitative(field=:Cty, axis=nothing),
            yquantitative(field=:Hwy, vlscale(zero=false)),
@@ -21,7 +21,7 @@ VegaLite.data(mpg) |>
 
 # A slope graph:
 
-VegaLite.data(mpg) |>
+mpg |>
   markline() |>
   encoding(xordinal(field=:Year,
                     vlaxis(labelAngle=-45, labelPadding=10),
@@ -31,7 +31,7 @@ VegaLite.data(mpg) |>
 
 # A facetted plot:
 
-VegaLite.data(mpg) |>
+mpg |>
   markpoint() |>
   encoding(columnordinal(field=:Cyl), # sets the column facet dimension
            rowordinal(field=:Year),   # sets the row facet dimension
@@ -43,7 +43,7 @@ VegaLite.data(mpg) |>
 
 # A table:
 
-VegaLite.data(mpg) |>
+mpg |>
   marktext() |>
   encoding(columnordinal(field=:Cyl),
            rowordinal(field=:Year),

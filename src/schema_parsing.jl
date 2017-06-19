@@ -47,8 +47,6 @@ type UnionDef <: SpecDef
   desc::String
   items::Vector
 end
-# UnionDef(spec::Dict) =
-#   UnionDef(get(spec, "description", ""), elemtype.(spec["type"]))
 
 type VoidDef <: SpecDef
   desc::String
@@ -154,47 +152,4 @@ rootSpec = toDef(schema)
 # dl = rootSpec.items[2].props["layer"]
 # dl2 = dl.items.items[2]
 # dl2 === dl2.props["layer"].items.items[2] # true, OK
-# deftree[dl2]
-# Base.summarysize(deftree) # 311k
 # Base.summarysize(rootSpec) # 222k
-
-
-###  Build a dict linking SpecDefs to (possibly several) parent SpecDef
-###   with their property name (used for function creation)
-
-lookinto!(s::SpecDef, parent::SpecDef, prop="*") =
-  deftree[s] = [(prop, parent)]
-
-function _addtodeftree(s::SpecDef, parent::SpecDef, prop::String)
-  push!(alreadyseen, (s, parent))
-  deftree[s] = push!(get(deftree, s, Tuple{String, SpecDef}[]), (prop, parent))
-end
-
-function lookinto!(s::ArrayDef, parent::SpecDef, prop="*")
-  (s, parent) in alreadyseen && return
-  _addtodeftree(s, parent, prop)
-  isa(s.items, UnionDef) && lookinto!(s.items, parent, prop)
-end
-
-function lookinto!(s::ObjDef, parent::SpecDef, prop="*")
-  (s, parent) in alreadyseen && return
-  _addtodeftree(s, parent, prop)
-  for (k,v) in s.props
-    lookinto!(v, s, k)
-  end
-end
-
-function lookinto!(s::UnionDef, parent::SpecDef, prop="*")
-  (s, parent) in alreadyseen && return
-  _addtodeftree(s, parent, prop)
-  for v in s.items
-    lookinto!(v, s)
-  end
-end
-
-alreadyseen = []  # to avoid infinite recursion
-deftree = Dict{SpecDef, Vector{Tuple{String, SpecDef}}}()
-lookinto!(rootSpec, VoidDef(""), "plot")
-
-# length(deftree) # 716
-# extrema(length(v) for v in values(deftree)) # 1 to 9

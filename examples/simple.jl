@@ -16,7 +16,7 @@ plot(vldata(url=src),
 
 # Syntax 2 : using pipes and shorcut functions
 
-data(url=src) |>
+VegaLite.data(url=src) |>
   markcircle() |>
   encoding(xquantitative(vlbin(maxbins=10), field=:IMDB_Rating),
            yquantitative(vlbin(maxbins=10), field=:Rotten_Tomatoes_Rating),
