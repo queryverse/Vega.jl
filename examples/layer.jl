@@ -1,5 +1,22 @@
-using DataFrames
-using VegaLite
+using DataTables, VegaLite
+
+# Example 1 : interpolation mode comparisons
+
+df  = DataFrame(x=[0:5;], y=rand(6))
+
+encx = xquantitative(field=:x)
+ency = yquantitative(field=:y)
+
+df |>
+  plot(width=500) |>
+  layer(markline(interpolate="linear"),
+        encoding(encx, ency, vlcolor(value="green"))) |>
+  layer(markline(interpolate="basis"),
+        encoding(encx, ency, vlcolor(value="red"))) |>
+  layer(markpoint(), encoding(encx, ency, vlcolor(value="black")))
+
+
+# Example 2 : closed shape w/ points
 
 r, nb = 5., 10
 df = DataFrame(n = [1:nb;],
@@ -13,14 +30,11 @@ encn = orderquantitative(field=:n)
 df |>
   layer(markpoint(),
         encoding(encx, ency, vlcolor(value="black"), vlsize(value=50))) |>
-  layer(markline(interpolate="linear-closed"),
-        encoding(encx, ency, encn, vlcolor(value="blue"))) |>
-  layer(markline(interpolate="monotone"),
+  layer(markline(interpolate="cardinal-closed"),
         encoding(encx, ency, encn, vlcolor(value="green")))
 
 
-
-###########################################################################
+# Example 3 : error bars
 
 rooturl = "https://raw.githubusercontent.com/vega/new-editor/master/"
 durl = rooturl * "data/population.json"

@@ -3,6 +3,6 @@
 *.jl.mem
 docs/build/
 docs/site/
-/deps/lib
-/deps/node_modules
+deps/lib/
+deps/node_modules/
 .directory

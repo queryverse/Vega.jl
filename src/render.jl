@@ -128,22 +128,21 @@ function writehtml_partial(io::IO, spec::String; title="VegaLite plot")
 
       vg_embed("#$divid", embedSpec, function(error, result) {});
 
-//      var opt = {
-//        mode: "vega-lite",
-//        renderer: "$RENDERER",
-//        actions: $ACTIONSLINKS
-//      }
-//
-//      var spec = $(v.json)
-//
-//      vega.embed('#$divid', spec, opt);
+  //      var opt = {
+  //        mode: "vega-lite",
+  //        renderer: "$RENDERER",
+  //        actions: $ACTIONSLINKS
+  //      }
+  //
+  //      var spec = $(v.json)
+  //
+  //      vega.embed('#$divid', spec, opt);
     })
 
     </script>
 
   </html>
   """)
-
 end
 
 @compat import Base.show
@@ -155,19 +154,12 @@ end
 opens a browser tab with the given html file
 """
 function launch_browser(tmppath::String)
-  # Open the browser
-  @static if VERSION < v"0.5.0-"
-    @osx_only run(`open $tmppath`)
-    @windows_only run(`cmd /c start $tmppath`)
-    @linux_only   run(`xdg-open $tmppath`)
-  else
-    if is_apple()
-      run(`open $tmppath`)
-    elseif is_windows()
-      run(`cmd /c start $tmppath`)
-    elseif is_linux()
-      run(`xdg-open $tmppath`)
-    end
+  if is_apple()
+    run(`open $tmppath`)
+  elseif is_windows()
+    run(`cmd /c start $tmppath`)
+  elseif is_linux()
+    run(`xdg-open $tmppath`)
   end
 end
 

@@ -17,7 +17,7 @@ mpg |>
   encoding(xquantitative(field=:Cty, axis=nothing),
            yquantitative(field=:Hwy, vlscale(zero=false)),
            colornominal(field=:Manufacturer)) |>    # bind color to :Manufacturer, nominal scale
-  config(vlcell(width=350, height=400))
+  config(vlcell(width=250, height=250))
 
 # A slope graph:
 

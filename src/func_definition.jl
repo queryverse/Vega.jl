@@ -61,7 +61,6 @@ needsfunction(s::StringDef) = false
 needsfunction(s::VoidDef)   = false
 needsfunction(s::AnyDef)    = false
 needsfunction(s::ObjDef)    = true
-# needsfunction(s::RefDef)    = needsfunction(defs[s.ref])
 needsfunction(s::UnionDef)  = any(needsfunction, s.items)
 needsfunction(s::ArrayDef)  = needsfunction(s.items)
 needsfunction(s::SpecDef)   = error("unknown type $(typeof(s))")
@@ -98,9 +97,6 @@ end
 
 # length(funcs) # 51
 # showall(keys(funcs))
-
-
-
 # k,v = first(funcs)
 # k,v = :vllayer, funcs[:vllayer]
 # for (k,v) in funcs

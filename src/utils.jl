@@ -1,7 +1,7 @@
 ### Shorcut functions
 
 # ... x(typ=:quantitative, .. ))  => xquantitative()
-for chan in keys(refs["EncodingWithFacet<Field>"].props)
+for chan in keys(refs["EncodingWithFacet"].props)
   for typ in refs["Type"].enum
     sfn = Symbol(chan * typ)
 
@@ -117,7 +117,6 @@ end
 
 
 ### pipe operator definition
-import Base: |>
 
 function |>(a::VLSpec, b::VLSpec)
   parsa = if isa(a,VLSpec{:plot})
@@ -137,6 +136,3 @@ function |>(a::VLSpec, b::VLSpec)
 
   VLSpec{:plot}(pars)
 end
-
-
-export |>

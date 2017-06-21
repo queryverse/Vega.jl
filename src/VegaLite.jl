@@ -2,11 +2,12 @@ VERSION >= v"0.4" && __precompile__()
 
 module VegaLite
 
-using JSON, Compat, Requires
-using PhantomJS
+using JSON, Compat, Requires, NodeJS, Cairo, Rsvg
+# using PhantomJS
 
 # import Base: show
 import Base: display, REPL.REPLDisplay
+import Base: |>
 
 export renderer, actionlinks, junoplotpane, png, svg, jgp, pdf
 
@@ -78,7 +79,8 @@ include("spec_validation.jl")
 include("utils.jl")
 include("render.jl")
 include("juno_integration.jl")
-include("output.jl")
+include("io.jl")
+include("show.jl")
 
 
 
