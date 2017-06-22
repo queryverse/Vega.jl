@@ -62,6 +62,7 @@ function elemtype(typ::String)
   typ=="boolean" && return BoolDef("")
   typ=="integer" && return IntDef("")
   typ=="string"  && return StringDef("", Set{String}())
+  typ=="null"    && return VoidDef("")
   error("unknown elementary type $typ")
 end
 
@@ -73,7 +74,10 @@ function toDef(spec::Dict)
     typ = spec["type"]
 
     if isa(typ, Vector)  # parse as UnionDef
-      return UnionDef(get(spec, "description", ""), elemtype.(spec["type"]))
+      if length(spec["type"]) > 1
+        return UnionDef(get(spec, "description", ""), elemtype.(spec["type"]))
+      end
+      typ = spec["type"][1]
     end
 
     if isa(typ, String)
@@ -143,13 +147,25 @@ function toDef(spec::Dict)
   end
 end
 
-fn = joinpath(dirname(@__FILE__), "../deps/lib/", "v2.json")
-schema = JSON.parsefile(fn)
-refs = Dict{String, SpecDef}()
-rootSpec = toDef(schema)
+# fn = joinpath(dirname(@__FILE__), "../deps/lib/", "v2.json")
+# schema = JSON.parsefile(fn)
+# refs = Dict{String, SpecDef}()
+# rootSpec = toDef(schema)
 
-# length(refs) # 74
+fn = joinpath(dirname(@__FILE__), "../deps/lib/", "vega-lite-schema.json")
+schema = JSON.parsefile(fn)
+# showall(keys(schema["definitions"]))
+# schema["definitions"]["TopLevelProperties"]
+# schema["definitions"]["TopLevelExtendedSpec"]
+# collect(Iterators.filter(n -> startswith(n, "TopLevel"), keys(schema["definitions"])))
+
+refs = Dict{String, SpecDef}()
+rootSpec = toDef(schema["definitions"]["TopLevelExtendedSpec"])
+
+
+
+# length(refs) # 124
 # dl = rootSpec.items[2].props["layer"]
-# dl2 = dl.items.items[2]
-# dl2 === dl2.props["layer"].items.items[2] # true, OK
-# Base.summarysize(rootSpec) # 222k
+# dl2 = dl.items.items[1]
+# dl2 === dl2.props["layer"].items.items[1] # true, OK
+# Base.summarysize(rootSpec) # 203k

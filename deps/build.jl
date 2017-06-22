@@ -3,9 +3,13 @@
 using BinDeps
 @BinDeps.setup
 
-uschema = "https://vega.github.io/schema/vega-lite/v2.json"
 
-ud3       = "https://d3js.org/d3.v3.min.js"
+# Vega-lite version v2.0.0-beta.4, commit dac71df
+
+uschema = "https://github.com/vega/vega-lite/blob/dac71dffbfcf28ff0ff406b94f0a294f1b0a4670/build/vega-lite-schema.json"
+# uschema = "https://vega.github.io/schema/vega-lite/v2.json"
+
+ud3       = "https://d3js.org/d3.v3.min.js"  # FIXME find URL with stable D3 version
 uvega     = "https://cdnjs.cloudflare.com/ajax/libs/vega/3.0.0-beta.33/vega.min.js"
 uvegalite = "https://cdnjs.cloudflare.com/ajax/libs/vega-lite/2.0.0-beta.4/vega-lite.min.js"
 uembed    = "https://cdnjs.cloudflare.com/ajax/libs/vega-embed/3.0.0-beta.17/vega-embed.min.js"
