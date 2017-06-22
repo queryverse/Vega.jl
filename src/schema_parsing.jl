@@ -4,7 +4,7 @@
 
 using JSON
 
-abstract SpecDef
+@compat abstract type SpecDef end
 
 type ObjDef <: SpecDef
   desc::String

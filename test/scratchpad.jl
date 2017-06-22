@@ -12,12 +12,15 @@ using VegaLite
 
 durl = "https://raw.githubusercontent.com/vega/new-editor/master/data/movies.json"
 
-plot(vldata(url=durl),
+p = plot(vldata(url=durl),
      mark="circle",
      vlencoding(vlx(vlbin(maxbins=10), field=:IMDB_Rating, typ=:quantitative),
                 vly(vlbin(maxbins=10), field=:Rotten_Tomatoes_Rating, typ=:quantitative),
                 vlsize(aggregate=:count, typ=:quantitative)),
-     width=300, height=300)
+     width=300, height=300) ;
+
+pdf("c:/temp/ex.pdf", p)
+
 
 
 plot(vldata(url=durl),
