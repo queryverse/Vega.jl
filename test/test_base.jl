@@ -37,8 +37,8 @@ datvals = [ Dict(:time => t, :res => r) for (t,r) in zip(ts, rs) ]
 @test isa(vlconfig(background="green"), VegaLite.VLSpec{:config})
 @test isa(markline(), VegaLite.VLSpec{:mark})
 @test isa(vldata(values=datvals), VegaLite.VLSpec{:data})
-@test isa(data(values=datvals), VegaLite.VLSpec{:data})
-@test equiv(data(values=datvals), vldata(values=datvals))
+@test isa(VegaLite.data(values=datvals), VegaLite.VLSpec{:data})
+@test equiv(VegaLite.data(values=datvals), vldata(values=datvals))
 
 
 vs = encoding(xquantitative(field=:x, vlbin(maxbins=20),
@@ -71,6 +71,6 @@ using RDatasets
 
 mpg = dataset("ggplot2", "mpg")
 
-@test isa(data(mpg), VegaLite.VLSpec{:data})
-@test equiv(data(mpg) |> config(vlcell(width=200)),
+@test isa(VegaLite.data(mpg), VegaLite.VLSpec{:data})
+@test equiv(VegaLite.data(mpg) |> config(vlcell(width=200)),
             mpg |> config(vlcell(width=200)))
