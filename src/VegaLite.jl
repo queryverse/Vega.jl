@@ -9,7 +9,7 @@ using JSON, Compat, Requires, NodeJS, Cairo, Rsvg
 import Base: display, REPL.REPLDisplay
 import Base: |>
 
-export renderer, actionlinks, junoplotpane, png, svg, jgp, pdf
+export renderer, actionlinks, junoplotpane, png, svg, jgp, pdf, savefig
 
 
 ########################  settings functions  ###############################
