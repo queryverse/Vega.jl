@@ -1,11 +1,11 @@
 using Base.Test
 using Compat
 using VegaLite
+using DataFrames
 
-p = data(DataFrames(x = [1,2,3], y=[1,2,3])) |>
+p = VegaLite.data(DataFrame(x = [1,2,3], y=[1,2,3])) |>
     markpoint() |>
-    encoding(xquantitative(:x) +
-    encoding_y_quant(:y)
+    encoding(xquantitative(field=:x), yquantitative(field=:y))
 
 Compat.Filesystem.mktempdir() do folder
     svg(joinpath(folder,"test1.svg"), p)

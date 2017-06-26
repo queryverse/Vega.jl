@@ -5,4 +5,5 @@ docs/build/
 docs/site/
 deps/lib/
 deps/node_modules/
+deps/npm-debug.log
 .directory
