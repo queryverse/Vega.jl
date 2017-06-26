@@ -152,7 +152,7 @@ end
 # refs = Dict{String, SpecDef}()
 # rootSpec = toDef(schema)
 
-fn = joinpath(dirname(@__FILE__), "../deps/lib/", "vega-lite-schema.json")
+fn = joinpath(dirname(@__FILE__), "../assets/", "vega-lite-schema.json")
 schema = JSON.parsefile(fn)
 # showall(keys(schema["definitions"]))
 # schema["definitions"]["TopLevelProperties"]

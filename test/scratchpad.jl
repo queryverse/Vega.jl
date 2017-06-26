@@ -19,6 +19,8 @@ p = plot(vldata(url=durl),
                 vlsize(aggregate=:count, typ=:quantitative)),
      width=300, height=300) ;
 
+p
+
 pdf("c:/temp/ex.pdf", p)
 
 
