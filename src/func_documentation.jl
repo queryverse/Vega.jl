@@ -11,7 +11,14 @@ end
 function prettytype(typ::SpecDef)
   isa(typ, IntDef) && return "Int"
   isa(typ, NumberDef) && return "Number"
-  isa(typ, StringDef) && return "String/Symbol"
+  if isa(typ, StringDef)
+    if length(typ.enum) > 0
+      tstr = "one of " * join(collect(typ.enum),",")
+    else
+      tstr = "String/Symbol"
+     end
+    return tstr
+  end
   isa(typ, BoolDef) && return "Bool"
   isa(typ, VoidDef) && return "Void"
   isa(typ, AnyDef) && return "Any"
@@ -35,7 +42,7 @@ function mkdoc(spec::UnionDef, context::Symbol, indent)
     for (i,v) in enumerate(spec.items)
       isa(v, VoidDef) && continue
       fs = needsfunction(v) ? "`$context(<keyword args..>)`" : "`$context=...`"
-      push!(docstr, "- *case #$(i)* $fs $(prettydesc(v.desc))")
+      push!(docstr, "\n- **case #$(i)**") # "* $fs $(prettydesc(v.desc))")
       append!(docstr, mkdoc(v, Symbol(""), 2))
     end
   end
@@ -57,11 +64,6 @@ function mkdoc(spec::ObjDef, context::Symbol, indent)
   end
   repeat(" ", indent) .* docstr
 end
-
-# There are circular references (in LayerSpec and RepeatSpec) that we
-# should not get stuck into. Doc creation will keep track of definitions
-# explored and stop when a RefSpec has already been seen
-refpath = String[]
 
 function _mkdoc(spec::SpecDef, indent)
   docstr = String[]

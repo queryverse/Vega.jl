@@ -1,34 +1,77 @@
 ## Functions
 
 
-```@docs
-plot()
-```
+### 1st level functions
 
 ```@docs
-data()
+plot
+data
+transform
+vlmark
+encoding
+config
+layer
+facet
+repeat
+hconcat
+vconcat
+spec
+selection
 ```
 
-```@docs
-encoding()
-```
+### Mark functions
 
 ```@docs
-layer()
+vltick
+vlbar
 ```
 
-```@docs
-config()
-```
+### Encoding channels
 
 ```@docs
-axis()
+vlx
+vly
+vlx2
+vly2
+vlcolor
+vlsize
+vlrow
+vlcolumn
+vltooltip
+vlorder
+vldetail
+vlshape
+vlopacity
+vltext
 ```
 
-```@docs
-scale()
-```
+### 2nd level functions
 
 ```@docs
-vlmark()
+vlaxis
+vlscale
+vlsort
+vlformat
+vllegend
+vltitle
+vlvalues
+vlfrom
+vloneOf
+vloverlay
+vlcondition
+vlencode
+vlequal
+vlaxisBand
+vlfilter
+vlscheme
+vlfield
+vlpadding
+vlheader
+vlinterval
+vlbin
+vlbind
+vlsummarize
+vldomain
+vlresolve
+vlcell
 ```
