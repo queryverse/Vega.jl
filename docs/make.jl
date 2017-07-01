@@ -11,3 +11,7 @@ makedocs(
     "Outputs" => "output.md",
     "API reference" => "functions.md"]
 )
+
+deploydocs(
+    repo = "github.com/fredo-dedup/VegaLite.jl.git"
+)
