@@ -3,61 +3,107 @@ VERSION >= v"0.4" && __precompile__()
 module VegaLite
 
 using JSON, Compat, Requires, NodeJS, Cairo, Rsvg
+# using PhantomJS
 
-import Base: +, *, scale
+# import Base: show
+import Base: display, REPL.REPLDisplay
+import Base: |>
 
-@compat import Base.show
-
-export VegaLiteVis, scale, axis, legend
-
-export svg, buttons
-
-export data_values
-
-export config_grid, config_facet_axis, config_facet_cell,
-    config_facet_scale
-
-export config, config_cell, config_mark, config_scale,
-    config_axis, config_legend
-
-export mark_bar, mark_circle, mark_square, mark_tick,
-    mark_line, mark_area, mark_point, mark_text
-
-export encoding_x_quant, encoding_x_temp, encoding_x_ord, encoding_x_nominal,
-    encoding_y_quant, encoding_y_temp, encoding_y_ord, encoding_y_nominal,
-    encoding_color_quant, encoding_color_temp, encoding_color_ord, encoding_color_nominal,
-    encoding_shape_quant, encoding_shape_temp, encoding_shape_ord, encoding_shape_nominal,
-    encoding_path_quant, encoding_path_temp, encoding_path_ord, encoding_path_nominal,
-    encoding_size_quant, encoding_size_temp, encoding_size_ord, encoding_size_nominal,
-    encoding_text_quant, encoding_text_temp, encoding_text_ord, encoding_text_nominal,
-    encoding_detail_quant, encoding_detail_temp, encoding_detail_ord, encoding_detail_nominal,
-    encoding_order_quant, encoding_order_temp, encoding_order_ord, encoding_order_nominal,
-    encoding_row_quant, encoding_row_temp, encoding_row_ord, encoding_row_nominal,
-    encoding_column_quant, encoding_column_temp, encoding_column_ord, encoding_column_nominal
-
-export savefig, svg, png, pdf, eps
+export renderer, actionlinks, junoplotpane, png, svg, jgp, pdf, savefig
 
 
+########################  settings functions  ###############################
+
+# Switch for plotting in SVGs or canvas
+
+global RENDERER = :svg
+
+"""
+`renderer()`
+
+show current rendering mode (svg or canvas)
+
+`renderer(::Symbol)`
+
+set rendering mode (svg or canvas)
+"""
+renderer() = RENDERER
+function renderer(m::Symbol)
+  global RENDERER
+  m in [:svg, :canvas] || error("rendering mode should be either :svg or :canvas")
+  RENDERER = m
+end
+
+
+# Switch for showing or not the buttons under the plot
+
+global ACTIONSLINKS = true
+
+"""
+`actionlinks()::Bool`
+
+show if plots will have (true) or not (false) the action links displayed
+
+`actionlinks(::Bool)`
+
+indicate if actions links should be dislpayed under the plot
+"""
+actionlinks() = ACTIONSLINKS
+actionlinks(b::Bool) = (global ACTIONSLINKS ; ACTIONSLINKS = b)
+
+
+# Switch for showing plots in a browser or in the plotpane when in Juno
+
+global JUNOPLOTPANE = false
+
+"""
+`junoplotpane()::Bool`
+
+when using Juno, show if plots will be rendered in plotpane or not
+
+`junoplotpane(::Bool)`
+
+set if plots should be rendered in Juno's plotpane or not
+"""
+junoplotpane() = JUNOPLOTPANE
+junoplotpane(b::Bool) = (global JUNOPLOTPANE ; JUNOPLOTPANE = b)
+
+
+
+########################  includes  #####################################
+
+include("schema_parsing.jl")
+include("func_definition.jl")
+include("func_documentation.jl")
+include("spec_validation.jl")
 include("utils.jl")
 include("render.jl")
-include("axis.jl")
-include("scale.jl")
-include("legend.jl")
-include("config.jl")
-include("data_values.jl")
-include("mark.jl")
-include("encoding.jl")
+include("juno_integration.jl")
 include("io.jl")
 include("show.jl")
 
-### Integration with Escher (Escher does not seem to work in 0.5)
-# include("escher_integration.jl")
+
+########################  conditional definitions  #######################
 
 ### Integration with DataFrames
-include("dataframes_integration.jl")
+@require DataFrames begin
+  function vldata(d::DataFrames.DataFrame)
+    recs = [ Dict(r) for r in DataFrames.eachrow(d) ]
+    VegaLite.VLSpec{:data}(Dict("values" => recs))
+  end
 
-### Integration with IJulia - Jupyter
-# include("ijulia_integration.jl")
+  |>(a::DataFrames.DataFrame, b::VLSpec) = vldata(a) |> b
+end
+
+### Integration with DataTables
+@require DataTables begin
+  function vldata(d::DataTables.DataTable)
+    recs = [ Dict(r) for r in DataTables.eachrow(d) ]
+    VegaLite.VLSpec{:data}(Dict("values" => recs))
+  end
+
+  |>(a::DataTables.DataTable, b::VLSpec) = vldata(a) |> b
+end
 
 ### Integration with Juno
 include("juno_integration.jl")

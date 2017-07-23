@@ -1,3 +1,13 @@
+*.jl.cov
+*.jl.*.cov
+*.jl.mem
 docs/build/
 docs/site/
+<<<<<<< HEAD
 deps/node_modules/
+=======
+deps/lib/
+deps/node_modules/
+deps/npm-debug.log
+.directory
+>>>>>>> devl

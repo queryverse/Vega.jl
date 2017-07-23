@@ -12,7 +12,11 @@ addons:
     apt:
         packages:
             - xvfb
+<<<<<<< HEAD
             - xauth        
+=======
+            - xauth
+>>>>>>> devl
             - libgtk-3-0
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi

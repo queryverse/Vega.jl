@@ -1,5 +1,5 @@
-function convert_to_svg(v::VegaLiteVis)
-    data = JSON.json(v.vis)
+function convert_to_svg(v::VLSpec{:plot})
+    data = JSON.json(v.params)
     script_path = joinpath(@__DIR__, "compilesvg.js")
     p_out, p_in, p = readandwrite(`$(nodejs_cmd()) $script_path`)
     write(p_in, data)
@@ -10,7 +10,7 @@ function convert_to_svg(v::VegaLiteVis)
     return res
 end
 
-@compat function Base.show(io::IO, m::MIME"image/svg+xml", v::VegaLiteVis)
+@compat function Base.show(io::IO, m::MIME"image/svg+xml", v::VLSpec{:plot})
    svgHeader = """
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
@@ -20,7 +20,7 @@ end
     print(io, convert_to_svg(v))
 end
 
-@compat function Base.show(io::IO, m::MIME"application/pdf", v::VegaLiteVis)
+@compat function Base.show(io::IO, m::MIME"application/pdf", v::VLSpec{:plot})
     svgstring = convert_to_svg(v)
 
     r = Rsvg.handle_new_from_data(svgstring)
@@ -32,7 +32,7 @@ end
     finish(cs)
 end
 
-@compat function Base.show(io::IO, m::MIME"application/eps", v::VegaLiteVis)
+@compat function Base.show(io::IO, m::MIME"application/eps", v::VLSpec{:plot})
     svgstring = convert_to_svg(v)
 
     r = Rsvg.handle_new_from_data(svgstring)
@@ -44,7 +44,7 @@ end
     finish(cs)
 end
 
-# function Base.show(io::IO, m::MIME"application/postscript", v::VegaLiteVis)
+# function Base.show(io::IO, m::MIME"application/postscript", v::VLSpec{:plot})
 #     svgstring = convert_to_svg(v)
 
 #     r = Rsvg.handle_new_from_data(svgstring)
@@ -56,7 +56,7 @@ end
 #     finish(cs)
 # end
 
-@compat function Base.show(io::IO, m::MIME"image/png", v::VegaLiteVis)
+@compat function Base.show(io::IO, m::MIME"image/png", v::VLSpec{:plot})
     svgstring = convert_to_svg(v)
 
     r = Rsvg.handle_new_from_data(svgstring)
