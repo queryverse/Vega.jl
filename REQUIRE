@@ -1,7 +1,9 @@
-julia 0.5
+julia 0.6
 Compat 0.9.1
 JSON
 Requires
 NodeJS
 Cairo
 Rsvg
+TableTraits 0.0.1
+IterableTables
