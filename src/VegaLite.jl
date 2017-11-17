@@ -2,13 +2,17 @@ VERSION >= v"0.4" && __precompile__()
 
 module VegaLite
 
-using JSON, Compat, Requires, NodeJS, Cairo, Rsvg, TableTraits
+using JSON, Compat, Requires, NodeJS, Cairo, Rsvg
+import IteratorInterfaceExtensions, TableTraits
 # using PhantomJS
 
 # import Base: show
 import Base: display, REPL.REPLDisplay
 import Base: |>
 
+# This import can eventually be removed, it currently just makes sure
+# that the iterable tables integration for DataFrames and friends
+# is loaded
 import IterableTables
 
 export renderer, actionlinks, junoplotpane, png, svg, jgp, pdf, savefig
@@ -87,9 +91,9 @@ include("show.jl")
 ### TableTraits.jl integration
 
 function vldata(d)
-    isiterabletable(d) || error("Only iterable tables can be passed to vldata.")
+    TableTraits.isiterabletable(d) || error("Only iterable tables can be passed to vldata.")
 
-    it = getiterator(d)
+    it = IteratorInterfaceExtensions.getiterator(d)
 
     recs = [Dict(c[1]=>isnull(c[2]) ? nothing : get(c[2])  for c in zip(keys(r), values(r))) for r in it ]
 
