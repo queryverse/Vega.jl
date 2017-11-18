@@ -67,3 +67,30 @@ end
     Rsvg.handle_render_cairo(c,r)
     Cairo.write_to_png(cs,io)
 end
+
+@compat function Base.show(io::IO, m::MIME"juliavscode/html", plt::VLSpec{:plot})
+    schema = plt.params
+    schema["\$schema"] = "https://vega.github.io/schema/vega-lite/v2.0.json"
+    html = """
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Embedding Vega-Lite</title>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/vega/3.0.7/vega.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/vega-lite/2.0.1/vega-lite.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/vega-embed/3.0.0-rc7/vega-embed.js"></script>
+    </head>
+    <body>
+
+      <div id="vis"></div>
+
+      <script type="text/javascript">
+        var yourVlSpec = $(JSON.json(schema))
+        vegaEmbed("#vis", yourVlSpec);
+      </script>
+    </body>
+    </html>
+    """
+    info(html)
+    print(io, html)
+end
