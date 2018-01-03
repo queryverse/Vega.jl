@@ -9,13 +9,11 @@
 
 # @require IJulia begin  # define only if/when IJulia is loaded
 
-@compat import Base.show
-
 # Apparently (?) the security model of Jupyter does not allow loading local
 # d3, vegalite, .. js files.
 #   => libraries are loaded from an internet repository
 
-@compat function show(io::IO, m::MIME"text/html", v::VegaLiteVis)
+function Base.show(io::IO, m::MIME"text/html", v::VegaLiteVis)
   divid = "vl" * randstring(10) # generated id for this plot
 
   fh = """
