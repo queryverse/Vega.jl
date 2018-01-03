@@ -145,9 +145,9 @@ function writehtml_partial(io::IO, spec::String; title="VegaLite plot")
   """)
 end
 
-@compat import Base.show
-@compat show(io::IO, m::MIME"text/html", plt::VLSpec{:plot}) =
-  writehtml_partial(io, JSON.json(plt.params))
+function Base.show(io::IO, m::MIME"text/html", plt::VLSpec{:plot})
+    return writehtml_partial(io, JSON.json(plt.params))
+end
 
 
 """
