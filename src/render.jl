@@ -164,7 +164,7 @@ function launch_browser(tmppath::String)
 end
 
 
-function display(d::REPLDisplay, plt::VLSpec{:plot})
+function Base.display(d::Base.REPL.REPLDisplay, plt::VLSpec{:plot})
   checkplot(plt)
   tmppath = writehtml_full(JSON.json(plt.params))
   launch_browser(tmppath) # Open the browser
