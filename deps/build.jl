@@ -11,7 +11,7 @@ uvega     = "https://cdnjs.cloudflare.com/ajax/libs/vega/3.0.7/vega.min.js"
 uvegalite = "https://cdnjs.cloudflare.com/ajax/libs/vega-lite/2.0.1/vega-lite.min.js"
 uembed    = "https://cdnjs.cloudflare.com/ajax/libs/vega-embed/3.0.0-rc7/vega-embed.min.js"
 
-destdir      = joinpath(dirname(@__FILE__), "lib")
+destdir      = joinpath(@__DIR__, "lib")
 
 run(@build_steps begin
   CreateDirectory(destdir, true)
