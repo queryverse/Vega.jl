@@ -1,5 +1,4 @@
-VERSION >= v"0.4" && __precompile__()
-
+__precompile__()
 module VegaLite
 
 using JSON, Compat, Requires, NodeJS, Cairo, Rsvg
