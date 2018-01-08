@@ -4,7 +4,7 @@
 #
 ######################################################################
 
-asset(url...) = normpath(joinpath(dirname(@__FILE__), "..", "deps", "lib", url...))
+asset(url...) = normpath(joinpath(@__DIR__, "..", "deps", "lib", url...))
 
 #Vega Scaffold: https://github.com/vega/vega/wiki/Runtime
 
@@ -21,10 +21,10 @@ function writehtml_full(io::IO, spec::String; title="VegaLite plot")
     <head>
       <title>$title</title>
       <meta charset="UTF-8">
-      <script src="file://$(asset("d3.v3.min.js"))"></script>
-      <script src="file://$(asset("vega.min.js"))"></script>
-      <script src="file://$(asset("vega-lite.min.js"))"></script>
-      <script src="file://$(asset("vega-embed.min.js"))"></script>
+      <script src="file://$(asset("d3.v4.min.js"))"></script>
+      <script src="file://$(asset("vega.js"))"></script>
+      <script src="file://$(asset("vega-lite.js"))"></script>
+      <script src="file://$(asset("vega-embed.js"))"></script>
     </head>
     <body>
       <div id="$divid"></div>
@@ -97,10 +97,10 @@ function writehtml_partial(io::IO, spec::String; title="VegaLite plot")
 
     requirejs.config({
         paths: {
-          d3: "https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.16/d3.min.js?noext",
-          vg: "https://cdnjs.cloudflare.com/ajax/libs/vega/2.5.1/vega.min.js?noext",
-          vl: "https://cdnjs.cloudflare.com/ajax/libs/vega-lite/1.2.0/vega-lite.js?noext",
-          vg_embed: "https://cdnjs.cloudflare.com/ajax/libs/vega-embed/2.2.0/vega-embed.js?noext"
+          d3: "https://d3js.org/d3.v4.min.js",
+          vg: "https://cdnjs.cloudflare.com/ajax/libs/vega/3.0.8/vega.js",
+          vl: "https://cdnjs.cloudflare.com/ajax/libs/vega-lite/2.0.3/vega-lite.js",
+          vg_embed: "https://cdnjs.cloudflare.com/ajax/libs/vega-embed/3.0.0-rc7/vega-embed.js"
         },
         shim: {
           vg_embed: {deps: ["vg.global", "vl.global"]},
@@ -145,9 +145,9 @@ function writehtml_partial(io::IO, spec::String; title="VegaLite plot")
   """)
 end
 
-@compat import Base.show
-@compat show(io::IO, m::MIME"text/html", plt::VLSpec{:plot}) =
-  writehtml_partial(io, JSON.json(plt.params))
+function Base.show(io::IO, m::MIME"text/html", plt::VLSpec{:plot})
+    return writehtml_partial(io, JSON.json(plt.params))
+end
 
 
 """
@@ -164,7 +164,7 @@ function launch_browser(tmppath::String)
 end
 
 
-function display(d::REPLDisplay, plt::VLSpec{:plot})
+function Base.display(d::Base.REPL.REPLDisplay, plt::VLSpec{:plot})
   checkplot(plt)
   tmppath = writehtml_full(JSON.json(plt.params))
   launch_browser(tmppath) # Open the browser

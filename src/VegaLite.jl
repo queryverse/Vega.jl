@@ -1,13 +1,9 @@
-VERSION >= v"0.4" && __precompile__()
-
+__precompile__()
 module VegaLite
 
 using JSON, Compat, Requires, NodeJS, Cairo, Rsvg
 import IteratorInterfaceExtensions, TableTraits
-# using PhantomJS
 
-# import Base: show
-import Base: display, REPL.REPLDisplay
 import Base: |>
 
 # This import can eventually be removed, it currently just makes sure
