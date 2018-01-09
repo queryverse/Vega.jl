@@ -97,10 +97,10 @@ function writehtml_partial(io::IO, spec::String; title="VegaLite plot")
 
     requirejs.config({
         paths: {
-          d3: "https://d3js.org/d3.v4.min.js",
-          vg: "https://cdnjs.cloudflare.com/ajax/libs/vega/3.0.8/vega.js",
-          vl: "https://cdnjs.cloudflare.com/ajax/libs/vega-lite/2.0.3/vega-lite.js",
-          vg_embed: "https://cdnjs.cloudflare.com/ajax/libs/vega-embed/3.0.0-rc7/vega-embed.js"
+          d3: "https://d3js.org/d3.v4.min.js?noext",
+          vg: "https://cdnjs.cloudflare.com/ajax/libs/vega/3.0.8/vega.min.js?noext",
+          vl: "https://cdnjs.cloudflare.com/ajax/libs/vega-lite/2.0.3/vega-lite.min.js?noext",
+          vg_embed: "https://cdnjs.cloudflare.com/ajax/libs/vega-embed/3.0.0-rc7/vega-embed.min.js?noext"
         },
         shim: {
           vg_embed: {deps: ["vg.global", "vl.global"]},
