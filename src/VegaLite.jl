@@ -12,7 +12,7 @@ import Base: |>
 import IterableTables
 
 export renderer, actionlinks, junoplotpane, png, svg, jgp, pdf, savefig,
-    @vl_str
+    loadspec, savespec, @vl_str
 
 
 ########################  settings functions  ###############################
