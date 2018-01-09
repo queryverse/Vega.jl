@@ -11,7 +11,8 @@ import Base: |>
 # is loaded
 import IterableTables
 
-export renderer, actionlinks, junoplotpane, png, svg, jgp, pdf, savefig
+export renderer, actionlinks, junoplotpane, png, svg, jgp, pdf, savefig,
+    @vl_str
 
 
 ########################  settings functions  ###############################
@@ -83,6 +84,7 @@ include("render.jl")
 include("juno_integration.jl")
 include("io.jl")
 include("show.jl")
+include("macro.jl")
 
 ### TableTraits.jl integration
 
