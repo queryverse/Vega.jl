@@ -118,25 +118,16 @@ function writehtml_partial(io::IO, spec::String; title="VegaLite plot")
     });
 
     require(["vg_embed"], function(vg_embed) {
-      var vlSpec = $(JSON.json(v.vis));
-      var embedSpec = {
+      var spec = $spec;
+
+      var opt = {
         mode: "vega-lite",
-        renderer: "$(SVG ? "svg" : "canvas")",
-        actions: $SAVE_BUTTONS,
-        spec: $spec
-      };
+        renderer: "$RENDERER",
+        actions: $ACTIONSLINKS
+      }
 
-      vg_embed("#$divid", embedSpec, function(error, result) {});
+      vg_embed("#$divid", spec, opt);
 
-  //      var opt = {
-  //        mode: "vega-lite",
-  //        renderer: "$RENDERER",
-  //        actions: $ACTIONSLINKS
-  //      }
-  //
-  //      var spec = $(v.json)
-  //
-  //      vega.embed('#$divid', spec, opt);
     })
 
     </script>
