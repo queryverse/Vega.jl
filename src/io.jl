@@ -47,7 +47,7 @@ function savefig(filename::AbstractString, v::VLSpec{:plot})
 end
 
 function loadspec(filename::AbstractString)
-    s = readstring(f.filename)
+    s = readstring(filename)
     return VLSpec{:plot}(JSON.parse(s))
 end
 
@@ -56,7 +56,7 @@ function savespec(filename::AbstractString, v::VLSpec{:plot}; include_data=false
     if !include_data
         delete!(output_dict, "data")
     end
-    open(file.filename, "w") do f
+    open(filename, "w") do f
         JSON.print(f, output_dict)
     end
 end
