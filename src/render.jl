@@ -110,7 +110,7 @@ function writehtml_partial(io::IO, spec::String; title="VegaLite plot")
     });
 
     define('vg.global', ['vg'], function(vgGlobal) {
-        window.vg = vgGlobal;
+        window.vega = vgGlobal;
     });
 
     define('vl.global', ['vl'], function(vlGlobal) {
