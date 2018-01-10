@@ -6,14 +6,24 @@
 
 @require Juno begin  # only if/when Juno is loaded
 
-import Juno
+import Juno: Juno, @render, media, Media, Hiccup
 
-function Juno.render(i::Juno.Inline, plt::VLSpec{:plot})
-  checkplot(plt)
-  tmppath = writehtml_full(JSON.json(plt.params))
-  launch_browser(tmppath) # Open the browser
-  Juno.render(i, "VegaLite plot") # print nothing in the editor pane
+media(VLSpec, Media.Plot)
+
+@render Juno.PlotPane p::VLSpec begin
+    HTML(stringmime("text/html", p))
 end
+
+# @render Juno.Editor p::Gadfly.Plot begin
+#     Juno.icon("graph")
+# end
+
+# function Juno.render(i::Juno.Inline, plt::VLSpec{:plot})
+#   checkplot(plt)
+#   tmppath = writehtml_full(JSON.json(plt.params))
+#   launch_browser(tmppath) # Open the browser
+#   Juno.render(i, "VegaLite plot") # print nothing in the editor pane
+# end
 
 # TODO : plotpane rendering
 # # if package PhantomJS is present redirect rendering to Juno's plot pane
