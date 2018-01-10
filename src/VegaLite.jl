@@ -2,7 +2,7 @@ __precompile__()
 module VegaLite
 
 using JSON, Compat, Requires, NodeJS, Cairo, Rsvg
-import IteratorInterfaceExtensions, TableTraits
+import IteratorInterfaceExtensions, TableTraits, FileIO
 
 import Base: |>
 
@@ -85,6 +85,7 @@ include("juno_integration.jl")
 include("io.jl")
 include("show.jl")
 include("macro.jl")
+include("fileio.jl")
 
 ### TableTraits.jl integration
 
