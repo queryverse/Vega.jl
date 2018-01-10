@@ -10,6 +10,12 @@ function convert_to_svg(v::VLSpec{:plot})
     return res
 end
 
+Base.Multimedia.istextmime(::MIME{Symbol("application/vnd.vegalite.v2+json")}) = true
+
+function Base.show(io::IO, m::MIME"application/vnd.vegalite.v2+json", v::VLSpec{:plot})
+     print(io, JSON.json(v.params))
+ end
+
 function Base.show(io::IO, m::MIME"image/svg+xml", v::VLSpec{:plot})
    svgHeader = """
 <?xml version="1.0" encoding="utf-8"?>
