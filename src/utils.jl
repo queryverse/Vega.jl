@@ -77,6 +77,12 @@ function pushpars!(pars::Dict{String,Any}, val,
     end
   elseif sprop == :plot # bag of key-values
     merge!(pars, rval)
+  elseif sprop == :encoding
+    if haskey(pars, "encoding")
+      merge!(pars["encoding"], rval)
+    else
+      pars["encoding"] = rval
+    end
   else
     pars[cprop] = rval
   end
