@@ -19,6 +19,20 @@ for chan in keys(refs["EncodingWithFacet"].props)
   end
 end
 
+# encode_x()
+for chan in keys(refs["EncodingWithFacet"].props)
+    sfn = Symbol("encode_" * chan)
+
+    schan = jlfunc(chan)
+
+    @eval(function ($sfn)(field::Symbol, args...;kwargs...)
+        contains(i->i[1],kwargs,:field) && error("You cannot pass a keyword argument named 'field'.")
+        nkw = [kwargs ; (:field, field)]
+        encoding(($schan)(args...;nkw...))
+    end)
+    eval( Expr(:export, sfn))
+end
+
 # ... mark(typ=:line .. ))  => markline()
 for typ in refs["Mark"].enum
   sfn = Symbol("mark" * typ)
