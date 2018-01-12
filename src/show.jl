@@ -69,28 +69,33 @@ function Base.show(io::IO, m::MIME"image/png", v::VLSpec{:plot})
 end
 
 @compat function Base.show(io::IO, m::MIME"juliavscode/html", plt::VLSpec{:plot})
-    schema = plt.params
-    schema["\$schema"] = "https://vega.github.io/schema/vega-lite/v2.0.json"
+    divid = "vg" * randstring(3)
+    spec = JSON.json(plt.params)
     html = """
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <title>Embedding Vega-Lite</title>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/vega/3.0.7/vega.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/vega-lite/2.0.1/vega-lite.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/vega-embed/3.0.0-rc7/vega-embed.js"></script>
-    </head>
-    <body>
+        <html>
+        <head>
+            <title>Vega-lite plot</title>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vega/3.0.8/vega.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vega-lite/2.0.3/vega-lite.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vega-embed/3.0.0-rc7/vega-embed.min.js"></script>
+        </head>
+        <body>
+            <div id="$divid"></div>
+        </body>
 
-      <div id="vis"></div>
+        <script type="text/javascript">
+            var opt = {
+                mode: "vega-lite",
+                renderer: "canvas",
+                actions: false
+            }
 
-      <script type="text/javascript">
-        var yourVlSpec = $(JSON.json(schema))
-        vegaEmbed("#vis", yourVlSpec);
-      </script>
-    </body>
-    </html>
+            var spec = $spec
+
+            vegaEmbed('#$divid', spec, opt);
+
+        </script>
+        </html>
     """
-    info(html)
     print(io, html)
 end
