@@ -3,6 +3,7 @@ using Documenter, VegaLite
 
 makedocs(
   modules=[VegaLite],
+  format=:html,
   sitename = "VegaLite.jl",
   pages = [
     "Introduction" => "index.md",
@@ -13,5 +14,9 @@ makedocs(
 )
 
 deploydocs(
-    repo = "github.com/fredo-dedup/VegaLite.jl.git"
+    deps=nothing,
+    make=nothing,
+    target="build",
+    repo = "github.com/fredo-dedup/VegaLite.jl.git",
+    julia = "0.6"
 )

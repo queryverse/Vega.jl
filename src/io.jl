@@ -46,6 +46,21 @@ function savefig(filename::AbstractString, v::VLSpec{:plot})
     savefig(filename, mime, v)
 end
 
+function loadspec(filename::AbstractString)
+    s = readstring(filename)
+    return VLSpec{:plot}(JSON.parse(s))
+end
+
+function savespec(filename::AbstractString, v::VLSpec{:plot}; include_data=false)
+    output_dict = copy(v.params)
+    if !include_data
+        delete!(output_dict, "data")
+    end
+    open(filename, "w") do f
+        JSON.print(f, output_dict)
+    end
+end
+
 """
     svg(filename::AbstractString, v::VLSpec{:plot})
 Save the plot ``v`` as a svg file with name ``filename``.

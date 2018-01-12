@@ -1,15 +1,18 @@
-VERSION >= v"0.4" && __precompile__()
-
+__precompile__()
 module VegaLite
 
 using JSON, Compat, Requires, NodeJS, Cairo, Rsvg
-# using PhantomJS
+import IteratorInterfaceExtensions, TableTraits
 
-# import Base: show
-import Base: display, REPL.REPLDisplay
 import Base: |>
 
-export renderer, actionlinks, junoplotpane, png, svg, jgp, pdf, savefig
+# This import can eventually be removed, it currently just makes sure
+# that the iterable tables integration for DataFrames and friends
+# is loaded
+import IterableTables
+
+export renderer, actionlinks, junoplotpane, png, svg, jgp, pdf, savefig,
+    loadspec, savespec, @vl_str
 
 
 ########################  settings functions  ###############################
@@ -81,29 +84,23 @@ include("render.jl")
 include("juno_integration.jl")
 include("io.jl")
 include("show.jl")
+include("macro.jl")
 
+### TableTraits.jl integration
+
+function vldata(d)
+    TableTraits.isiterabletable(d) || error("Only iterable tables can be passed to vldata.")
+
+    it = IteratorInterfaceExtensions.getiterator(d)
+
+    recs = [Dict(c[1]=>isnull(c[2]) ? nothing : get(c[2])  for c in zip(keys(r), values(r))) for r in it ]
+
+    VegaLite.VLSpec{:data}(Dict("values" => recs))
+end
+
+|>(a, b::VLSpec) = vldata(a) |> b
 
 ########################  conditional definitions  #######################
-
-### Integration with DataFrames
-@require DataFrames begin
-  function vldata(d::DataFrames.DataFrame)
-    recs = [ Dict(r) for r in DataFrames.eachrow(d) ]
-    VegaLite.VLSpec{:data}(Dict("values" => recs))
-  end
-
-  |>(a::DataFrames.DataFrame, b::VLSpec) = vldata(a) |> b
-end
-
-### Integration with DataTables
-@require DataTables begin
-  function vldata(d::DataTables.DataTable)
-    recs = [ Dict(r) for r in DataTables.eachrow(d) ]
-    VegaLite.VLSpec{:data}(Dict("values" => recs))
-  end
-
-  |>(a::DataTables.DataTable, b::VLSpec) = vldata(a) |> b
-end
 
 ### Integration with Juno
 include("juno_integration.jl")
