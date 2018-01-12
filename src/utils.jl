@@ -30,6 +30,29 @@ for chan in keys(refs["EncodingWithFacet"].props)
         nkw = [kwargs ; (:field, field)]
         encoding(($schan)(args...;nkw...))
     end)
+
+    # TODO Make this more robust
+    @eval(function ($sfn)(shorthand::String, args...;kwargs...)
+        parts = split(shorthand, ':')
+
+        vl_type = if parts[2]=="Q"
+            :quantitative
+        elseif parts[2]=="O"
+            :ordinal
+        elseif parts[2]=="N"
+            :nominal
+        elseif parts[2]=="T"
+            :temporal
+        else
+            error("Unknown data type.")
+        end
+
+        nkw = [kwargs ; (:field, Symbol(parts[1]))]
+        nkw = [nkw ; (:type, vl_type)]
+
+        encoding(($schan)(args...;nkw...))
+    end)    
+
     eval( Expr(:export, sfn))
 end
 
