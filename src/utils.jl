@@ -31,24 +31,37 @@ for chan in keys(refs["EncodingWithFacet"].props)
         encoding(($schan)(args...;nkw...))
     end)
 
-    # TODO Make this more robust
     @eval(function ($sfn)(shorthand::String, args...;kwargs...)
-        parts = split(shorthand, ':')
+        parts = match(r"(\w+)(\(\w+\))?(:[QqOoNnTt])?", shorthand)
 
-        vl_type = if parts[2]=="Q"
-            :quantitative
-        elseif parts[2]=="O"
-            :ordinal
-        elseif parts[2]=="N"
-            :nominal
-        elseif parts[2]=="T"
-            :temporal
+        if parts[2]==nothing
+            field_name = parts[1]
+            agg_name = nothing
         else
-            error("Unknown data type.")
+            field_name = parts[2][2:end-1]
+            agg_name = parts[1]
+        end
+        vl_type = if parts[3]!=nothing && uppercase(parts[3][2:end])=="Q"
+            "quantitative"
+        elseif parts[3]!=nothing && uppercase(parts[3][2:end])=="O"
+            "ordinal"
+        elseif parts[3]!=nothing && uppercase(parts[3][2:end])=="N"
+            "nominal"
+        elseif parts[3]!=nothing && uppercase(parts[3][2:end])=="T"
+            "temporal"
+        else
+            nothing
         end
 
-        nkw = [kwargs ; (:field, Symbol(parts[1]))]
-        nkw = [nkw ; (:type, vl_type)]
+        parts = split(shorthand, ':')
+
+        nkw = [kwargs ; (:field, Symbol(field_name))]
+        if vl_type!=nothing
+          nkw = [nkw ; (:type, vl_type)]
+        end
+        if agg_name!=nothing
+          nkw = [nkw ; (:aggregate, String(agg_name))]
+        end
 
         encoding(($schan)(args...;nkw...))
     end)    
