@@ -2,7 +2,7 @@ __precompile__()
 module VegaLite
 
 using JSON, Compat, Requires, NodeJS, Cairo, Rsvg
-import IteratorInterfaceExtensions, TableTraits, FileIO
+import IteratorInterfaceExtensions, TableTraits, FileIO, DataValues
 
 import Base: |>
 
