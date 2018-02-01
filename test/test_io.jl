@@ -7,7 +7,7 @@ p = VegaLite.data(DataFrame(x = [1,2,3], y=[1,2,3])) |>
     markpoint() |>
     encoding(xquantitative(field=:x), yquantitative(field=:y))
 
-Compat.Filesystem.mktempdir() do folder
+Base.Filesystem.mktempdir() do folder
     svg(joinpath(folder,"test1.svg"), p)
     @test isfile(joinpath(folder,"test1.svg"))
 
@@ -32,4 +32,17 @@ Compat.Filesystem.mktempdir() do folder
     savefig(joinpath(folder,"test2.eps"), p)
     @test isfile(joinpath(folder,"test2.eps"))
 
+    VegaLite.savespec(joinpath(folder,"test1.vegalite"), p)
+    @test isfile(joinpath(folder,"test1.vegalite"))
+
+    # TODO Enable once FileIO registration is merged
+    # save(p, joinpath(folder,"test2.vegalite"))
+    # @test isfile(joinpath(folder,"test2.vegalite"))
+
+    p2 = VegaLite.loadspec(joinpath(folder,"test1.vegalite"))
+    @test isa(p2, VegaLite.VLSpec)
+
+    # TODO Enable once FileIO registration is merged
+    # p2 = load(joinpath(folder,"test1.vegalite"))
+    # @test isa(p2, VLSpec)
 end
