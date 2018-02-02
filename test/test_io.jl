@@ -3,6 +3,8 @@ using Compat
 using VegaLite
 using DataFrames
 
+@testset "io" begin
+
 p = VegaLite.data(DataFrame(x = [1,2,3], y=[1,2,3])) |>
     markpoint() |>
     encoding(xquantitative(field=:x), yquantitative(field=:y))
@@ -45,4 +47,6 @@ Base.Filesystem.mktempdir() do folder
     # TODO Enable once FileIO registration is merged
     # p2 = load(joinpath(folder,"test1.vegalite"))
     # @test isa(p2, VLSpec)
+end
+
 end
