@@ -133,11 +133,6 @@ function writehtml_partial(io::IO, spec::String; title="VegaLite plot")
   """)
 end
 
-function Base.show(io::IO, m::MIME"text/html", plt::VLSpec{:plot})
-    return writehtml_partial(io, JSON.json(plt.params))
-end
-
-
 """
 opens a browser tab with the given html file
 """
