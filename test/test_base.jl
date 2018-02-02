@@ -1,6 +1,8 @@
 using Base.Test
 using VegaLite
 
+@testset "base" begin
+
 equiv(a::VegaLite.VLSpec, b::VegaLite.VLSpec) = false
 equiv{T}(a::VegaLite.VLSpec{T}, b::VegaLite.VLSpec{T}) =
   ==(a.params,b.params)
@@ -74,3 +76,5 @@ mpg = dataset("ggplot2", "mpg")
 @test isa(VegaLite.data(mpg), VegaLite.VLSpec{:data})
 @test equiv(VegaLite.data(mpg) |> config(vlcell(width=200)),
             mpg |> config(vlcell(width=200)))
+
+end
