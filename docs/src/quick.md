@@ -17,7 +17,7 @@ mpg |> # start with the data source (here a DataFrame)
   config(vlcell(width=350, height=400))
 ```
 
-![plot1](examples/png/vegalite3.png)
+![plot1](png/vegalite3.png)
 
 An alternative, more julian syntax, without the piping operator is also valid. The preceding statement can just as well be written :
 
@@ -56,7 +56,7 @@ mpg |>
   config(vlcell(width=400))
 ```
 
-![plot2](../examples/png/example3.png)
+![plot2](png/example3.png)
 
 
 ### Using `layer()` to surimpose several plots
@@ -80,7 +80,7 @@ df |>
   layer(markpoint(), encoding(encx, ency, vlcolor(value="black")))
 ```
 
-![plot4](../examples/png/example4.png)
+![plot4](png/example4.png)
 
 ### Using `repeat()` to facet a plot by data fields
 
