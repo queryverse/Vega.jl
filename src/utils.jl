@@ -19,6 +19,56 @@ for chan in keys(refs["EncodingWithFacet"].props)
   end
 end
 
+# encode_x()
+for chan in keys(refs["EncodingWithFacet"].props)
+    sfn = Symbol("encode_" * chan)
+
+    schan = jlfunc(chan)
+
+    @eval(function ($sfn)(field::Symbol, args...;kwargs...)
+        contains(i->i[1],kwargs,:field) && error("You cannot pass a keyword argument named 'field'.")
+        nkw = [kwargs ; (:field, field)]
+        encoding(($schan)(args...;nkw...))
+    end)
+
+    @eval(function ($sfn)(shorthand::String, args...;kwargs...)
+        parts = match(r"(\w+)(\(\w+\))?(:[QqOoNnTt])?", shorthand)
+
+        if parts[2]==nothing
+            field_name = parts[1]
+            agg_name = nothing
+        else
+            field_name = parts[2][2:end-1]
+            agg_name = parts[1]
+        end
+        vl_type = if parts[3]!=nothing && uppercase(parts[3][2:end])=="Q"
+            "quantitative"
+        elseif parts[3]!=nothing && uppercase(parts[3][2:end])=="O"
+            "ordinal"
+        elseif parts[3]!=nothing && uppercase(parts[3][2:end])=="N"
+            "nominal"
+        elseif parts[3]!=nothing && uppercase(parts[3][2:end])=="T"
+            "temporal"
+        else
+            nothing
+        end
+
+        parts = split(shorthand, ':')
+
+        nkw = [kwargs ; (:field, Symbol(field_name))]
+        if vl_type!=nothing
+          nkw = [nkw ; (:type, vl_type)]
+        end
+        if agg_name!=nothing
+          nkw = [nkw ; (:aggregate, String(agg_name))]
+        end
+
+        encoding(($schan)(args...;nkw...))
+    end)    
+
+    eval( Expr(:export, sfn))
+end
+
 # ... mark(typ=:line .. ))  => markline()
 for typ in refs["Mark"].enum
   sfn = Symbol("mark" * typ)
@@ -77,6 +127,12 @@ function pushpars!(pars::Dict{String,Any}, val,
     end
   elseif sprop == :plot # bag of key-values
     merge!(pars, rval)
+  elseif sprop == :encoding
+    if haskey(pars, "encoding")
+      merge!(pars["encoding"], rval)
+    else
+      pars["encoding"] = rval
+    end
   else
     pars[cprop] = rval
   end
