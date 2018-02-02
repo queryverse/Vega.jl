@@ -2,7 +2,7 @@ __precompile__()
 module VegaLite
 
 using JSON, Compat, Requires, NodeJS, Cairo, Rsvg
-import IteratorInterfaceExtensions, TableTraits
+import IteratorInterfaceExtensions, TableTraits, FileIO, DataValues
 
 import Base: |>
 
@@ -85,6 +85,7 @@ include("juno_integration.jl")
 include("io.jl")
 include("show.jl")
 include("macro.jl")
+include("fileio.jl")
 
 ### TableTraits.jl integration
 
@@ -93,7 +94,7 @@ function vldata(d)
 
     it = IteratorInterfaceExtensions.getiterator(d)
 
-    recs = [Dict(c[1]=>isnull(c[2]) ? nothing : get(c[2])  for c in zip(keys(r), values(r))) for r in it ]
+    recs = [Dict(c[1]=>isa(c[2], DataValues.DataValue) ? (isnull(c[2]) ? nothing : get(c[2])) : c[2] for c in zip(keys(r), values(r))) for r in it]
 
     VegaLite.VLSpec{:data}(Dict("values" => recs))
 end
