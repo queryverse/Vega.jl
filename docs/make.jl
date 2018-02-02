@@ -8,6 +8,7 @@ makedocs(
   pages = [
     "Introduction" => "index.md",
     "Quick Tour" => "quick.md",
+    "Vega-lite specifications" => "vlspec.md",
     "Global settings" => "global.md",
     "Outputs" => "output.md",
     "API reference" => "functions.md"]
