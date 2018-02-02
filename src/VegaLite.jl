@@ -101,9 +101,4 @@ end
 
 |>(a, b::VLSpec) = vldata(a) |> b
 
-########################  conditional definitions  #######################
-
-### Integration with Juno
-include("juno_integration.jl")
-
 end
