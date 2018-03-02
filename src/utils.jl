@@ -2,7 +2,7 @@
 
 # ... x(typ=:quantitative, .. ))  => xquantitative()
 for chan in keys(refs["EncodingWithFacet"].props)
-  for typ in refs["Type"].enum
+  for typ in union(refs["BasicType"].enum, refs["GeoType"].enum)
     sfn = Symbol(chan * typ)
 
     # function declaration and export
@@ -64,7 +64,7 @@ for chan in keys(refs["EncodingWithFacet"].props)
         end
 
         encoding(($schan)(args...;nkw...))
-    end)    
+    end)
 
     eval( Expr(:export, sfn))
 end
