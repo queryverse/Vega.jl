@@ -170,18 +170,34 @@
 #   pars
 # end
 
-#
-# tstargs(;kwargs...) = kwargs
-#
-# tstargs(abcd=456, xs="abcd")
-# tstargs(; @NT(abcd=456, xs="abcd")...)
-# ttt = @NT(abcd=456, xs="abcd")
-# kwa = [ (ns,  getfield(ttt, ns)) for ns in fieldnames(typeof(ttt)) ]
-# tstargs(;kwa...)
-# kwa = [ ns => getfield(ttt, ns) for ns in fieldnames(typeof(ttt)) ]
-# Dict(kwa)
-# tstargs(;Dict(kwa)...)
-# tstargs(;Dict("abcd"=>423)...)
+
+########################  The VegaLite spec type  ########################
+
+struct VLSpec{T}
+    params::Union{Dict, Vector}
+end
+
+function VLSpec{VL}(args...;kwargs...) where VL
+    params = todicttree(args...; kwargs...)
+
+    # check if at least one of the SpecDef associated matches
+    # except if 1st level (i.e.  :plot) because this level can be built
+    # incrementally (with the pipe operator) and can be incomplete at
+    #  intermediate stages
+    # if VL != :plot
+        fdefs = collect(keys(funcs[VL]))
+        conforms(params, "$VL", UnionDef("", fdefs))
+    # end
+
+    VLSpec{VL}(params)
+end
+
+vltype(::VLSpec{T}) where T = T
+
+
+
+
+
 
 """
 transforms arguments to a dict structure (dict) suitable for a VLSpec.
@@ -197,7 +213,8 @@ function todicttree(args...; kwargs...)
             kwa = [ (ns,  getfield(v, ns)) for ns in fieldnames(typeof(v)) ]
             pars[kstr] = todicttree(;kwa...)
         elseif v isa Dict
-            pars[kstr] = todicttree(;v...)
+            kwa = [ (Symbol(k),  val) for (k,val) in v ]
+            pars[kstr] = todicttree(;kwa...)
         elseif v isa VLSpec
             pars[kstr] = Dict(vlname(vltype(v)) => v.params)
         else
@@ -210,9 +227,9 @@ function todicttree(args...; kwargs...)
     #  (no named tuples, ...)
     for a in args
         isa(a, VLSpec) || error("non keyword args should be a VegaLite function, not $a")
-        prop = vltype(a)
+        prop = vlname(vltype(a))
         haskey(pars, prop) && error("property $prop specified more than once")
-        pars[prop] = a
+        pars[prop] = a.params
     end
 
     # if Symbol(vlname(sfn)) in arrayprops
@@ -223,36 +240,20 @@ function todicttree(args...; kwargs...)
 end
 
 
-struct VLSpec2{T}
-    params::Union{Dict, Vector}
-    function VLSpec2{T}(params)
-        if T != :plot
-          fdefs = collect(keys(funcs[T]))
-          conforms(params, "$T", UnionDef("", fdefs))
-        end
-        new{T}(params)
-    end
-end
-
-VLSpec2{T}(args...;kwargs...) where T =
-    VLSpec2{T}(todicttree(args...; kwargs...))
-
-
-
 
 ### TableTraits.jl integration
 
-function vldata(d)
-    TableTraits.isiterabletable(d) || error("Only iterable tables can be passed to vldata.")
-
-    it = IteratorInterfaceExtensions.getiterator(d)
-
-    recs = [Dict(c[1]=>isa(c[2], DataValues.DataValue) ? (isnull(c[2]) ? nothing : get(c[2])) : c[2] for c in zip(keys(r), values(r))) for r in it]
-
-    VegaLite.VLSpec{:data}(Dict("values" => recs))
-end
-
-|>(a, b::VLSpec) = vldata(a) |> b
+# function vldata(d)
+#     TableTraits.isiterabletable(d) || error("Only iterable tables can be passed to vldata.")
+#
+#     it = IteratorInterfaceExtensions.getiterator(d)
+#
+#     recs = [Dict(c[1]=>isa(c[2], DataValues.DataValue) ? (isnull(c[2]) ? nothing : get(c[2])) : c[2] for c in zip(keys(r), values(r))) for r in it]
+#
+#     VegaLite.VLSpec{:data}(Dict("values" => recs))
+# end
+#
+# |>(a, b::VLSpec) = vldata(a) |> b
 
 
 if false

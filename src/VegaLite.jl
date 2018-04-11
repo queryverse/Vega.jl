@@ -1,7 +1,7 @@
 __precompile__()
 module VegaLite
 
-using JSON, Compat, Requires, NodeJS, Cairo, Rsvg
+using JSON, Compat, Requires, NodeJS, Cairo, Rsvg, NamedTuples
 import IteratorInterfaceExtensions, TableTraits, FileIO, DataValues
 
 import Base: |>
@@ -75,11 +75,12 @@ junoplotpane(b::Bool) = (global JUNOPLOTPANE ; JUNOPLOTPANE = b)
 
 ########################  includes  #####################################
 
+include("dsl.jl")
 include("schema_parsing.jl")
 include("func_definition.jl")
 include("func_documentation.jl")
 include("spec_validation.jl")
-include("utils.jl")
+# include("utils.jl")
 include("render.jl")
 include("juno_integration.jl")
 include("io.jl")
@@ -87,18 +88,5 @@ include("show.jl")
 include("macro.jl")
 include("fileio.jl")
 
-### TableTraits.jl integration
-
-function vldata(d)
-    TableTraits.isiterabletable(d) || error("Only iterable tables can be passed to vldata.")
-
-    it = IteratorInterfaceExtensions.getiterator(d)
-
-    recs = [Dict(c[1]=>isa(c[2], DataValues.DataValue) ? (isnull(c[2]) ? nothing : get(c[2])) : c[2] for c in zip(keys(r), values(r))) for r in it]
-
-    VegaLite.VLSpec{:data}(Dict("values" => recs))
-end
-
-|>(a, b::VLSpec) = vldata(a) |> b
 
 end

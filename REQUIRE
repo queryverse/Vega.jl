@@ -11,3 +11,4 @@ IterableTables
 FileIO
 Juno
 DataValues
+NamedTuples

@@ -1,8 +1,113 @@
 
-module A
+reload("VegaLite")
+
+module VegaLite
+methods(VLSpec)
+VLSpec{:vlmark}(typ=:point).params
+VLSpec{:vlmark}(typo=:point).params
+VLSpec{:vlmark}(Dict("typ" => :point)).params
+
+VLSpec{:vllayer}(mark=@NT(typ=:point),
+                 encoding=@NT(x=@NT(typ=:nominal, field=:xx)),
+                 width=300).params
+VLSpec{:vllayer}(encoding=@NT(x=@NT(typ=:nominal, field=:xx)),
+                 width=300).params
+
+VLSpec{:vllayer}(VLSpec{:vlencoding}(x=@NT(typ=:nominal, field=:xx)),
+                 VLSpec{:vlmark}(typ=:point),
+                 width=300).params
+
+todicttree(VLSpec{:vlencoding}(x=@NT(typ=:nominal, field=:xx)),
+                 VLSpec{:vlmark}(typ=:point),
+                 width=300)
+
+ttt = VLSpec{:vllayer}(encoding=@NT(x=@NT(typ=:nominal, field=:xx)),
+                 width=300);
+
+
+
+macro mkfuncEDT(dim, typ)
+ quote
+     (val, args...) ->
+         VLSpec{:vlencoding}(;$dim = todicttree(args...;value=val, typ=typ, kwargs...))
+ end
 end
 
-reload("VegaLite")
+ttt = @mkfuncEDT(x, nominal)
+ttt()
+
+macro mkfuncEDT(dim, typ)
+    if typ == :value
+        quote
+            function (val, args...; kwargs...)
+                VLSpec{:vlencoding}(;$dim = todicttree(args...;value=val, typ=typ, kwargs...))
+            end
+        end
+    else
+        quote
+            function (val, args...; kwargs...)
+                VLSpec{:vlencoding}(;$dim = todicttree(args...;field=val, typ=typ, kwargs...))
+            end
+        end
+    end
+end
+
+ttt = @mkfuncEDT(x, nominal)
+
+channels = tuple(Symbol.(collect(keys(refs["EncodingWithFacet"].props)))...)
+
+
+
+refs["EncodingWithFacet"].props
+
+
+ttt(:yoyo, axis=nothing).params
+
+
+ttt = @NT( [ (:nominal,      mkfuncEDT(:vlx, :nominal)),
+       (:quantitative, mkfuncEDT(:vlx, :quantitative))]... )
+
+tlst = [:nominal, :quantitative, :ordinal, :temporal, :value]
+ttt = @NT(nominal, quantitative, ordinal, temporal, value)
+tmp = ttt([mkfuncEDT(:vlx, t) for t in tlst]...)
+
+
+ttt = VLSpec{:vlx}(field=:yoyo, typ=:nominal, axis=nothing);
+tt2 = VLSpec{:vlencoding}(Dict(:x => ttt.params));
+tt2 = VLSpec{:vlencoding}(ttt);
+tt2.params
+vltype(ttt)
+vlname(vltype(ttt))
+
+
+
+ttt = tmp.nominal(:yoyo, axis=nothing);
+ttt.params
+
+
+
+ttt = VLSpec{:vlx}(typ=:nominal, field = :k);
+ttt.params
+
+tt2 = VLSpec{:vlencoding}(ttt);
+tt2.params
+
+tmp.nominal(field = :k)
+
+
+methods(VLSpec)
+
+p = res |>
+    plot(mark.bar(),
+         encoding.x.nominal(:src),
+         encoding.y.quantitative(:val),
+         encoding.color.nominal(:src),
+         encoding.column.nominal(:cat),
+         height=400, width=80);
+
+end
+
+
 
 module A
 
