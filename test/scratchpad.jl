@@ -25,28 +25,42 @@ ttt = VLSpec{:vllayer}(encoding=@NT(x=@NT(typ=:nominal, field=:xx)),
                  width=300);
 
 
+dim, typ = :x, :nominal
+ttt = eval(quote
+    (val, args...; kwargs...) ->
+        VLSpec{:vlencoding}(;$dim = todicttree(args...;field=val, typ= :($typ), kwargs...))
+    end)
+
+ttt(:xx).params
+
+dump( :( ( val, args... ; kwargs... ) -> 12 ) )
 
 macro mkfuncEDT(dim, typ)
- quote
-     (val, args...) ->
-         VLSpec{:vlencoding}(;$dim = todicttree(args...;value=val, typ=typ, kwargs...))
- end
+    quote
+        function abcd( val, args... ; kwargs... )
+            # println(val, ",", args, ",", kwargs)
+            VLSpec{:vlencoding}(;$dim = todicttree(args...;field=val, typ=:($typ), kwargs...))
+        end
+    end
 end
 
+println( macroexpand( @mkfuncEDT(x, nominal) ) )
+
 ttt = @mkfuncEDT(x, nominal)
-ttt()
+ttt(:x, axis=nothing).params
 
 macro mkfuncEDT(dim, typ)
+    fn = gensym()
     if typ == :value
         quote
-            function (val, args...; kwargs...)
-                VLSpec{:vlencoding}(;$dim = todicttree(args...;value=val, typ=typ, kwargs...))
+            function ($fn)(val, args...; kwargs...)
+                VLSpec{:vlencoding}(;$dim = todicttree(args...;value=val, typ=:($typ), kwargs...))
             end
         end
     else
         quote
-            function (val, args...; kwargs...)
-                VLSpec{:vlencoding}(;$dim = todicttree(args...;field=val, typ=typ, kwargs...))
+            function ($fn)(val, args...; kwargs...)
+                VLSpec{:vlencoding}(;$dim = todicttree(args...;field=val, typ=:($typ), kwargs...))
             end
         end
     end
@@ -54,9 +68,43 @@ end
 
 ttt = @mkfuncEDT(x, nominal)
 
-channels = tuple(Symbol.(collect(keys(refs["EncodingWithFacet"].props)))...)
+channels = Symbol.(collect(keys(refs["EncodingWithFacet"].props)))
+chantyps = Symbol.(collect(union(refs["BasicType"].enum, refs["GeoType"].enum)))
+push!(chantyps, :value)
 
+typnt = NamedTuples.make_tuple( chantyps )
 
+encs = []
+ch, tp = :x, :nominal
+for ch in channels
+    typs = []
+    for tp in chantyps
+        fn = gensym()
+        nfex = quote
+                function ($fn)(val, args...; kwargs...)
+                    VLSpec{:vlencoding}(;$ch = todicttree(args...; field=val, typ=:($tp), kwargs...))
+                end
+               end
+        push!(typs, eval(nfex))
+    end
+    push!(encs, typnt( typs... ) )
+end
+ch
+encnt = NamedTuples.make_tuple( channels )
+enc = encnt( encs... )
+
+enc.x.value(:abd, axis=nothing)
+println(nfex)
+
+typnt = eval( :( @NT $chantyps ) )
+typeof(typnt)
+
+clipboard(union(refs["BasicType"].enum, refs["GeoType"].enum))
+Set(String["geojson", "latitude", "ordinal", "nominal", "longitude", "quantitative", "temporal"])
+
+typtype = @NT(:geojson, :latitude, :ordinal, :nominal, :longitude, :quantitative, :temporal )
+
+typtype =
 
 refs["EncodingWithFacet"].props
 
