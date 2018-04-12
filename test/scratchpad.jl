@@ -66,6 +66,23 @@ macro mkfuncEDT(dim, typ)
     end
 end
 
+
+function mkfunc1(dim, typ)
+    if typ == :value
+        function (val, args...; kwargs...)
+            params = todicttree(args...; value=val, typ=typ, kwargs...)
+            VLSpec{:vlencoding}(;[(dim, params);]...)
+        end
+    else
+        function (val, args...; kwargs...)
+            params = todicttree(args...; field=val, typ=typ, kwargs...)
+            VLSpec{:vlencoding}(;[(dim, params);]...)
+        end
+    end
+end
+
+
+
 ttt = @mkfuncEDT(x, nominal)
 
 channels = Symbol.(collect(keys(refs["EncodingWithFacet"].props)))
@@ -430,3 +447,17 @@ data(url=durl) |>
 
 
 ############################################################
+
+
+function ttt(a)
+    function (b)
+        b * a
+    end
+end
+
+f1 = ttt("abcd")
+f1("123")
+
+f2 = ttt("xyz")
+f2("132")
+f1("123")
