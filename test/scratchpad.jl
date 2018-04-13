@@ -1,6 +1,14 @@
 
 reload("VegaLite")
 
+import VegaLite: enc, mark
+
+mark.point()
+
+using VegaLite
+VegaLite.mark
+
+
 module VegaLite
 methods(VLSpec)
 VLSpec{:vlmark}(typ=:point).params
@@ -17,133 +25,20 @@ VLSpec{:vllayer}(VLSpec{:vlencoding}(x=@NT(typ=:nominal, field=:xx)),
                  VLSpec{:vlmark}(typ=:point),
                  width=300).params
 
-todicttree(VLSpec{:vlencoding}(x=@NT(typ=:nominal, field=:xx)),
-                 VLSpec{:vlmark}(typ=:point),
-                 width=300)
-
 ttt = VLSpec{:vllayer}(encoding=@NT(x=@NT(typ=:nominal, field=:xx)),
                  width=300);
 
+todicttree(abcd="yo", xyz=456)
 
-dim, typ = :x, :nominal
-ttt = eval(quote
-    (val, args...; kwargs...) ->
-        VLSpec{:vlencoding}(;$dim = todicttree(args...;field=val, typ= :($typ), kwargs...))
-    end)
+todicttree("yo", "abcd")
+todicttree(["yo", "abcd"])
+todicttree(["yo", "abcd"], tets=45)
 
-ttt(:xx).params
-
-dump( :( ( val, args... ; kwargs... ) -> 12 ) )
-
-macro mkfuncEDT(dim, typ)
-    quote
-        function abcd( val, args... ; kwargs... )
-            # println(val, ",", args, ",", kwargs)
-            VLSpec{:vlencoding}(;$dim = todicttree(args...;field=val, typ=:($typ), kwargs...))
-        end
-    end
-end
-
-println( macroexpand( @mkfuncEDT(x, nominal) ) )
-
-ttt = @mkfuncEDT(x, nominal)
-ttt(:x, axis=nothing).params
-
-macro mkfuncEDT(dim, typ)
-    fn = gensym()
-    if typ == :value
-        quote
-            function ($fn)(val, args...; kwargs...)
-                VLSpec{:vlencoding}(;$dim = todicttree(args...;value=val, typ=:($typ), kwargs...))
-            end
-        end
-    else
-        quote
-            function ($fn)(val, args...; kwargs...)
-                VLSpec{:vlencoding}(;$dim = todicttree(args...;field=val, typ=:($typ), kwargs...))
-            end
-        end
-    end
-end
-
-ttt = @mkfuncEDT(x, nominal)
-
-channels = Symbol.(collect(keys(refs["EncodingWithFacet"].props)))
-chantyps = Symbol.(collect(union(refs["BasicType"].enum, refs["GeoType"].enum)))
-push!(chantyps, :value)
-
-typnt = NamedTuples.make_tuple( chantyps )
-
-encs = []
-ch, tp = :x, :nominal
-for ch in channels
-    typs = []
-    for tp in chantyps
-        fn = gensym()
-        nfex = quote
-                function ($fn)(val, args...; kwargs...)
-                    VLSpec{:vlencoding}(;$ch = todicttree(args...; field=val, typ=:($tp), kwargs...))
-                end
-               end
-        push!(typs, eval(nfex))
-    end
-    push!(encs, typnt( typs... ) )
-end
-ch
-encnt = NamedTuples.make_tuple( channels )
-enc = encnt( encs... )
-
-enc.x.value(:abd, axis=nothing)
-println(nfex)
-
-typnt = eval( :( @NT $chantyps ) )
-typeof(typnt)
-
-clipboard(union(refs["BasicType"].enum, refs["GeoType"].enum))
-Set(String["geojson", "latitude", "ordinal", "nominal", "longitude", "quantitative", "temporal"])
-
-typtype = @NT(:geojson, :latitude, :ordinal, :nominal, :longitude, :quantitative, :temporal )
-
-typtype =
-
-refs["EncodingWithFacet"].props
+plot( mark.point(), width=400,
+      enc.x.nominal(:x, maxbins=10),
+      enc.y.nominal(:yyy) ).params
 
 
-ttt(:yoyo, axis=nothing).params
-
-
-ttt = @NT( [ (:nominal,      mkfuncEDT(:vlx, :nominal)),
-       (:quantitative, mkfuncEDT(:vlx, :quantitative))]... )
-
-tlst = [:nominal, :quantitative, :ordinal, :temporal, :value]
-ttt = @NT(nominal, quantitative, ordinal, temporal, value)
-tmp = ttt([mkfuncEDT(:vlx, t) for t in tlst]...)
-
-
-ttt = VLSpec{:vlx}(field=:yoyo, typ=:nominal, axis=nothing);
-tt2 = VLSpec{:vlencoding}(Dict(:x => ttt.params));
-tt2 = VLSpec{:vlencoding}(ttt);
-tt2.params
-vltype(ttt)
-vlname(vltype(ttt))
-
-
-
-ttt = tmp.nominal(:yoyo, axis=nothing);
-ttt.params
-
-
-
-ttt = VLSpec{:vlx}(typ=:nominal, field = :k);
-ttt.params
-
-tt2 = VLSpec{:vlencoding}(ttt);
-tt2.params
-
-tmp.nominal(field = :k)
-
-
-methods(VLSpec)
 
 p = res |>
     plot(mark.bar(),
@@ -157,92 +52,57 @@ end
 
 
 
-module A
-
 using VegaLite
+using NamedTuples
+using ElectronDisplay
 
 ############################################################
 
 durl = "https://raw.githubusercontent.com/vega/new-editor/master/data/movies.json"
 
-p = plot(vldata(url=durl),
-     mark="circle",
-     vlencoding(vlx(vlbin(maxbins=10), field=:IMDB_Rating, typ=:quantitative),
-                vly(vlbin(maxbins=10), field=:Rotten_Tomatoes_Rating, typ=:quantitative),
-                vlsize(aggregate=:count, typ=:quantitative)),
-     width=300, height=300) ;
 
-p
+p = VegaLite.plot(VegaLite.data(url=durl),
+         VegaLite.mark.circle(),
+         enc.x.quantitative(:IMDB_Rating, bin=@NT(maxbins=10)),
+         enc.y.quantitative(:Rotten_Tomatoes_Rating, bin=@NT(maxbins=10)),
+         # enc.size.quantitative(:*, aggregate=:count, typ=:quantitative),
+         enc.size.value(200),
+         width=300, height=300) ;
+display(p)
+
+
+VegaLite.vlsize
 
 pdf("c:/temp/ex.pdf", p)
 
 
+VegaLite.todicttree(VegaLite.data(url=durl),
+         VegaLite.mark.circle(),
+         enc.x.quantitative(:IMDB_Rating, bin=@NT(maxbins=10)),
+         enc.y.quantitative(:Rotten_Tomatoes_Rating, bin=@NT(maxbins=10)),
+         # enc.size.quantitative(:*, aggregate=:count, typ=:quantitative),
+         width=300, height=300)
 
-plot(vldata(url=durl),
-     mark="circle",
-     vlencoding(vlx(vlbin(maxbins=10), field=:IMDB_Rating, typ=:quantitative),
-                vly(vlbin(maxbins=10), field=:Rotten_Tomatoes_Rating, typ=:quantitative),
-                vlcolor(field=:Rotten_Tomatoes_Rating, typ=:quantitative),
-                vlsize(aggregate=:count, typ=:quantitative)),
-     width=300, height=300)
-
-
-plot(data(url=durl),
-     markcircle(),
-     encoding(xquantitative(vlbin(maxbins=10), field=:IMDB_Rating),
-                yquantitative(vlbin(maxbins=10), field=:Rotten_Tomatoes_Rating),
-                colorquantitative(field=:Rotten_Tomatoes_Rating),
-                sizequantitative(aggregate=:count)),
-     width=300, height=300)
-
-data(url=durl) |>
-  markcircle() |>
-  vlencoding(xquantitative(vlbin(maxbins=10), field=:IMDB_Rating),
-             yquantitative(vlbin(maxbins=10), field=:Rotten_Tomatoes_Rating),
-             sizequantitative(aggregate=:count))
-
-p.params
-
-p
-fieldnames(p)
-
-using JSON
-
-function tst(p)
-  pd = JSON.parse(p.json)
-  VegaLite.conforms(pd, "plot(..", VegaLite.defs["plot"])
-end
+VegaLite.todicttree(enc.size.quantitative(:*, aggregate=:count, typ=:quantitative))
+VegaLite.todicttree(enc.y.quantitative(:Rotten_Tomatoes_Rating, bin=@NT(maxbins=10)))
 
 
-tst(p)
-
-data(url=durl) |>
-  transform(vlfilter(field=:IMDB_Rating, oneOf= [1,2])) |>
-  # transform(filter=" datum.Scope2 == 'Hedged'") |>
-  markcircle() |>
-  encoding(xquantitative(vlbin(maxbins=10), field=:IMDB_Rating),
-           yquantitative(vlbin(maxbins=10), field=:Rotten_Tomatoes_Rating),
-           colorquantitative(field=:Rotten_Tomatoes_Rating),
-           sizequantitative(aggregate="count")) |>
-  plot(width=300, height=300)
-
-vlfilter
-
-showall(keys(VegaLite.defs))
 ##################################################################
 
 using Distributions
 using DataTables
 xs = rand(Normal(), 100, 3)
-dt = DataTable(a = xs[:,1] + xs[:,2] .^ 2,
-               b = xs[:,3] .* xs[:,2],
-               c = xs[:,3] .+ xs[:,2])
 
-data(dt) |>
-  repeat(column = [:a, :b, :c], row = [:a, :b, :c]) |>
-  spec(markpoint(),
-       encoding(xquantitative(vlfield(repeat=:column)),
-                yquantitative(vlfield(repeat=:row))))
+dt = [ @NT( a = xs[i,1] + xs[i,2] .^ 2,
+            b = xs[i,3] .* xs[i,2],
+            c = xs[i,3] .+ xs[i,2] )  for i in 1:size(xs,1) ]
+
+dt |>
+  VegaLite.plot( VegaLite.rep(column = [:a, :b, :c], row = [:a, :b, :c]),
+        VegaLite.spec(VegaLite.mark.point(),
+             enc.x.quantitative(@NT(repeat=:column)),
+             enc.y.quantitative(@NT(repeat=:row))))
+
 
 data(dt) |>
   repeat(column = [:a, :b, :c], row = [:a, :b, :c]) |>
