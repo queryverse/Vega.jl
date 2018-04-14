@@ -39,6 +39,10 @@ function todicttree(args...; kwargs...)
             elseif v isa Dict
                 kwa = [ (Symbol(k),  val) for (k,val) in v ]
                 todicttree(;kwa...)
+            elseif v isa Tuple  # accepted if all elements have a prop (VLSpecs)
+                all( isa(e, VLSpec) for e in v) || error("tuple $v is not all VLSpecs")
+                kwa = [ (Symbol(vlname(vltype(e))), e.params) for (k,val) in v ]
+                todicttree(;kwa...)
             elseif v isa VLSpec
                 Dict(vlname(vltype(v)) => v.params)
             else
@@ -51,6 +55,9 @@ function todicttree(args...; kwargs...)
     for a in args
         if isa(a, VLSpec)
             push!(pars, vlname(vltype(a)) => a.params)
+        elseif a isa Tuple  # accepted if all elements have a prop (VLSpecs)
+            all( isa(e, VLSpec) for e in a) || error("tuple $a is not all VLSpecs")
+            push!(pars, nothing => Dict([ Symbol(vlname(vltype(e))) => e.params for e in a ]...) )
         else
             push!(pars, nothing => a)
         end
@@ -62,6 +69,7 @@ function todicttree(args...; kwargs...)
 
     if all( p[1]==nothing for p in pars )
         return length(pars)==1 ? pars[1][2] : [ p[2] for p in pars ]
+
     elseif all( p[1]!=nothing for p in pars )
         pars2 = Dict{String,Any}()
         for p in pars

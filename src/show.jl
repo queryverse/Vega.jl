@@ -1,3 +1,10 @@
+
+function Base.show(io::IO, m::MIME"text/plain", v::VLSpec)
+    print(io, summary(v))
+end
+
+
+
 function convert_to_svg(v::VLSpec{:plot})
     data = JSON.json(v.params)
     script_path = joinpath(@__DIR__, "compilesvg.js")

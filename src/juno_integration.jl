@@ -6,8 +6,8 @@
 
 using Juno
 
-media(VLSpec, Media.Plot)
+media(VLSpec{:plot}, Media.Plot)
 
-Juno.@render Juno.PlotPane p::VLSpec begin
+Juno.@render Juno.PlotPane p::VLSpec{:plot} begin
     HTML(stringmime("image/svg+xml", p))
 end

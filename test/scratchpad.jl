@@ -1,52 +1,56 @@
 
-reload("VegaLite")
+5+6
 
-import VegaLite: enc, mark
+@time import VegaLite # 7s
+@profile using VegaLite
+Profile.print(format=:flat)
 
-mark.point()
+whos(VegaLite)
 
 using VegaLite
-VegaLite.mark
+using NamedTuples
+using ElectronDisplay
+
 
 
 module VegaLite
-methods(VLSpec)
-VLSpec{:vlmark}(typ=:point).params
-VLSpec{:vlmark}(typo=:point).params
-VLSpec{:vlmark}(Dict("typ" => :point)).params
+    methods(VLSpec)
+    VLSpec{:vlmark}(typ=:point).params
+    VLSpec{:vlmark}(typo=:point).params
+    VLSpec{:vlmark}(Dict("typ" => :point)).params
 
-VLSpec{:vllayer}(mark=@NT(typ=:point),
-                 encoding=@NT(x=@NT(typ=:nominal, field=:xx)),
-                 width=300).params
-VLSpec{:vllayer}(encoding=@NT(x=@NT(typ=:nominal, field=:xx)),
-                 width=300).params
+    VLSpec{:vllayer}(mark=@NT(typ=:point),
+                     encoding=@NT(x=@NT(typ=:nominal, field=:xx)),
+                     width=300).params
+    VLSpec{:vllayer}(encoding=@NT(x=@NT(typ=:nominal, field=:xx)),
+                     width=300).params
 
-VLSpec{:vllayer}(VLSpec{:vlencoding}(x=@NT(typ=:nominal, field=:xx)),
-                 VLSpec{:vlmark}(typ=:point),
-                 width=300).params
+    VLSpec{:vllayer}(VLSpec{:vlencoding}(x=@NT(typ=:nominal, field=:xx)),
+                     VLSpec{:vlmark}(typ=:point),
+                     width=300).params
 
-ttt = VLSpec{:vllayer}(encoding=@NT(x=@NT(typ=:nominal, field=:xx)),
-                 width=300);
+    ttt = VLSpec{:vllayer}(encoding=@NT(x=@NT(typ=:nominal, field=:xx)),
+                     width=300);
 
-todicttree(abcd="yo", xyz=456)
+    todicttree(abcd="yo", xyz=456)
 
-todicttree("yo", "abcd")
-todicttree(["yo", "abcd"])
-todicttree(["yo", "abcd"], tets=45)
+    todicttree("yo", "abcd")
+    todicttree(["yo", "abcd"])
+    todicttree(["yo", "abcd"], tets=45)
 
-plot( mark.point(), width=400,
-      enc.x.nominal(:x, maxbins=10),
-      enc.y.nominal(:yyy) ).params
+    plot( mark.point(), width=400,
+          enc.x.nominal(:x, maxbins=10),
+          enc.y.nominal(:yyy) ).params
 
 
 
-p = res |>
-    plot(mark.bar(),
-         encoding.x.nominal(:src),
-         encoding.y.quantitative(:val),
-         encoding.color.nominal(:src),
-         encoding.column.nominal(:cat),
-         height=400, width=80);
+    p = res |>
+        plot(mark.bar(),
+             encoding.x.nominal(:src),
+             encoding.y.quantitative(:val),
+             encoding.color.nominal(:src),
+             encoding.column.nominal(:cat),
+             height=400, width=80);
 
 end
 
@@ -260,47 +264,44 @@ plot(repeat(row    = ["Horsepower","Acceleration"],
 rooturl = "https://raw.githubusercontent.com/vega/new-editor/master/"
 durl = rooturl * "data/population.json"
 
-xchan = xordinal(field=:age, vlaxis(labelAngle=-45))
-ychan = yquantitative(field=:people)
+xchan = enc.x.ordinal(:age, axis=@NT(labelAngle=-45))
+ychan = enc.y.quantitative(:people)
 
-tpop = vlaxis(title="population")
-ymin = yquantitative(aggregate=:min, field=:people, tpop)
-ymax = yquantitative(aggregate=:max, field=:people, tpop)
-y2max = y2quantitative(aggregate=:max, field=:people)
-ymean = yquantitative(aggregate=:mean, field=:people, tpop)
+tpop = @NT(title="population")
+ymin = enc.y.quantitative(:people, aggregate=:min, axis=tpop)
+ymax = enc.y.quantitative(:people, aggregate=:max, axis=tpop)
+y2max = enc.y2.quantitative(:people, aggregate=:max)
+ymean = enc.y.quantitative(:people, aggregate=:mean, axis=tpop)
 
-data(url=durl) |>
-  transform(filter="datum.year==2000") |>
-  layer(marktick(),  encoding(xchan, ymin, vlsize(value=5))) |>
-  layer(marktick(),  encoding(xchan, ymax, vlsize(value=5))) |>
-  layer(markpoint(), encoding(xchan, ymean, vlsize(value=5))) |>
-  layer(markrule(),  encoding(xchan, ymin, y2max))
+VegaLite.vltype(layer( VegaLite.mark.tick(), xchan, ymin, enc.size.value(5) ) )
+VegaLite.vlname(:vllayer)
+
+plot(data(url=durl),
+     transform([filter="datum.year==2000"]),
+     layer( [mk.tick(), xchan, ymin, enc.size.value(5)] ))
+
+VegaLite.todicttree(data(url=durl),
+     transform([filter="datum.year==2000"]),
+     layer( (mk.tick(), xchan, ymin, enc.size.value(5)) ))
+
+VegaLite.todicttree((xchan, ymin))
+
+
+plot(data(url=durl),
+     transform(@NT(filter="datum.year==2000")),
+     layer(( mk.tick(), xchan, ymin, enc.size.value(5) ),
+           ( mk.tick(), xchan, ymax, enc.size.value(5) ),
+           ( mk.point(), xchan, ymean, enc.size.value(5) ),
+           ( mk.rule(),  xchan, ymin, y2max) ))
+
 
 ###########################################################
 
 rooturl = "https://raw.githubusercontent.com/vega/new-editor/master/"
 durl = rooturl * "data/cars.json"
 
-data(url=durl) |>
-  markrect() |>
-  encoding(xordinal(field=:Origin),
-           yordinal(field=:Cylinders),
-           colorquantitative(aggregate=:mean, field=:Horsepower)) |>
-  plot(width=200, height=200)
-
-
-############################################################
-
-
-function ttt(a)
-    function (b)
-        b * a
-    end
-end
-
-f1 = ttt("abcd")
-f1("123")
-
-f2 = ttt("xyz")
-f2("132")
-f1("123")
+display(
+    plot(data(url=durl),
+         mk.rect(), enc.x.ordinal(:Origin), enc.y.ordinal(:Cylinders),
+         enc.color.quantitative(:Horsepower, aggregate=:mean),
+         width=200, height=200) )

@@ -14,7 +14,7 @@ import IterableTables
 export renderer, actionlinks
 export png, svg, jgp, pdf, savefig, loadspec, savespec, @vl_str
 
-export mark, enc
+export mk, enc
 
 ########################  settings functions  ############################
 
@@ -78,7 +78,7 @@ include("fileio.jl")
 
 function __init__()
 
-    global mark, enc
+    global mk, enc
 
     ### encoding family : enc.x.quantitative, ...
 
@@ -108,8 +108,6 @@ function __init__()
     end
     enc = NamedTuples.make_tuple( channels )( encs... )
 
-    # export enc
-
     #####  mark family : mark.line(), ...
 
     function mkfunc2(typ)
@@ -118,19 +116,11 @@ function __init__()
         end
     end
 
-
     # this fails at precompilation
     marktyps = Symbol.(collect(refs["Mark"].enum))
     marknt = NamedTuples.make_tuple( marktyps )
 
-    # => switch to explicit creation
-    # marktyps = Symbol[:tick, :bar, :square, :point, :line, :rect, :area, :circle, :rule, :text, :geoshape]
-    # marknt = @NT(tick, bar, square, point, line, rect, area, circle, rule, text, geoshape)
-    #
-    mark = marknt([ mkfunc2(typ) for typ in marktyps ]...)
-
-    # export mark
-
+    mk = marknt([ mkfunc2(typ) for typ in marktyps ]...)
 
 end
 
