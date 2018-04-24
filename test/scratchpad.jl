@@ -1,6 +1,7 @@
 
 5+6
 
+<<<<<<< HEAD
 @time import VegaLite # 7s
 @profile using VegaLite
 Profile.print(format=:flat)
@@ -34,11 +35,20 @@ module VegaLite
 
     todicttree(abcd="yo", xyz=456)
 
+=======
+@time using VegaLite
+
+
+module VegaLite
+
+    todicttree(abcd="yo", xyz=456)
+>>>>>>> e71df31ba269b516bfc526b859a690a49d8c4615
     todicttree("yo", "abcd")
     todicttree(["yo", "abcd"])
     todicttree(["yo", "abcd"], tets=45)
 
     plot( mark.point(), width=400,
+<<<<<<< HEAD
           enc.x.nominal(:x, maxbins=10),
           enc.y.nominal(:yyy) ).params
 
@@ -51,12 +61,17 @@ module VegaLite
              encoding.color.nominal(:src),
              encoding.column.nominal(:cat),
              height=400, width=80);
+=======
+          enc.x.nominal(:x, bin=@NT(maxbins=10)),
+          enc.y.nominal(:yyy) ).params
+>>>>>>> e71df31ba269b516bfc526b859a690a49d8c4615
 
 end
 
+module VegaLite ; end
 
 
-using VegaLite
+using VegaLite # 55s w/ precompilation, 23s w/o precompilation
 using NamedTuples
 using ElectronDisplay
 
@@ -64,62 +79,36 @@ using ElectronDisplay
 
 durl = "https://raw.githubusercontent.com/vega/new-editor/master/data/movies.json"
 
-
-p = VegaLite.plot(VegaLite.data(url=durl),
-         VegaLite.mark.circle(),
+p = plot(data(url=durl),
+         mk.circle(),
          enc.x.quantitative(:IMDB_Rating, bin=@NT(maxbins=10)),
          enc.y.quantitative(:Rotten_Tomatoes_Rating, bin=@NT(maxbins=10)),
-         # enc.size.quantitative(:*, aggregate=:count, typ=:quantitative),
-         enc.size.value(200),
+         enc.size.quantitative(:*, aggregate=:count),
          width=300, height=300) ;
+
 display(p)
-
-
-VegaLite.vlsize
-
 pdf("c:/temp/ex.pdf", p)
-
-
-VegaLite.todicttree(VegaLite.data(url=durl),
-         VegaLite.mark.circle(),
-         enc.x.quantitative(:IMDB_Rating, bin=@NT(maxbins=10)),
-         enc.y.quantitative(:Rotten_Tomatoes_Rating, bin=@NT(maxbins=10)),
-         # enc.size.quantitative(:*, aggregate=:count, typ=:quantitative),
-         width=300, height=300)
-
-VegaLite.todicttree(enc.size.quantitative(:*, aggregate=:count, typ=:quantitative))
-VegaLite.todicttree(enc.y.quantitative(:Rotten_Tomatoes_Rating, bin=@NT(maxbins=10)))
-
 
 ##################################################################
 
-using Distributions
-using DataTables
-xs = rand(Normal(), 100, 3)
+import Distributions
+xs = rand(Distributions.Normal(), 100, 3)
 
 dt = [ @NT( a = xs[i,1] + xs[i,2] .^ 2,
             b = xs[i,3] .* xs[i,2],
             c = xs[i,3] .+ xs[i,2] )  for i in 1:size(xs,1) ]
 
-dt |>
-  VegaLite.plot( VegaLite.rep(column = [:a, :b, :c], row = [:a, :b, :c]),
-        VegaLite.spec(VegaLite.mark.point(),
+p = dt |>
+  plot( rep(column = [:a, :b, :c], row = [:a, :b, :c]),
+        spec(mk.point(),
              enc.x.quantitative(@NT(repeat=:column)),
-             enc.y.quantitative(@NT(repeat=:row))))
+             enc.y.quantitative(@NT(repeat=:row))));
 
-
-data(dt) |>
-  repeat(column = [:a, :b, :c], row = [:a, :b, :c]) |>
-  spec(markpoint() |>
-       encoding(xquantitative(vlfield(repeat=:column)),
-                yquantitative(vlfield(repeat=:row))))
-
-dt |>
-  repeat(column = [:a, :b, :c], row = [:a, :b, :c]) |>
-  spec(markpoint() |>
-       encoding(xquantitative(vlfield(repeat=:column)),
-                yquantitative(vlfield(repeat=:row))))
-
+p = plot(data(dt),
+         rep(column = [:a, :b, :c], row = [:a, :b, :c]),
+         spec(mk.point(),
+         enc.x.quantitative(@NT(repeat=:column)),
+         enc.y.quantitative(@NT(repeat=:row))));
 
 ###################################
 
