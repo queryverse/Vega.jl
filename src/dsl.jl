@@ -59,24 +59,30 @@ end
 
 #### plot, the top level function
 
-plot(args...; kwargs...)     = VLSpec{:plot}(args...; kwargs...)
+# function plot(args...; kwargs...)
+#     vls = mkSpec(:plot, args...; kwargs...)
+#     checkplot(vls)
+#     vls
+# end
+
+plot(args...; kwargs...)        = mkSpec(:plot, args...; kwargs...)
 
 export plot
 
 #### 1st level aliases
 
-config(args...; kwargs...)     = VLSpec{:vlconfig}(args...; kwargs...)
-selection(args...; kwargs...)  = VLSpec{:vlselection}(args...; kwargs...)
-resolve(args...; kwargs...)    = VLSpec{:vlresolve}(args...; kwargs...)
-projection(args...; kwargs...) = VLSpec{:vlprojection}(args...; kwargs...)
-facet(args...; kwargs...)      = VLSpec{:vlfacet}(args...; kwargs...)
-spec(args...; kwargs...)       = VLSpec{:vlspec}(args...; kwargs...)
-rep(args...; kwargs...)        = VLSpec{:vlrepeat}(args...; kwargs...)
+config(args...; kwargs...)     = mkSpec(:vlconfig, args...; kwargs...)
+selection(args...; kwargs...)  = mkSpec(:vlselection, args...; kwargs...)
+resolve(args...; kwargs...)    = mkSpec(:vlresolve, args...; kwargs...)
+projection(args...; kwargs...) = mkSpec(:vlprojection, args...; kwargs...)
+facet(args...; kwargs...)      = mkSpec(:vlfacet, args...; kwargs...)
+spec(args...; kwargs...)       = mkSpec(:vlspec, args...; kwargs...)
+rep(args...; kwargs...)        = mkSpec(:vlrepeat, args...; kwargs...)
 
-transform(args...) = VLSpec{:vltransform}(args...)
-hconcat(args...)   = VLSpec{:vlhconcat}(args...)
-vconcat(args...)   = VLSpec{:vlvconcat}(args...)
-layer(args...)     = VLSpec{:vllayer}(args...)
+transform(args...) = mkSpec(:vltransform, args...)
+hconcat(args...)   = mkSpec(:vlhconcat, args...)
+vconcat(args...)   = mkSpec(:vlvconcat, args...)
+layer(args...)     = mkSpec(:vllayer, args...)
 
 export config, selection, resolve, projection, facet, spec, rep
 export transform, hconcat, vconcat, layer
@@ -93,12 +99,15 @@ function data(args...; kwargs...)
         it = IteratorInterfaceExtensions.getiterator(args[1])
         recs = [Dict(c[1] => getrealvalue(c[2]) for c in zip(keys(r), values(r))) for r in it]
 
-        VLSpec{:vldata}(args...; values=recs, kwargs...)
+        mkSpec(:vldata; values=recs, kwargs...)
     else
-        VLSpec{:vldata}(args...; kwargs...)
+        mkSpec(:vldata, args...; kwargs...)
     end
 end
 
-|>(a, b::VLSpec{:plot}) = data(a) |> b
+function |>(a, b::VLSpec{:plot})
+    b.params["data"] = data(a).params
+    b
+end
 
 export data

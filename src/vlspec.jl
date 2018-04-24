@@ -7,8 +7,12 @@
 struct VLSpec{T}
     params::Union{Dict, Vector}
 end
+vltype(::VLSpec{T}) where T = T
 
-function VLSpec{VL}(args...;kwargs...) where VL
+"""
+creates a new VLSpec from the arguments provided
+"""
+function mkSpec(VL::Symbol, args...;kwargs...)
     params = todicttree(args...; kwargs...)
 
     # check if at least one of the SpecDef associated matches
@@ -18,7 +22,6 @@ function VLSpec{VL}(args...;kwargs...) where VL
     VLSpec{VL}(params)
 end
 
-vltype(::VLSpec{T}) where T = T
 
 
 

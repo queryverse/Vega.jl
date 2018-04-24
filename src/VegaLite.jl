@@ -1,8 +1,12 @@
 __precompile__()
+
 module VegaLite
 
-using JSON, Compat, Requires, NodeJS, Cairo, Rsvg, NamedTuples
-import IteratorInterfaceExtensions, TableTraits, FileIO, DataValues
+using JSON, Compat, Requires, NodeJS, Cairo, Rsvg, NamedTuples # 6s
+import IteratorInterfaceExtensions # 1s
+import TableTraits # 0
+import FileIO # 17s
+import DataValues  # 1s
 
 import Base: |>
 
@@ -14,7 +18,7 @@ import IterableTables
 export renderer, actionlinks
 export png, svg, jgp, pdf, savefig, loadspec, savespec, @vl_str
 
-export mark, enc
+export mk, enc
 
 ########################  settings functions  ############################
 
@@ -60,10 +64,10 @@ actionlinks(b::Bool) = (global ACTIONSLINKS ; ACTIONSLINKS = b)
 
 include("vlspec.jl")
 
-include("schema_parsing.jl")
-include("func_definition.jl")
-include("func_documentation.jl")
-include("spec_validation.jl")
+include("schema_parsing.jl") # 8s
+include("func_definition.jl") # 5s
+include("func_documentation.jl") # 3s
+include("spec_validation.jl") # 0s
 
 include("dsl.jl")
 # include("utils.jl")
@@ -78,7 +82,7 @@ include("fileio.jl")
 
 function __init__()
 
-    global mark, enc
+    global mk, enc
 
     ### encoding family : enc.x.quantitative, ...
 
@@ -86,12 +90,12 @@ function __init__()
         if typ == :value
             function (val, args...; kwargs...)
                 pars = todicttree(args...; value=val, kwargs...)
-                VLSpec{:vlencoding}(;[(dim, pars);]...)
+                mkSpec(:vlencoding; [(dim, pars);]...)
             end
         else
             function (field, args...; kwargs...)
                 pars = todicttree(args...; field=field, typ=typ, kwargs...)
-                VLSpec{:vlencoding}(;[(dim, pars);]...)
+                mkSpec(:vlencoding; [(dim, pars);]...)
             end
         end
     end
@@ -108,13 +112,11 @@ function __init__()
     end
     enc = NamedTuples.make_tuple( channels )( encs... )
 
-    # export enc
-
-    #####  mark family : mark.line(), ...
+    #####  mark family : mk.line(), ...
 
     function mkfunc2(typ)
         function (args...; kwargs...)
-            VLSpec{:vlmark}(args...; typ=typ, kwargs...)
+            mkSpec(:vlmark, args...; typ=typ, kwargs...)
         end
     end
 
@@ -127,10 +129,7 @@ function __init__()
     # marktyps = Symbol[:tick, :bar, :square, :point, :line, :rect, :area, :circle, :rule, :text, :geoshape]
     # marknt = @NT(tick, bar, square, point, line, rect, area, circle, rule, text, geoshape)
     #
-    mark = marknt([ mkfunc2(typ) for typ in marktyps ]...)
-
-    # export mark
-
+    mk = marknt([ mkfunc2(typ) for typ in marktyps ]...)
 
 end
 
