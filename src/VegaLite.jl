@@ -5,7 +5,7 @@ module VegaLite
 using JSON, Compat, Requires, NodeJS, Cairo, Rsvg, NamedTuples # 6s
 import IteratorInterfaceExtensions # 1s
 import TableTraits # 0
-import FileIO # 17s
+import FileIO # 17s !!!
 import DataValues  # 1s
 
 import Base: |>
@@ -64,20 +64,19 @@ actionlinks(b::Bool) = (global ACTIONSLINKS ; ACTIONSLINKS = b)
 
 include("vlspec.jl")
 
-include("schema_parsing.jl") # 8s
-include("func_definition.jl") # 5s
-include("func_documentation.jl") # 3s
-include("spec_validation.jl") # 0s
+include("schema/schema_parsing.jl") # 8s
+include("schema/func_definition.jl") # 5s
+include("schema/func_documentation.jl") # 3s
+include("schema/spec_validation.jl") # 0s
 
 include("dsl.jl")
-# include("utils.jl")
-
-include("render.jl")
-include("juno_integration.jl")
-include("io.jl")
-include("show.jl")
 include("macro.jl")
-include("fileio.jl")
+
+include("rendering/render.jl")
+include("rendering/juno_integration.jl")
+include("rendering/io.jl")
+include("rendering/show.jl")
+include("rendering/fileio.jl")
 
 
 function __init__()

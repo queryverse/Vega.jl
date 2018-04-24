@@ -44,7 +44,7 @@ function todicttree(args...; kwargs...)
                 todicttree(;kwa...)
             elseif v isa Tuple  # accepted if all elements have a prop (VLSpecs)
                 all( isa(e, VLSpec) for e in v) || error("tuple $v is not all VLSpecs")
-                kwa = [ (Symbol(vlname(vltype(e))), e.params) for (k,val) in v ]
+                kwa = [ (Symbol(vlname(vltype(e))), e.params) for e in v ]
                 todicttree(;kwa...)
             elseif v isa VLSpec
                 Dict(vlname(vltype(v)) => v.params)
@@ -60,7 +60,7 @@ function todicttree(args...; kwargs...)
             push!(pars, vlname(vltype(a)) => a.params)
         elseif a isa Tuple  # accepted if all elements have a prop (VLSpecs)
             all( isa(e, VLSpec) for e in a) || error("tuple $a is not all VLSpecs")
-            push!(pars, nothing => Dict([ Symbol(vlname(vltype(e))) => e.params for e in a ]...) )
+            push!(pars, nothing => todicttree(collect(a)...))
         else
             push!(pars, nothing => a)
         end
@@ -103,41 +103,3 @@ end
 function fuse(a, b)
     [a, b]
 end
-
-# function todicttree(args...; kwargs...)
-#     #  pass 1 : collect prop => value pairs
-#     pars = Dict{String,Any}()
-#
-#     # first process the kw args
-#     for (ksym,v) in kwargs
-#         # translate to VegaLite prop if needed (typ > type), and to a string
-#         kstr = String( get(jl2sp, ksym, ksym) )
-#         if v isa NamedTuple
-#             kwa = [ (ns,  getfield(v, ns)) for ns in fieldnames(typeof(v)) ]
-#             pars[kstr] = todicttree(;kwa...)
-#         elseif v isa Dict
-#             kwa = [ (Symbol(k),  val) for (k,val) in v ]
-#             pars[kstr] = todicttree(;kwa...)
-#         elseif v isa VLSpec
-#             pars[kstr] = Dict(vlname(vltype(v)) => v.params)
-#         else
-#             pars[kstr] = v
-#         end
-#     end
-#
-#     # second the other arguments : they should be VLSpecs to ensure that
-#     #  they have a VL type (encoding, etc..) and that they are already processed
-#     #  (no named tuples, ...)
-#     for a in args
-#         isa(a, VLSpec) || error("non keyword args should be a VegaLite function, not $a")
-#         prop = vlname(vltype(a))
-#         haskey(pars, prop) && error("property $prop specified more than once")
-#         pars[prop] = a.params
-#     end
-#
-#     # if Symbol(vlname(sfn)) in arrayprops
-#     #   pars = [pars]
-#     # end
-#
-#     pars
-# end

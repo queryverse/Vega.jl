@@ -1,70 +1,19 @@
 
 5+6
 
-<<<<<<< HEAD
-@time import VegaLite # 7s
-@profile using VegaLite
-Profile.print(format=:flat)
-
-whos(VegaLite)
-
-using VegaLite
-using NamedTuples
-using ElectronDisplay
-
-
-
-module VegaLite
-    methods(VLSpec)
-    VLSpec{:vlmark}(typ=:point).params
-    VLSpec{:vlmark}(typo=:point).params
-    VLSpec{:vlmark}(Dict("typ" => :point)).params
-
-    VLSpec{:vllayer}(mark=@NT(typ=:point),
-                     encoding=@NT(x=@NT(typ=:nominal, field=:xx)),
-                     width=300).params
-    VLSpec{:vllayer}(encoding=@NT(x=@NT(typ=:nominal, field=:xx)),
-                     width=300).params
-
-    VLSpec{:vllayer}(VLSpec{:vlencoding}(x=@NT(typ=:nominal, field=:xx)),
-                     VLSpec{:vlmark}(typ=:point),
-                     width=300).params
-
-    ttt = VLSpec{:vllayer}(encoding=@NT(x=@NT(typ=:nominal, field=:xx)),
-                     width=300);
-
-    todicttree(abcd="yo", xyz=456)
-
-=======
 @time using VegaLite
 
 
 module VegaLite
 
     todicttree(abcd="yo", xyz=456)
->>>>>>> e71df31ba269b516bfc526b859a690a49d8c4615
     todicttree("yo", "abcd")
     todicttree(["yo", "abcd"])
     todicttree(["yo", "abcd"], tets=45)
 
     plot( mark.point(), width=400,
-<<<<<<< HEAD
-          enc.x.nominal(:x, maxbins=10),
-          enc.y.nominal(:yyy) ).params
-
-
-
-    p = res |>
-        plot(mark.bar(),
-             encoding.x.nominal(:src),
-             encoding.y.quantitative(:val),
-             encoding.color.nominal(:src),
-             encoding.column.nominal(:cat),
-             height=400, width=80);
-=======
           enc.x.nominal(:x, bin=@NT(maxbins=10)),
           enc.y.nominal(:yyy) ).params
->>>>>>> e71df31ba269b516bfc526b859a690a49d8c4615
 
 end
 
