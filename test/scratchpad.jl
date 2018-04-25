@@ -1,8 +1,4 @@
-
-5+6
-
 @time using VegaLite
-
 
 module VegaLite
 
@@ -38,6 +34,8 @@ p = plot(data(url=durl),
 display(p)
 pdf("c:/temp/ex.pdf", p)
 
+Dict()
+
 ##################################################################
 
 import Distributions
@@ -46,6 +44,8 @@ xs = rand(Distributions.Normal(), 100, 3)
 dt = [ @NT( a = xs[i,1] + xs[i,2] .^ 2,
             b = xs[i,3] .* xs[i,2],
             c = xs[i,3] .+ xs[i,2] )  for i in 1:size(xs,1) ]
+
+data(dt)
 
 p = dt |>
   plot( rep(column = [:a, :b, :c], row = [:a, :b, :c]),
@@ -59,109 +59,61 @@ p = plot(data(dt),
          enc.x.quantitative(@NT(repeat=:column)),
          enc.y.quantitative(@NT(repeat=:row))));
 
+display(p)
 ###################################
-
-durl = "file://c:/users/frtestar/downloads/etherprice.2.csv"
-
-using CSV
-
-download(, "/tmp/etherprice.2.csv")
-
-fn = "c:/users/frtestar/downloads/etherprice.2.csv"
-fn = "/tmp/etherprice.2.csv"
-
-df = CSV.read(fn, header=["date", "value"], delim=';')
-df[:date2] = DateTime("1970-01-01") + Dates.Second.(Array(df[:date]))
-
-df2 = readdlm("c:/users/frtestar/downloads/etherprice.2.csv", ';', header=false)
-
-dfd = [ Dict(zip(names(df), vec(df2[i,:]))) for i in 1:size(df,1) ]
-
-# dv = get(df[1,1])
-# DateTime(round(Int, dv/1000000))
-# DateTime("1970-01-01") + Dates.Second(dv)
-dvs = DateTime("1970-01-01") + Dates.Second.(round(Int, df2[:,1]))
-
-dfd2 = [ Dict(zip([:date1, :value, :date2 ], [df2[i,1:2]; dvs[i]] )) for i in 1:size(df,1) ]
-
-data(df) |>
-  layer(markline(),
-        encoding(xtemporal(field=:date2, vlaxis(labelAngle=-30)), #labelFont="Helvetica")),
-                 yquantitative(field="value", vlscale(typ=:log)))
-       ) |>
-  layer(markarea(),
-        encoding(xtemporal(field="date2"),
-                 yquantitative(field="value", vlscale(typ=:log)),
-                 vlopacity(value=0.5))
-       ) |>
-  config(timeFormat="%b-%Y") |>
-  plot(width=600, height=300)
-
-
-##########################################################################
-
 
 rooturl = "https://raw.githubusercontent.com/vega/new-editor/master/data/"
 durl = rooturl * "unemployment-across-industries.json"
 
-data(url=durl) |>
-  plot(width=600, height=400) |>
-  markline(interpolate="step-before") |>
-  transform(filter="datum.series=='Agriculture'") |>
-  encoding(xtemporal(timeUnit="yearmonth", field="date",
-                     vlscale(nice="month"),
-                     vlaxis(format="%Y", labelAngle=-45)),
-           yquantitative(aggregate=:sum, field=:count),
-           colornominal(field=:series, vlscale(scheme="category20b"))
-           )
+VegaLite.todicttree([@NT(filter="datum.series=='Agriculture'")])
+VegaLite.togoodarg([@NT(filter="datum.series=='Agriculture'")])
+
+display(plot(data(url=durl),
+     width=600, height=400,
+     mk.line(interpolate="step-before"),
+     transform([@NT(filter="datum.series=='Agriculture'")]),
+     enc.x.temporal(:date, timeUnit="yearmonth",
+                    scale=@NT(nice="month"),
+                    axis=@NT(format="%Y", labelAngle=-45)),
+     enc.y.quantitative(:count, aggregate=:sum),
+     enc.color.nominal(:series, scale=@NT(scheme="category20b")) ) )
 
 ############################################################################
 
-using DataFrames
+import DataFrames
 
-df  = DataFrame(x=[1:7;], y=rand(7))
-dfd = [ Dict(zip(names(df), vec(Array(df[i,:])))) for i in 1:size(df,1) ]
+df  = DataFrames.DataFrame(x=[1:7;], y=rand(7))
+# dfd = [ Dict(zip(names(df), vec(Array(df[i,:])))) for i in 1:size(df,1) ]
 
-encx = xquantitative(field=:x)
-ency = yquantitative(field=:y)
+encx = enc.x.quantitative(:x)
+ency = enc.y.quantitative(:y)
 
-data(values=dfd) |>
-  plot(width=500) |>
-  layer(markline(),
-        encoding(encx, ency, vlcolor(value="green"))) |>
-  layer(markline(interpolate="cardinal"),
-        encoding(encx, ency, vlcolor(value="blue"))) |>
-  layer(markline(interpolate="basis"),
-        encoding(encx, ency, vlcolor(value="red"))) |>
-  layer(markpoint(),
-        encoding(encx, ency, vlcolor(value="black"), vlsize(value=50)))
+display( df |>
+  plot(width=500,
+       layer((mk.line(), encx, ency, enc.color.value(:green)),
+             (mk.line(interpolate=:cardinal), encx, ency, enc.color.value(:blue)),
+             (mk.line(interpolate=:basis), encx, ency, enc.color.value(:red)),
+             (mk.point(), encx, ency, enc.color.value(:black), enc.size.value(50))) )
+   )
 
 
 ###########################################################################
 
 r, nb = 5., 10
-df = DataFrame(n = [1:nb;],
+df = DataFrames.DataFrame(n = [1:nb;],
                x = r * (0.2 + rand(nb)) .* cos.(2π * linspace(0,1,nb)),
                y = r * (0.2 + rand(nb)) .* sin.(2π * linspace(0,1,nb)))
 
-dfd = [ Dict(zip(names(df), vec(Array(df[i,:])))) for i in 1:size(df,1) ]
+encx = enc.x.quantitative(:x, scale=@NT(zero=false))
+ency = enc.y.quantitative(:y, scale=@NT(zero=false))
+encn = enc.order.quantitative(:n)
 
-encx = xquantitative(field=:x, vlscale(zero=false))
-ency = yquantitative(field=:y, vlscale(zero=false))
-encn = orderquantitative(field=:n)
-
-data(values=dfd) |>
-  layer(markline(interpolate="basis-closed"),
-        encoding(encx, ency, encn, vlcolor(value="blue"))) |>
-  layer(markpoint(),
-        encoding(encx, ency, vlcolor(value="black"), vlsize(value=50)))
-
-
-data(values=dfd) |>
-  layer(markline(interpolate="basis-closed"),
-        encoding(encx, ency, encn, vlcolor(value="blue"))) |>
-  layer(markpoint(),
-        encoding(encx, ency, vlcolor(value="black"), vlsize(value=50)))
+display(
+  plot(data(df),
+       layer((mk.line(interpolate="basis-closed"), encx, ency, encn,
+               enc.color.value(:blue)),
+             (mk.point(), encx, ency, enc.color.value(:black), enc.size.value(50)))
+      ) )
 
 
 ############################################################################
@@ -227,10 +179,10 @@ VegaLite.todicttree((xchan, ymin))
 
 plot(data(url=durl),
      transform(@NT(filter="datum.year==2000")),
-     layer(( mk.tick(), xchan, ymin, enc.size.value(5) ),
-           ( mk.tick(), xchan, ymax, enc.size.value(5) ),
-           ( mk.point(), xchan, ymean, enc.size.value(5) ),
-           ( mk.rule(),  xchan, ymin, y2max) ))
+     layer(( mk.tick(),   xchan, ymin,  enc.size.value(5) ),
+           ( mk.tick(),   xchan, ymax,  enc.size.value(5) ),
+           ( mk.point(),  xchan, ymean, enc.size.value(5) ),
+           ( mk.rule(),   xchan, ymin,  y2max) ))
 
 
 ###########################################################
@@ -243,3 +195,77 @@ display(
          mk.rect(), enc.x.ordinal(:Origin), enc.y.ordinal(:Cylinders),
          enc.color.quantitative(:Horsepower, aggregate=:mean),
          width=200, height=200) )
+
+
+############### maps  ########################################
+
+
+###########  widgets  ########################################
+
+rooturl = "https://raw.githubusercontent.com/vega/new-editor/master/"
+durl = rooturl * "data/cars.json"
+
+
+
+layer1 = (selection(CylYr=@NT(typ=:single, fields=["Cylinders", "Year"],
+                              bind=@NT(Cylinders=@NT(input=:range, min=3, max=8, step=1),
+                                       Year=@NT(input=:range, min=1969, max=1981, step=1) ))),
+          mk.circle(),
+          enc.x.quantitative(:HorsePower),
+          enc.y.quantitative(:Miles_per_Gallon),
+          enc.color.value(:grey, condition=@NT(selection=:CylYr, field=:Origin, typ=:nominal)))
+
+layer2 = (transform([@NT(filter=@NT(selection=:CylYr))]),
+          mk.circle(),
+          enc.x.quantitative(:HorsePower),
+          enc.y.quantitative(:Miles_per_Gallon),
+          enc.color.nominal(:Origin),
+          enc.size.value(100))
+
+p = plot(data(url=durl),
+         description="Drag the sliders to highlight points.",
+         transform= [@NT(calculate="year(datum.Year)", as="Year")],
+         layer([layer1, layer2]) )
+
+VegaLite.todict(layer1)
+
+VegaLite.todicttree([@NT(filter=@NT(selection=:CylYr))])
+
+
+VegaLite.todicttree(@NT(filter=@NT(selection=:CylYr)))
+
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
+  "description": "Drag the sliders to highlight points.",
+  "data": {"url": "data/cars.json"},
+  "transform": [{"calculate": "year(datum.Year)", "as": "Year"}],
+  "layer": [{
+    "selection": {
+      "CylYr": {
+        "type": "single", "fields": ["Cylinders", "Year"],
+        "bind": {
+          "Cylinders": {"input": "range", "min": 3, "max": 8, "step": 1},
+          "Year": {"input": "range", "min": 1969, "max": 1981, "step": 1}
+        }
+      }
+    },
+    "mark": "circle",
+    "encoding": {
+      "x": {"field": "Horsepower", "type": "quantitative"},
+      "y": {"field": "Miles_per_Gallon", "type": "quantitative"},
+      "color": {
+        "condition": {"selection": "CylYr", "field": "Origin", "type": "nominal"},
+        "value": "grey"
+      }
+    }
+  }, {
+    "transform": [{"filter": {"selection": "CylYr"}}],
+    "mark": "circle",
+    "encoding": {
+      "x": {"field": "Horsepower", "type": "quantitative"},
+      "y": {"field": "Miles_per_Gallon", "type": "quantitative"},
+      "color": {"field": "Origin", "type": "nominal"},
+      "size": {"value": 100}
+    }
+  }]
+}
