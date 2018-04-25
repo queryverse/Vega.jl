@@ -123,7 +123,7 @@ function pushpars!(pars::Dict{String,Any}, val,
     if haskey(pars, string(sprop))
       append!(pars[cprop], rval)
     else
-      pars[cprop] = rval
+      pars[cprop] = copy(rval)
     end
   elseif sprop == :plot # bag of key-values
     merge!(pars, rval)
