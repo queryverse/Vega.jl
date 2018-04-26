@@ -200,72 +200,107 @@ display(
 ############### maps  ########################################
 
 
-###########  widgets  ########################################
+###########  query widgets  ########################################
 
 rooturl = "https://raw.githubusercontent.com/vega/new-editor/master/"
 durl = rooturl * "data/cars.json"
-
-
 
 layer1 = (selection(CylYr=@NT(typ=:single, fields=["Cylinders", "Year"],
                               bind=@NT(Cylinders=@NT(input=:range, min=3, max=8, step=1),
                                        Year=@NT(input=:range, min=1969, max=1981, step=1) ))),
           mk.circle(),
-          enc.x.quantitative(:HorsePower),
+          enc.x.quantitative(:Horsepower),
           enc.y.quantitative(:Miles_per_Gallon),
           enc.color.value(:grey, condition=@NT(selection=:CylYr, field=:Origin, typ=:nominal)))
 
 layer2 = (transform([@NT(filter=@NT(selection=:CylYr))]),
           mk.circle(),
-          enc.x.quantitative(:HorsePower),
+          enc.x.quantitative(:Horsepower),
           enc.y.quantitative(:Miles_per_Gallon),
           enc.color.nominal(:Origin),
           enc.size.value(100))
 
 p = plot(data(url=durl),
          description="Drag the sliders to highlight points.",
-         transform= [@NT(calculate="year(datum.Year)", as="Year")],
-         layer([layer1, layer2]) )
+         # transform([@NT(calculate="year(datum.Year)", as="Year")]),
+         layer([layer1, layer2]) );
+display(p)
 
-VegaLite.todict(layer1)
+############ cross filter  ###################
 
-VegaLite.todicttree([@NT(filter=@NT(selection=:CylYr))])
+rooturl = "https://raw.githubusercontent.com/vega/new-editor/master/"
+durl = rooturl * "data/flights-2k.json"
+
+layer1 = (selection(brush=@NT(typ=:interval, encodings=[:x])),
+          mk.bar(),
+          enc.x.quantitative(@NT(repeat=:column), bin=@NT(maxbins=20)),
+          enc.y.quantitative(:*, aggregate=:count) )
+
+layer2 = (transform([@NT(filter=@NT(selection=:brush))]),
+          mk.bar(),
+          enc.x.quantitative(@NT(repeat=:column), bin=@NT(maxbins=20)),
+          enc.y.quantitative(:*, aggregate=:count),
+          enc.color.value(:goldenrod) )
+
+p = plot(data(url=durl, format=@NT(parse=@NT(date=:date))),
+         transform([@NT(calculate="hours(datum.date)", as=:time)]),
+         rep(column=["distance", "delay", "time"]),
+         spec=@NT(layer=[layer1, layer2]) );
+
+display(p)
 
 
-VegaLite.todicttree(@NT(filter=@NT(selection=:CylYr)))
+##################  maps ###################################
+
+rooturl = "https://raw.githubusercontent.com/vega/new-editor/master/"
+durl = rooturl * "data/income.json"
+
+p = plot(width=250, height=150,
+         data(url=durl),
+         transform([@NT(lookup=:id, as=:geo,
+                       from=@NT(
+                        data=@NT(
+                          url=rooturl * "data/us-10m.json",
+                          format=@NT(typ=:topojson, feature=:states)),
+                        key=:id))]),
+          projection=@NT(typ=:albersUsa),
+          mk.geoshape(),
+          enc.shape.geojson(:geo),
+          enc.color.quantitative(:pct),
+          enc.row.nominal(:group)
+          );
+display(p)
+
+
 
 {
-  "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
-  "description": "Drag the sliders to highlight points.",
-  "data": {"url": "data/cars.json"},
-  "transform": [{"calculate": "year(datum.Year)", "as": "Year"}],
-  "layer": [{
-    "selection": {
-      "CylYr": {
-        "type": "single", "fields": ["Cylinders", "Year"],
-        "bind": {
-          "Cylinders": {"input": "range", "min": 3, "max": 8, "step": 1},
-          "Year": {"input": "range", "min": 1969, "max": 1981, "step": 1}
-        }
-      }
-    },
-    "mark": "circle",
-    "encoding": {
-      "x": {"field": "Horsepower", "type": "quantitative"},
-      "y": {"field": "Miles_per_Gallon", "type": "quantitative"},
-      "color": {
-        "condition": {"selection": "CylYr", "field": "Origin", "type": "nominal"},
-        "value": "grey"
-      }
+  "$schema": "https://vega.github.io/schema/vega-lite/v2.1.json",
+  "width": 500,
+  "height": 300,
+  "data": {
+    "url": "data/income.json"
+  },
+  "transform": [
+    {
+      "lookup": "id",
+      "from": {
+        "data": {
+          "url": "data/us-10m.json",
+          "format": {
+            "type": "topojson",
+            "feature": "states"
+          }
+        },
+        "key": "id"
+      },
+      "as": "geo"
     }
-  }, {
-    "transform": [{"filter": {"selection": "CylYr"}}],
-    "mark": "circle",
-    "encoding": {
-      "x": {"field": "Horsepower", "type": "quantitative"},
-      "y": {"field": "Miles_per_Gallon", "type": "quantitative"},
-      "color": {"field": "Origin", "type": "nominal"},
-      "size": {"value": 100}
-    }
-  }]
+  ],
+  "projection": {"type": "albersUsa"},
+  "mark": "geoshape",
+  "encoding": {
+    "shape": {"field": "geo","type": "geojson"},
+    "color": {"field": "pct","type": "quantitative"},
+    "row": {"field": "group","type": "nominal"}
+  }
 }

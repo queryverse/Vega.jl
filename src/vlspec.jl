@@ -49,12 +49,22 @@ function togoodarg(a::Tuple)::Dict{String,Any}
 end
 
 function togoodarg(a::NamedTuple)::Dict{String,Any}
-    elp = Tuple{String,Any}[ (ns,  togoodarg(getfield(a, ns))) for ns in fieldnames(typeof(a)) ]
+    elp = Tuple{String,Any}[]
+    for fnsym in fieldnames(typeof(a))
+        # translate to a valid VegaLite prop if needed ('typ' -> 'type'), and to a string
+        fnstr = String( get(jl2sp, fnsym, fnsym) )
+        push!(elp, (fnstr,  togoodarg(getfield(a, fnsym))))
+    end
     collapsetodict(elp)
 end
 
 function togoodarg(a::Dict{String,Any})::Dict{String,Any}
-    elp = Tuple{String,Any}[ (k,  togoodarg(v)) for (k,v) in a ]
+    elp = Tuple{String,Any}[]
+    for (k,v) in a
+        # translate to a valid VegaLite prop if needed ('typ' -> 'type'), and to a string
+        fnstr = String( get(jl2sp, k, k) )
+        push!(elp, (fnstr,  togoodarg(v)))
+    end
     Dict{String,Any}(elp) # no need to fuse since we started with a Dict
 end
 
