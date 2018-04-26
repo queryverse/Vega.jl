@@ -254,6 +254,8 @@ display(p)
 
 rooturl = "https://raw.githubusercontent.com/vega/new-editor/master/"
 durl = rooturl * "data/income.json"
+topourl = rooturl * "data/us-10m.json"
+clipboard(topourl)
 
 p = plot(width=250, height=150,
          data(url=durl),
@@ -271,6 +273,45 @@ p = plot(width=250, height=150,
           );
 display(p)
 
+
+
+topourl = "https://raw.githubusercontent.com/deldersveld/topojson/master/countries/japan/jp-towns.json"
+http://www.naturalearthdata.com/downloads/110m-cultural-vectors/jp-towns.json
+
+topourl = "https://raw.githubusercontent.com/deldersveld/topojson/master/countries/italy/italy-regions.json"
+
+p = plot(
+    width=500, height=500,
+    data(url=topourl, format=@NT(typ=:topojson, feature=:ITA_adm1)),
+    projection=@NT(typ=:orthographic),
+    mk.geoshape(stroke=:black)
+    ) ;
+
+VegaLite.display(Base.REPL.REPLDisplay(), p)
+
+tmppath = string(tempname(), ".vegalite.html")
+
+open(tmppath, "w") do io
+    VegaLite.writehtml_partial(io, JSON.json(p.params))
+end
+
+
+tmppath = VegaLite.writehtml_full(JSON.json(p.params))
+VegaLite.launch_browser(tmppath) # Open the browser
+
+VegaLite.vlprojection
+    "data": {
+      "url": "data/us-10m.json",
+      "format": {
+        "type": "topojson",
+        "feature": "states"
+      }
+    },
+    "mark": {
+      "type": "geoshape",
+      "fill": "lightgray",
+      "stroke": "white"
+    }
 
 
 {
