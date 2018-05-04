@@ -7,7 +7,7 @@ end
 
 function convert_to_svg(v::VLSpec{:plot})
     data = JSON.json(v.params)
-    script_path = joinpath(@__DIR__, "rendering/compilesvg.js")
+    script_path = joinpath(@__DIR__, "compilesvg.js")
     p_out, p_in, p = readandwrite(`$(nodejs_cmd()) $script_path`)
     write(p_in, data)
     flush(p_in)
