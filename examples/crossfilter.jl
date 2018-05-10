@@ -19,4 +19,4 @@ plot(
     data(url=durl, format=@NT(parse=@NT(date=:date))),
     transform([@NT(calculate="hours(datum.date)", as=:time)]),
     rep(column=["distance", "delay", "time"]),
-    spec( layer(layer1, layer2) ) )
+    spec( layer(layer1, layer2) ) ) 

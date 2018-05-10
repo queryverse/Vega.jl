@@ -48,8 +48,10 @@ mpg |>
 mpg |>
   plot(
     mk.text(),
-    enc.column.ordinal(:Cyl), # sets the column facet dimension
-    enc.row.ordinal(:Year),   # sets the row facet dimension
+    enc.x.ordinal(:Cyl), # sets the column facet dimension
+    enc.y.ordinal(:Year),   # sets the row facet dimension
     enc.text.quantitative(:Displ, aggregate=:mean),
     background=:white,
-    config(mark=@NT(fontStyle="italic", fontSize=15, font="helvetica")))
+    config(
+        numberFormat=".2r",
+        mark=@NT( fontStyle="italic", fontSize=15, font="helvetica") ))

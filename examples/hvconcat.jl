@@ -13,5 +13,8 @@ r2 = (mk.rect(),
       enc.y.quantitative(:Hwy, bin=@NT(maxbins=10)),
       enc.color.quantitative(:*, aggregate=:count)) ;
 
-mpg |>
-  plot(vconcat([r1,r2]))
+
+mpg |> plot( vconcat(r1, r2) )
+
+# or alternatively :
+mpg |> plot( vconcat([r1, r2]) )

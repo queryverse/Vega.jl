@@ -36,31 +36,7 @@ pdf("c:/temp/ex.pdf", p)
 
 Dict()
 
-##################################################################
-
-import Distributions
-xs = rand(Distributions.Normal(), 100, 3)
-
-dt = [ @NT( a = xs[i,1] + xs[i,2] .^ 2,
-            b = xs[i,3] .* xs[i,2],
-            c = xs[i,3] .+ xs[i,2] )  for i in 1:size(xs,1) ]
-
-data(dt)
-
-p = dt |>
-  plot( rep(column = [:a, :b, :c], row = [:a, :b, :c]),
-        spec(mk.point(),
-             enc.x.quantitative(@NT(repeat=:column)),
-             enc.y.quantitative(@NT(repeat=:row))));
-
-p = plot(data(dt),
-         rep(column = [:a, :b, :c], row = [:a, :b, :c]),
-         spec(mk.point(),
-         enc.x.quantitative(@NT(repeat=:column)),
-         enc.y.quantitative(@NT(repeat=:row))));
-
-display(p)
-###################################
+####################################
 
 rooturl = "https://raw.githubusercontent.com/vega/new-editor/master/data/"
 durl = rooturl * "unemployment-across-industries.json"
@@ -78,42 +54,6 @@ display(plot(data(url=durl),
      enc.y.quantitative(:count, aggregate=:sum),
      enc.color.nominal(:series, scale=@NT(scheme="category20b")) ) )
 
-############################################################################
-
-import DataFrames
-
-df  = DataFrames.DataFrame(x=[1:7;], y=rand(7))
-# dfd = [ Dict(zip(names(df), vec(Array(df[i,:])))) for i in 1:size(df,1) ]
-
-encx = enc.x.quantitative(:x)
-ency = enc.y.quantitative(:y)
-
-display( df |>
-  plot(width=500,
-       layer((mk.line(), encx, ency, enc.color.value(:green)),
-             (mk.line(interpolate=:cardinal), encx, ency, enc.color.value(:blue)),
-             (mk.line(interpolate=:basis), encx, ency, enc.color.value(:red)),
-             (mk.point(), encx, ency, enc.color.value(:black), enc.size.value(50))) )
-   )
-
-
-###########################################################################
-
-r, nb = 5., 10
-df = DataFrames.DataFrame(n = [1:nb;],
-               x = r * (0.2 + rand(nb)) .* cos.(2π * linspace(0,1,nb)),
-               y = r * (0.2 + rand(nb)) .* sin.(2π * linspace(0,1,nb)))
-
-encx = enc.x.quantitative(:x, scale=@NT(zero=false))
-ency = enc.y.quantitative(:y, scale=@NT(zero=false))
-encn = enc.order.quantitative(:n)
-
-display(
-  plot(data(df),
-       layer((mk.line(interpolate="basis-closed"), encx, ency, encn,
-               enc.color.value(:blue)),
-             (mk.point(), encx, ency, enc.color.value(:black), enc.size.value(50)))
-      ) )
 
 
 ############################################################################
@@ -121,30 +61,31 @@ display(
 # TODO le schema json ne contient pas la def de "brush", ni "grid"
 
 rooturl = "https://raw.githubusercontent.com/vega/new-editor/master/data/"
-durl = rooturl * "data/cars.json"
+dataurl = rooturl * "data/cars.json"
 
-plot(repeat(row    = ["Horsepower","Acceleration"],
-            column = ["Horsepower", "Miles_per_Gallon"]),
-     spec(
-          data(url=durl),
-          mark="point",
-          selection(
-                    # brush(typ="interval", resolve="union",
-                    #       encodings=["x"],
-                    #       on="[mousedown[event.shiftKey], mouseup] > mousemove",
-                    #       translate="[mousedown[event.shiftKey], mouseup] > mousemove"),
-                    grid(typ="interval", resolve="global",
-                         bind="scales",
-                         translate="[mousedown[!event.shiftKey], mouseup] > mousemove")
-                   ),
-          encoding(
-                    x(field(repeat="row"), typ="quantitative"),
-                    y(field(repeat="column"), typ="quantitative"),
-                    color(field="Origin", typ="nominal",
-                          condition(selection="!brush", value="grey"))
+plot(
+    rep(row    = ["Horsepower","Acceleration"],
+        column = ["Horsepower", "Miles_per_Gallon"]),
+    spec(
+        data(url=durl),
+        mk.point(),
+        selection(
+            brush=@NT(
+                typ="interval", resolve="union",
+                encodings=["x"],
+                on="[mousedown[event.shiftKey], mouseup] > mousemove",
+                translate="[mousedown[event.shiftKey], mouseup] > mousemove"),
+            grid=@NT(
+                typ="interval", resolve="global", bind="scales",
+                translate="[mousedown[!event.shiftKey], mouseup] > mousemove") ),
+        enc.x.quantitative(@NT(repeat=:row)),
+        enc.y.quantitative(@NT(repeat=:column)),
+        enc.color.nominal(:Origin, condition=@NT(selection="!brush", value=:grey))
                     )
-          )
-     )
+     ) |> display
+
+
+
 
 # brush pas encore définie
 
@@ -279,6 +220,8 @@ topourl = "https://raw.githubusercontent.com/deldersveld/topojson/master/countri
 http://www.naturalearthdata.com/downloads/110m-cultural-vectors/jp-towns.json
 
 topourl = "https://raw.githubusercontent.com/deldersveld/topojson/master/countries/italy/italy-regions.json"
+durl = rooturl * "data/income.json"
+topourl = rooturl * "data/us-10m.json"
 
 p = plot(
     width=500, height=500,
@@ -287,7 +230,10 @@ p = plot(
     mk.geoshape(stroke=:black)
     ) ;
 
+display(p)
 VegaLite.display(Base.REPL.REPLDisplay(), p)
+
+
 
 tmppath = string(tempname(), ".vegalite.html")
 
