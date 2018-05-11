@@ -1,4 +1,5 @@
 using VegaLite
+using NamedTuples
 using RDatasets
 
 mpg = dataset("ggplot2", "mpg") # load the 'mpg' dataframe
@@ -13,8 +14,9 @@ r2 = (mk.rect(),
       enc.y.quantitative(:Hwy, bin=@NT(maxbins=10)),
       enc.color.quantitative(:*, aggregate=:count)) ;
 
+c2 = (mk.bar(),
+      enc.x.quantitative(:Displ),
+      enc.y.nominal(:Manufacturer),
+      enc.color.nominal(:Manufacturer)) ;
 
-mpg |> plot( vconcat(r1, r2) )
-
-# or alternatively :
-mpg |> plot( vconcat([r1, r2]) )
+mpg |> plot(hconcat([r2, c2]))
