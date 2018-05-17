@@ -2,7 +2,7 @@ __precompile__()
 module VegaLite
 
 using JSON, Compat, Requires, NodeJS, Cairo, Rsvg
-import IteratorInterfaceExtensions, TableTraits, FileIO, DataValues
+import IteratorInterfaceExtensions, TableTraits, FileIO, DataValues, MacroTools
 
 import Base: |>
 
@@ -12,7 +12,7 @@ import Base: |>
 import IterableTables
 
 export renderer, actionlinks, junoplotpane, png, svg, jgp, pdf, savefig,
-    loadspec, savespec, @vl_str
+    loadspec, savespec, @vl_str, @vlplot
 
 
 ########################  settings functions  ###############################
