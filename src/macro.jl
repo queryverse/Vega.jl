@@ -113,6 +113,16 @@ function fix_shortcuts(spec::Dict)
         new_spec["encoding"] = new_encoding_dict
     end
 
+    if haskey(new_spec, "data")
+        if TableTraits.isiterabletable(new_spec["data"])
+            it = IteratorInterfaceExtensions.getiterator(new_spec["data"])
+
+            recs = [Dict(c[1]=>isa(c[2], DataValues.DataValue) ? (isnull(c[2]) ? nothing : get(c[2])) : c[2] for c in zip(keys(r), values(r))) for r in it]
+        
+            new_spec["data"] = Dict{String,Any}("values" => recs)
+        end
+    end
+
     return new_spec
 end
 
