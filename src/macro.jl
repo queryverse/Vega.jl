@@ -130,8 +130,10 @@ macro vlplot(ex...)
     ex = :({$(ex...)})
     new_ex = MacroTools.prewalk(ex) do x
         # @show x
-        if x isa Expr && x.head==:(=)
-            return :($(string(x.args[1]))=>$(x.args[2]))
+        if x isa Expr && x.head==:(=) && x.args[2] isa Symbol
+            return :($(string(x.args[1]))=>$(esc(x.args[2])))
+        elseif x isa Expr && x.head==:(=)
+                return :($(string(x.args[1]))=>$(x.args[2]))
         elseif x isa Expr && x.head==:cell1d
             args = Vector{Expr}(length(x.args))
             for (i,v) in enumerate(x.args)
