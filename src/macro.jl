@@ -142,10 +142,15 @@ end
 
 function Base.:+(a::VLSpec{:plot}, b::VLSpec{:plot})
     new_spec = deepcopy(a.params)
-    if !haskey(new_spec,"layer")
-        new_spec["layer"] = []
+    if haskey(new_spec, "facet") || haskey(new_spec, "repeat")
+        new_spec["spec"] = deepcopy(b.params)
+    else
+        if !haskey(new_spec,"layer")
+            new_spec["layer"] = []
+        end
+        push!(new_spec["layer"], deepcopy(b.params))
     end
-    push!(new_spec["layer"], deepcopy(b.params))
+    
     return VLSpec{:plot}(new_spec)
 end
 
