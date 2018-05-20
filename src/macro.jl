@@ -156,6 +156,10 @@ function Base.:+(a::VLSpec{:plot}, b::VLSpec{:plot})
     new_spec = deepcopy(a.params)
     if haskey(new_spec, "facet") || haskey(new_spec, "repeat")
         new_spec["spec"] = deepcopy(b.params)
+    elseif haskey(b.params, "vconcat")
+        new_spec["vconcat"] = deepcopy(b.params["vconcat"])
+    elseif haskey(b.params, "hconcat")
+        new_spec["hconcat"] = deepcopy(b.params["hconcat"])
     else
         if !haskey(new_spec,"layer")
             new_spec["layer"] = []
