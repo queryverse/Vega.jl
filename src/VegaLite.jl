@@ -70,8 +70,9 @@ include("schema/func_definition.jl") # 5s
 include("schema/func_documentation.jl") # 3s
 include("schema/spec_validation.jl") # 0s
 
-include("dsl.jl")
-include("macro.jl")
+include("dsl_helper_func/dsl_helper_func.jl")
+include("dsl_vlplot_macro/dsl_vlplot_macro.jl")
+include("dsl_str_macro/dsl_str_macro.jl")
 
 include("rendering/render.jl")
 include("rendering/juno_integration.jl")

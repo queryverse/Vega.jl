@@ -5,6 +5,8 @@
 #
 ###############################################################################
 
+include("dsl_helper_func_utils.jl")
+
 ### encoding family : enc.x.quantitative, ...
 
 function mkfunc1(dim, typ)
