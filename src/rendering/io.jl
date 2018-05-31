@@ -9,19 +9,6 @@ function savefig(filename::AbstractString, mime::AbstractString, v::VLSpec{:plot
 end
 
 
-# PhantomJS alternative
-# function tofile(path::String, plt::VLSpec{:plot}, format::String)
-#   checkplot(v)
-#
-#   pio = IOBuffer()
-#   writehtml_full(pio, JSON.json(v.params))
-#
-#   out = PhantomJS.renderhtml(seekstart(pio),
-#                              clipToSelector=".marks",
-#                              format=format)
-# end
-
-
 """
     savefig(filename::AbstractString, v::VLSpec{:plot})
 Save the plot ``v`` as a file with name ``filename``. The file format

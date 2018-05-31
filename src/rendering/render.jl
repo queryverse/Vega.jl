@@ -4,7 +4,7 @@
 #
 ######################################################################
 
-asset(url...) = normpath(joinpath(@__DIR__, "..", "deps", "lib", url...))
+asset(url...) = normpath(joinpath(@__DIR__, "../..", "deps", "lib", url...))
 
 #Vega Scaffold: https://github.com/vega/vega/wiki/Runtime
 

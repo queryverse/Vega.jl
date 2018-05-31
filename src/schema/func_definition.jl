@@ -109,26 +109,21 @@ end
 const arrayprops = Symbol[:layer, :transform, :hconcat, :vconcat]
 
 ### step 3 : declare functions
-
-type VLSpec{T}
-  params::Union{Dict, Vector}
-end
-vltype{T}(::VLSpec{T}) = T
-
-for sfn in keys(funcs)
-  if isdefined(sfn)
-    mt = @eval typeof($sfn).name.mt
-    if isdefined(mt, :module) && mt.module != current_module()
-      println("   importing $sfn from $(mt.module)")
-      eval( Expr(:import, Symbol(mt.module), sfn) )
-    end
-  end
-
-  specnm = Symbol(vlname(sfn)) # VegaLite property name
-  @eval( function ($sfn)(args...;kwargs...)
-           $(Expr(:curly, :VLSpec, QuoteNode(specnm)))( wrapper($(QuoteNode(sfn)), args...; kwargs...) )
-         end  )
-
-  # export
-  eval( Expr(:export, sfn) )
-end
+#
+# for sfn in keys(funcs)
+#   if isdefined(sfn)
+#     mt = @eval typeof($sfn).name.mt
+#     if isdefined(mt, :module) && mt.module != current_module()
+#       println("   importing $sfn from $(mt.module)")
+#       eval( Expr(:import, Symbol(mt.module), sfn) )
+#     end
+#   end
+#
+#   specnm = Symbol(vlname(sfn)) # VegaLite property name
+#   @eval( function ($sfn)(args...;kwargs...)
+#            $(Expr(:curly, :VLSpec, QuoteNode(specnm)))( wrapper($(QuoteNode(sfn)), args...; kwargs...) )
+#          end  )
+#
+#   # export
+#   eval( Expr(:export, sfn) )
+# end

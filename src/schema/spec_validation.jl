@@ -34,7 +34,15 @@ function conforms(x, ps::String, d::ArrayDef)
 end
 
 function conforms(d, ps::String, spec::ObjDef)
-  isa(d, Dict) || throw("expected object got '$d' in $ps")
+  throw("expected object got '$d' in $ps")
+end
+
+function conforms(d::NamedTuple, ps::String, spec::ObjDef)
+  dnt = [ ns => getfield(d, ns) for ns in fieldnames(typeof(d)) ]
+  conforms(Dict(dnt), ps, spec)
+end
+
+function conforms(d::Dict, ps::String, spec::ObjDef)
   for (k,v) in d
     if haskey(spec.props, k)
       conforms(v, "$ps.$k", spec.props[k])
