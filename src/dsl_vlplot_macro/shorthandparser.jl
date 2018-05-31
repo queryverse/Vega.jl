@@ -86,6 +86,6 @@ function parse_shortcut(s::AbstractString)
             throw(ArgumentError("Invalid shortcut string"))
         end
     else
-        return ["field"=>tokens[1],"type"=>:quantitative]
+        return ["field"=>tokens[1]]
     end
 end

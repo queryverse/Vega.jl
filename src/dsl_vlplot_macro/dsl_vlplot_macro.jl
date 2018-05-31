@@ -72,7 +72,7 @@ function fix_shortcuts(spec::Dict{String,Any}, positional_key::String)
         new_encoding_dict = Dict{String,Any}()
         for (k,v) in new_spec["encoding"]
             if v isa Symbol
-                new_encoding_dict[k] = Dict{String,Any}("field"=>string(v),"type"=>"quantitative")
+                new_encoding_dict[k] = Dict{String,Any}("field"=>string(v))
             elseif v isa String
                 new_encoding_dict[k] = Dict{String,Any}(parse_shortcut(v)...)   
             else
