@@ -107,9 +107,4 @@ function data(args...; kwargs...)
     end
 end
 
-function |>(a, b::VLSpec{:plot})
-    b.params["data"] = data(a).params
-    b
-end
-
 export data
