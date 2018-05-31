@@ -8,8 +8,7 @@ import TableTraits # 0
 import FileIO # 17s !!!
 import DataValues  # 1s
 import MacroTools
-
-import Base: |>
+using URIParser
 
 # This import can eventually be removed, it currently just makes sure
 # that the iterable tables integration for DataFrames and friends
