@@ -38,7 +38,7 @@ function decode_typ(s::AbstractString)
     end
 
     if s in union(VegaLite.refs["BasicType"].enum, VegaLite.refs["GeoType"].enum)
-        return :type=>Symbol(s)
+        return "type"=>Symbol(s)
     else
         throw(ArgumentError("Invalid type."))
     end
@@ -47,9 +47,9 @@ end
 function decode_func(s::AbstractString)
     s = lowercase(s)
     if s in VegaLite.refs["AggregateOp"].enum
-        return :aggregate=>Symbol(s)
+        return "aggregate"=>Symbol(s)
     elseif s in union(VegaLite.refs["LocalMultiTimeUnit"].enum,VegaLite.refs["LocalSingleTimeUnit"].enum,VegaLite.refs["UtcMultiTimeUnit"].enum,VegaLite.refs["UtcSingleTimeUnit"].enum)
-        return :timeUnit=>Symbol(s)
+        return "timeUnit"=>Symbol(s)
     else
         throw(ArgumentError("Unknown aggregation function or time unit '$s'."))
     end
@@ -62,7 +62,7 @@ function parse_shortcut(s::AbstractString)
             if length(tokens)>2 && tokens[3]==")"
                 if length(tokens)==3
                     decoded_func = decode_func(tokens[1])
-                    return [decoded_func,:type=>decoded_func[1]==:timeUnit ? :temporal : :quantitative]
+                    return [decoded_func,"type"=>decoded_func[1]=="timeUnit" ? :temporal : :quantitative]
                 elseif length(tokens)==5 && tokens[4]==":"
                     return [decode_func(tokens[1]),decode_typ(tokens[5])]
                 else
@@ -71,9 +71,9 @@ function parse_shortcut(s::AbstractString)
             elseif length(tokens)>3 && tokens[4]==")"
                 if length(tokens)==4
                     decoded_func = decode_func(tokens[1])
-                    return [decoded_func,:field=>tokens[3],:type=>decoded_func[1]==:timeUnit ? :temporal : :quantitative]
+                    return [decoded_func,"field"=>tokens[3],"type"=>decoded_func[1]=="timeUnit" ? :temporal : :quantitative]
                 elseif length(tokens)==6 && tokens[5]==":"
-                    return [decode_func(tokens[1]),:field=>tokens[3],decode_typ(tokens[6])]
+                    return [decode_func(tokens[1]),"field"=>tokens[3],decode_typ(tokens[6])]
                 else
                     throw(ArgumentError("invalid shortcut string"))
                 end
@@ -81,11 +81,11 @@ function parse_shortcut(s::AbstractString)
                 throw(ArgumentError("Invalid shortcut string"))
             end
         elseif length(tokens)==3 && tokens[2]==":"
-            return [:field=>tokens[1],decode_typ(tokens[3])]
+            return ["field"=>tokens[1],decode_typ(tokens[3])]
         else
             throw(ArgumentError("Invalid shortcut string"))
         end
     else
-        return [:field=>tokens[1],:type=>:quantitative]
+        return ["field"=>tokens[1],"type"=>:quantitative]
     end
 end
