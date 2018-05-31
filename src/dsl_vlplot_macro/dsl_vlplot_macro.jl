@@ -1,9 +1,5 @@
 include("shorthandparser.jl")
 
-macro vl_str(content)
-    return VLSpec{:plot}(JSON.parse(content))
-end
-
 function walk_dict(f, d, parent)
     res = Dict{String,Any}()
     for p in d
