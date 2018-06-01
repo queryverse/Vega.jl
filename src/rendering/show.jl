@@ -42,7 +42,7 @@ function Base.show(io::IO, m::MIME"application/pdf", v::VLSpec{:plot})
     cs = Cairo.CairoPDFSurface(io, d.width,d.height)
     c = Cairo.CairoContext(cs)
     Rsvg.handle_render_cairo(c,r)
-    finish(cs)
+    Cairo.finish(cs)
 end
 
 function Base.show(io::IO, m::MIME"application/eps", v::VLSpec{:plot})
@@ -54,7 +54,7 @@ function Base.show(io::IO, m::MIME"application/eps", v::VLSpec{:plot})
     cs = Cairo.CairoEPSSurface(io, d.width,d.height)
     c = Cairo.CairoContext(cs)
     Rsvg.handle_render_cairo(c,r)
-    finish(cs)
+    Cairo.finish(cs)
 end
 
 # function Base.show(io::IO, m::MIME"application/postscript", v::VLSpec{:plot})
@@ -66,7 +66,7 @@ end
 #     cs = Cairo.CairoPSSurface(io, d.width,d.height)
 #     c = Cairo.CairoContext(cs)
 #     Rsvg.handle_render_cairo(c,r)
-#     finish(cs)
+#     Cairo.finish(cs)
 # end
 
 function Base.show(io::IO, m::MIME"image/png", v::VLSpec{:plot})
