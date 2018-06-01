@@ -5,7 +5,7 @@ module VegaLite
 using JSON, Compat, Requires, NodeJS, Cairo, Rsvg, NamedTuples # 6s
 import IteratorInterfaceExtensions # 1s
 import TableTraits # 0
-import FileIO # 17s !!!
+using FileIO # 17s !!!
 import DataValues  # 1s
 import MacroTools
 using URIParser
@@ -17,6 +17,7 @@ import IterableTables
 
 export renderer, actionlinks
 export png, svg, jgp, pdf, savefig, loadspec, savespec, @vl_str, @vlplot
+export load, save
 
 export mk, enc
 
