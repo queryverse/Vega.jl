@@ -1,4 +1,4 @@
-## Quick tour
+# Quick tour
 
 ### Simple scatter plot
 
