@@ -2,6 +2,9 @@ using Documenter, VegaLite
 
 info("Building docs...")
 
+Pkg.add("DataFrames")
+Pkg.add("VegaDatasets")
+
 makedocs(
   modules=[VegaLite],
   format=:html,
