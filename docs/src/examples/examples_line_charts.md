@@ -1,4 +1,4 @@
-## Simple Bar Chart
+## Line Chart
 
 ```@example
 using VegaLite, VegaDatasets
