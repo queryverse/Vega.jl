@@ -22,7 +22,8 @@ makedocs(
         "Area Charts & Streamgraphs" => "examples/examples_area_Charts_streamgraphs.md",
         "Table-based Plots" => "examples/examples_table_based_plots.md",
         "Faceting (Trellis Plot / Small Multiples)" => "examples/examples_faceting.md",
-        "Repeat & Concatenation" => "examples/examples_repeat_concatenation.md"
+        "Repeat & Concatenation" => "examples/examples_repeat_concatenation.md",
+        "Maps (Geographic Displays)" => "examples/examples_maps.md"
     ],
     "User Guide" => Any[
         "Vega-lite specifications" => "userguide/vlspec.md"
