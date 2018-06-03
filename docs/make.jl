@@ -15,7 +15,11 @@ makedocs(
         "Quick Tour" => "gettingstarted/quick.md"
     ],
     "Examples" => Any[
-        "Simple Charts" => "examples/examples_simplecharts.md"
+        "Simple Charts" => "examples/examples_simplecharts.md",
+        "Bar Charts & Histograms" => "examples/examples_barchartshistograms.md",
+        "Scatter & Strip Plots" => "examples/examples_scatter_strip_plots.md",
+        "Line Charts" => "examples/examples_line_charts.md",
+        "Area Charts & Streamgraphs" => "examples/examples_area_Charts_streamgraphs.md"
     ],
     "User Guide" => Any[
         "Vega-lite specifications" => "userguide/vlspec.md"
