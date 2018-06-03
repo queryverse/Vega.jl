@@ -10,6 +10,7 @@ using FileIO # 17s !!!
 import DataValues  # 1s
 import MacroTools
 using URIParser
+using FilePaths
 
 # This import can eventually be removed, it currently just makes sure
 # that the iterable tables integration for DataFrames and friends
