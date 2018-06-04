@@ -16,6 +16,7 @@ makedocs(
     ],
     "User Guide" => Any[
         "Vega-lite specifications" => "userguide/vlspec.md",
+        "The @vlplot command" => "userguide/vlplotmacro.md",
         "Data sources" => "userguide/data.md"
     ],
     "Examples" => Any[
