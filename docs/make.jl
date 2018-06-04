@@ -15,7 +15,8 @@ makedocs(
         "Quick Tour" => "gettingstarted/quick.md"
     ],
     "User Guide" => Any[
-        "Vega-lite specifications" => "userguide/vlspec.md"
+        "Vega-lite specifications" => "userguide/vlspec.md",
+        "Data sources" => "userguide/data.md"
     ],
     "Examples" => Any[
         "Simple Charts" => "examples/examples_simplecharts.md",
