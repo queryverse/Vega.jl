@@ -4,7 +4,9 @@ TODO
 
 ## One dot per zipcode in the U.S.
 
-```@example
+TODO convert this to PNG output
+
+```julia
 using VegaLite, VegaDatasets
 
 dataset("zipcodes").path |>
