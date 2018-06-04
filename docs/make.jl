@@ -33,7 +33,8 @@ makedocs(
         "Multi-View Displays" => Any[
             "Faceting (Trellis Plot / Small Multiples)" => "examples/examples_faceting.md",
             "Repeat & Concatenation" => "examples/examples_repeat_concatenation.md"
-        ]        
+        ],
+        "Maps (Geographic Displays)" => "examples/examples_maps.md"
     ],
     "Reference Manual" => [
         "Global settings" => "referencemanual/global.md",
