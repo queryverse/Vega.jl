@@ -14,9 +14,9 @@ This section will give a brief overview of these options. Other sections will de
 
 ## The `@vlplot` macro
 
-The `@vlplot` macro is the main way to specify plots in [VegaLite.jl](https://github.com/fredo-dedup/VegaLite.jl). The macro uses a syntax that is closely aligned with the JSON format of the original [Vega-Lite](https://vega.github.io/vega-lite/) specification. It is very simple to take a vega-lite specification and "translate" it into a corresponding `@vlplot` macro call. In addition, the macro provides a number of convenient syntax features that allow for a concise expression of common vega-lite patterns. These shorthands give [VegaLite.jl]() a syntax that can be used in a productive way for exploratory data analysis.
+The `@vlplot` macro is the main way to specify plots in [VegaLite.jl](https://github.com/fredo-dedup/VegaLite.jl). The macro uses a syntax that is closely aligned with the JSON format of the original [Vega-Lite](https://vega.github.io/vega-lite/) specification. It is very simple to take a vega-lite specification and "translate" it into a corresponding `@vlplot` macro call. In addition, the macro provides a number of convenient syntax features that allow for a concise expression of common vega-lite patterns. These shorthand give [VegaLite.jl]() a syntax that can be used in a productive way for exploratory data analysis.
 
-A very simple [Vega-Lite]() JSON specification looks like this:
+A very simple [Vega-Lite](https://vega.github.io/vega-lite/) JSON specification looks like this:
 
 ```json
 {
@@ -58,7 +58,7 @@ using VegaLite
 
 The main difference between JSON and the `@vlplot` macro is that keys are not surrounded by quotation marks in the macro, and key-value pairs are separate by a `=` (instead of a `:`). The second important change is that whenever a key is named `type` in the JSON version, one has to translate that into `typ` in the macro (`type` is a reserved keyword in julia and therefore can't be used in this context).
 
-While these literal translations of JSON work, they are also quite verbose. The `@vlplot` macro provides a number of shorthands so that the same plot can be expressed in a much more conside manner. The following example creates the same plot, but uses a number of alternative syntaxes provided by the `@vlplot` macro:
+While these literal translations of JSON work, they are also quite verbose. The `@vlplot` macro provides a number of shorthands so that the same plot can be expressed in a much more concise manner. The following example creates the same plot, but uses a number of alternative syntaxes provided by the `@vlplot` macro:
 
 ```julia
 using VegaLite, DataFrames
