@@ -1,3 +1,5 @@
+# Scatter & Strip Plots
+
 ## Scatterplot
 
 ```@example

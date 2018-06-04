@@ -1,3 +1,5 @@
+# Simple Charts
+
 ## Simple Bar Chart
 
 ```@example
