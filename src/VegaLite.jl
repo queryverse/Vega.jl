@@ -10,6 +10,7 @@ using FileIO # 17s !!!
 import DataValues  # 1s
 import MacroTools
 using URIParser
+using FilePaths
 
 # This import can eventually be removed, it currently just makes sure
 # that the iterable tables integration for DataFrames and friends
@@ -21,6 +22,11 @@ export png, svg, jgp, pdf, savefig, loadspec, savespec, @vl_str, @vlplot
 export load, save
 
 export mk, enc
+
+export vlplot, vldata
+
+export config, selection, resolve, projection, facet, spec, rep
+export transform, hconcat, vconcat, layer
 
 ########################  settings functions  ############################
 

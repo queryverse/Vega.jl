@@ -1,3 +1,5 @@
+# Table-based Plots
+
 ## Table Heatmap
 
 ```@example

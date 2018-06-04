@@ -1,33 +1,29 @@
+# VegaLite.jl
 
-[VegaLite.jl](https://github.com/fredo-dedup/VegaLite.jl) enables the generation of [Vega-Lite](https://vega.github.io/vega-lite/) plots from Julia.
+## Overview
 
-[Vega-Lite](https://vega.github.io/vega-lite/) is a visualization grammar describing mappings from data to graphical properties (e.g. marks, axes, scales). For rendering it uses pre-defined design rules that keep the visualization specification succinct while still leaving user control.
+[VegaLite.jl](https://github.com/fredo-dedup/VegaLite.jl) is a plotting package for the [julia](https://julialang.org/) programming language. The package is based on [Vega-Lite](https://vega.github.io/vega-lite/), which extends a traditional [grammar of graphics](https://doi.org/10.1007/0-387-28695-0) API into a [grammar of interactive graphics](https://doi.org/10.1109/TVCG.2016.2599030).
 
-Vega-Lite supports:
-- data transformation, sorting, filtering and grouping.
-- aggregation, binning, and simple statistical analysis (e.g. mean, std, var, count).
-- plots can be faceted, layered and stacked vertically or horizontally.
-
-### Installation
-
-To install the package run `Pkg.add("VegaLite")`.
-
-### Principles
-
-The package is essentially a thin layer translating Julia statements to the [Vega-Lite](https://vega.github.io/vega-lite/) visualization specification format.
-
-One can take any Vega-Lite specification and easily translate it into corresponding julia code. In addition, the package provides various ways to specify figures in a much more concise way. Here is an example of a scatter plot with a legend:
+[VegaLite.jl](https://github.com/fredo-dedup/VegaLite.jl) allows you to create a wide range of statistical plots. It exposes the full functionality of the underlying [Vega-Lite](https://vega.github.io/vega-lite/) and is a the same time tightly integrated into the julia ecosystem. Here is an example of a scatter plot:
 
 ```@example
 using VegaLite, VegaDatasets
 
 dataset("cars") |>
 @vlplot(
-  :point,
-  x=:Horsepower,
-  y=:Miles_per_Gallon,
-  color=:Origin,
-  width=400,
-  height=400
+    :point,
+    x=:Horsepower,
+    y=:Miles_per_Gallon,
+    color=:Origin,
+    width=400,
+    height=400
 )
+```
+
+## Installation
+
+To install [VegaLite.jl](https://github.com/fredo-dedup/VegaLite.jl), run the following julia code:
+
+```julia
+Pkg.add("VegaLite")
 ```

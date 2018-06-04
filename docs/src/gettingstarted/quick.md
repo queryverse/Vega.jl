@@ -1,5 +1,9 @@
 # Quick tour
 
+!!! note
+
+    This section is outdated and does not reflect the latest API of the package.
+
 ### Simple scatter plot
 
 Use functions linked by the `|>` operator to build your visuialization incrementally. VegaLite.jl can use DataFrames or DataTables as sources for data. For a scatter plot, specify that the mark should a point by `markpoint()`, then how the data in the DataFrame `mpg` (fields `:Cty`, `:Hwy` and `:Manufacturer`) should be connected to the encoding channels (x, y and color respectively). Finally, global configuration options are provided in a `config` function (type `? config``to see all the options).

@@ -1,3 +1,5 @@
+# Line Charts
+
 ## Line Chart
 
 ```@example
@@ -102,7 +104,7 @@ dataset("stocks") |>
 )
 ```
 
-### Connected Scatterplot (Lines with Custom Paths)
+## Connected Scatterplot (Lines with Custom Paths)
 
 ```@example
 using VegaLite, VegaDatasets

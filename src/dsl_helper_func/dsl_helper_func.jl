@@ -67,9 +67,7 @@ end
 #     vls
 # end
 
-plot(args...; kwargs...)        = mkSpec(:plot, args...; kwargs...)
-
-export plot
+vlplot(args...; kwargs...)        = mkSpec(:plot, args...; kwargs...)
 
 #### 1st level aliases
 
@@ -86,9 +84,6 @@ hconcat(args...)   = mkSpec(:vlhconcat, args...)
 vconcat(args...)   = mkSpec(:vlvconcat, args...)
 layer(args...)     = mkSpec(:vllayer, args...)
 
-export config, selection, resolve, projection, facet, spec, rep
-export transform, hconcat, vconcat, layer
-
 ### data
 # dat is a special case, we want to interpret correctly cases where an
 # iterable table is passed as an argument
@@ -96,7 +91,7 @@ export transform, hconcat, vconcat, layer
 getrealvalue(v::DataValues.DataValue) = isnull(v) ? nothing : get(v)
 getrealvalue(v) = v
 
-function data(args...; kwargs...)
+function vldata(args...; kwargs...)
     if (length(args) == 1) && TableTraits.isiterabletable(args[1])
         it = IteratorInterfaceExtensions.getiterator(args[1])
         recs = [Dict(c[1] => getrealvalue(c[2]) for c in zip(keys(r), values(r))) for r in it]
@@ -106,5 +101,3 @@ function data(args...; kwargs...)
         mkSpec(:vldata, args...; kwargs...)
     end
 end
-
-export data

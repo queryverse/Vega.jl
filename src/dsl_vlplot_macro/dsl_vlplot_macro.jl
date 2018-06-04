@@ -61,6 +61,11 @@ function fix_shortcuts(spec::Dict{String,Any}, positional_key::String)
             return parse_shortcut(string(p[2]))
         elseif p[1]=="typ"
             return "type"=>p[2]
+        elseif p[1]=="url" && p[2] isa AbstractPath && parent=="data"
+            # TODO This is a hack that might only work on Windows
+            # Vega seems to not understand properly formed file URIs
+            as_uri = string(URI(p[2]))
+            return p[1] => as_uri[1:5] * as_uri[7:end]
         else
             return p
         end
