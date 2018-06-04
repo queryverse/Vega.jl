@@ -46,7 +46,12 @@ using VegaLite, VegaDatasets
 
 dataset("cars") |>
 @vlplot(repeat={column=[:Horsepower, :Miles_per_Gallon, :Acceleration]}) +
-@vlplot(:bar,x={field={repeat=:column},bin=true,typ=:quantitative}, y="count()", color=:Origin)
+@vlplot(
+    :bar,
+    x={field={repeat=:column},bin=true,typ=:quantitative},
+    y="count()",
+    color=:Origin
+)
 ```
 
 ## Interactive Scatterplot Matrix

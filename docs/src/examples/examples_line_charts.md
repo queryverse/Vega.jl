@@ -176,7 +176,8 @@ TODO
 using VegaLite, DataFrames
 
 data = DataFrame(
-    team=["Man Utd", "Chelsea", "Man City", "Spurs", "Man Utd", "Chelsea", "Man City", "Spurs", "Man Utd", "Chelsea", "Man City", "Spurs"],
+    team=["Man Utd", "Chelsea", "Man City", "Spurs", "Man Utd", "Chelsea",
+        "Man City", "Spurs", "Man Utd", "Chelsea", "Man City", "Spurs"],
     matchday=[1,1,1,1,2,2,2,2,3,3,3,3],
     point=[3,1,1,0,6,1,0,3,9,1,0,6]
 )
