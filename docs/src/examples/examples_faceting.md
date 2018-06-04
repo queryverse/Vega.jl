@@ -1,3 +1,5 @@
+# Faceting (Trellis Plot / Small Multiples)
+
 ## Trellis Bar Chart
 
 ```@example
@@ -35,7 +37,7 @@ dataset("movies") |>
 @vlplot(:point, column="MPAA_Rating:o", x=:Worldwide_Gross, y=:US_DVD_Sales)
 ```
 
-### Trellis Histograms
+## Trellis Histograms
 
 ```@example
 using VegaLite, VegaDatasets

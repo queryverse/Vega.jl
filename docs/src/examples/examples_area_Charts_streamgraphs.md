@@ -1,3 +1,5 @@
+# Area Charts & Streamgraphs
+
 ## Area Chart
 
 ```@example
