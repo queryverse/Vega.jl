@@ -65,7 +65,7 @@ function fix_shortcuts(spec::Dict{String,Any}, positional_key::String)
             # TODO This is a hack that might only work on Windows
             # Vega seems to not understand properly formed file URIs
             as_uri = string(URI(p[2]))
-            return p[1] => as_uri[1:5] * as_uri[7:end]
+            return p[1] => is_windows() ? as_uri[1:5] * as_uri[7:end] : as_uri
         else
             return p
         end

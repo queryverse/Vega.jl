@@ -17,7 +17,7 @@ function (p::VLSpec{:plot})(data)
 
         # TODO This is a hack that might only work on Windows
         # Vega seems to not understand properly formed file URIs
-        new_dict["data"] = Dict{String,Any}("url" => as_uri[1:5] * as_uri[7:end])
+        new_dict["data"] = Dict{String,Any}("url" => is_windows() ? as_uri[1:5] * as_uri[7:end] : as_uri)
 
         return VLSpec{:plot}(new_dict)
     elseif TableTraits.isiterabletable(data)
