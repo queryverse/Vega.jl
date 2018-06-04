@@ -4,9 +4,7 @@ TODO
 
 ## One dot per zipcode in the U.S.
 
-TODO convert this to PNG output
-
-```julia
+```@example
 using VegaLite, VegaDatasets
 
 dataset("zipcodes").path |>
@@ -20,6 +18,8 @@ dataset("zipcodes").path |>
     size={value=1},
     color="digit:n"
 )
+
+VegaLite.MimeWrapper{MIME"image/png"}(dataset("zipcodes").path |> @vlplot(:circle,width=500,height=300,transform=[{calculate="substring(datum.zip_code, 0, 1)", as=:digit}],projection={typ=:albersUsa},longitude="longitude:q",latitude="latitude:q",size={value=1},color="digit:n")) # hide
 ```
 
 ## One dot per airport in the US overlayed on geoshape
