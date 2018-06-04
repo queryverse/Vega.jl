@@ -84,9 +84,6 @@ hconcat(args...)   = mkSpec(:vlhconcat, args...)
 vconcat(args...)   = mkSpec(:vlvconcat, args...)
 layer(args...)     = mkSpec(:vllayer, args...)
 
-export config, selection, resolve, projection, facet, spec, rep
-export transform, hconcat, vconcat, layer
-
 ### data
 # dat is a special case, we want to interpret correctly cases where an
 # iterable table is passed as an argument

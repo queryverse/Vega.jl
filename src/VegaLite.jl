@@ -25,6 +25,9 @@ export mk, enc
 
 export vlplot, vldata
 
+export config, selection, resolve, projection, facet, spec, rep
+export transform, hconcat, vconcat, layer
+
 ########################  settings functions  ############################
 
 # Switch for plotting in SVGs or canvas
