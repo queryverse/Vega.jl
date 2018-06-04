@@ -67,9 +67,7 @@ end
 #     vls
 # end
 
-plot(args...; kwargs...)        = mkSpec(:plot, args...; kwargs...)
-
-export plot
+vlplot(args...; kwargs...)        = mkSpec(:plot, args...; kwargs...)
 
 #### 1st level aliases
 
@@ -96,7 +94,7 @@ export transform, hconcat, vconcat, layer
 getrealvalue(v::DataValues.DataValue) = isnull(v) ? nothing : get(v)
 getrealvalue(v) = v
 
-function data(args...; kwargs...)
+function vldata(args...; kwargs...)
     if (length(args) == 1) && TableTraits.isiterabletable(args[1])
         it = IteratorInterfaceExtensions.getiterator(args[1])
         recs = [Dict(c[1] => getrealvalue(c[2]) for c in zip(keys(r), values(r))) for r in it]
@@ -106,5 +104,3 @@ function data(args...; kwargs...)
         mkSpec(:vldata, args...; kwargs...)
     end
 end
-
-export data

@@ -23,6 +23,8 @@ export load, save
 
 export mk, enc
 
+export vlplot, vldata
+
 ########################  settings functions  ############################
 
 # Switch for plotting in SVGs or canvas
