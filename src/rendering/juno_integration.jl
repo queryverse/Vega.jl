@@ -6,8 +6,8 @@
 
 using Juno
 
-media(VLSpec{:plot}, Media.Plot)
+media(VLSpec, Media.Plot)
 
 Juno.@render Juno.PlotPane p::VLSpec{:plot} begin
-    HTML(stringmime("image/svg+xml", p))
+    HTML(string("<div style=\"background-color:white\"", stringmime("image/svg+xml", p), "</div>"))
 end
