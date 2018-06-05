@@ -1,6 +1,35 @@
 ## Choropleth of unemployment rate per county
 
-TODO
+```@example
+using VegaLite, VegaDatasets
+
+us10m = dataset("us-10m").path
+unemployment = dataset("unemployment.tsv").path
+
+@vlplot(
+    :geoshape,
+    width=500, height=300,
+    data={
+        url=us10m,
+        format={
+            typ=:topojson,
+            feature=:counties
+        }
+    },
+    transform=[{
+        lookup=:id,
+        from={
+            data=unemployment,
+            key=:id,
+            fields=["rate"]
+        }
+    }],
+    projection={
+        typ=:albersUsa
+    },
+    color="rate:q"
+)
+```
 
 ## One dot per zipcode in the U.S.
 
@@ -24,7 +53,35 @@ VegaLite.MimeWrapper{MIME"image/png"}(dataset("zipcodes").path |> @vlplot(:circl
 
 ## One dot per airport in the US overlayed on geoshape
 
-TODO
+```@example
+using VegaLite, VegaDatasets
+
+us10m = dataset("us-10m").path
+airports = dataset("airports")
+
+@vlplot(width=500, height=300) +
+@vlplot(
+    mark={
+        :geoshape,
+        fill=:lightgray,
+        stroke=:white
+    },
+    data={
+        url=us10m,
+        format={typ=:topojson, feature=:states}
+    },
+    projection={typ=:albersUsa},
+) +
+@vlplot(
+    :circle,
+    data=airports,
+    projection={typ=:albersUsa},
+    longitude="longitude:q",
+    latitude="latitude:q",
+    size={value=10},
+    color={value=:steelblue}
+)
+```
 
 ## Rules (line segments) connecting SEA to every airport reachable via direct flight
 
