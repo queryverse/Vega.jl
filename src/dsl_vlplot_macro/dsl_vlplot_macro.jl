@@ -61,11 +61,6 @@ function fix_shortcuts(spec::Dict{String,Any}, positional_key::String)
             return parse_shortcut(string(p[2]))
         elseif p[1]=="typ"
             return "type"=>p[2]
-        elseif p[1]=="url" && p[2] isa AbstractPath && parent=="data"
-            # TODO This is a hack that might only work on Windows
-            # Vega seems to not understand properly formed file URIs
-            as_uri = string(URI(p[2]))
-            return p[1] => is_windows() ? as_uri[1:5] * as_uri[7:end] : as_uri
         else
             return p
         end
@@ -87,8 +82,51 @@ function fix_shortcuts(spec::Dict{String,Any}, positional_key::String)
         new_spec["encoding"] = new_encoding_dict
     end
 
+    if haskey(new_spec, "transform")
+        for transform in new_spec["transform"]
+            if haskey(transform, "from") && haskey(transform["from"], "data")
+                if transform["from"]["data"] isa Dict && haskey(transform["from"]["data"], "url")
+                    if transform["from"]["data"]["url"] isa AbstractPath
+                        as_uri = string(URI(transform["data"]["url"]))
+                        transform["from"]["data"]["url"] = is_windows() ? as_uri[1:5] * as_uri[7:end] : as_uri
+                    elseif transform["from"]["data"]["url"] isa URI
+                        as_uri = string(transform["from"]["data"]["url"])
+                        transform["from"]["data"]["url"] = is_windows() ? as_uri[1:5] * as_uri[7:end] : as_uri
+                    end
+                elseif transform["from"]["data"] isa AbstractPath
+                    as_uri = string(URI(transform["from"]["data"]))
+                    transform["from"]["data"] = Dict{String,Any}("url" => is_windows() ? as_uri[1:5] * as_uri[7:end] : as_uri)
+                elseif transform["from"]["data"] isa URI
+                    as_uri = string(transform["from"]["data"])
+                    transform["from"]["data"] = Dict{String,Any}("url" => is_windows() ? as_uri[1:5] * as_uri[7:end] : as_uri)
+                elseif TableTraits.isiterabletable(transform["from"]["data"])
+                    it = IteratorInterfaceExtensions.getiterator(transform["from"]["data"])
+        
+                    recs = [Dict(c[1]=>isa(c[2], DataValues.DataValue) ? (isnull(c[2]) ? nothing : get(c[2])) : c[2] for c in zip(keys(r), values(r))) for r in it]
+                
+                    transform["from"]["data"] = Dict{String,Any}("values" => recs)
+                end
+        
+            end
+        end
+    end
+
     if haskey(new_spec, "data")
-        if TableTraits.isiterabletable(new_spec["data"])
+        if new_spec["data"] isa Dict && haskey(new_spec["data"], "url")
+            if new_spec["data"]["url"] isa AbstractPath
+                as_uri = string(URI(new_spec["data"]["url"]))
+                new_spec["data"]["url"] = is_windows() ? as_uri[1:5] * as_uri[7:end] : as_uri
+            elseif new_spec["data"]["url"] isa URI
+                as_uri = string(new_spec["data"]["url"])
+                new_spec["data"]["url"] = is_windows() ? as_uri[1:5] * as_uri[7:end] : as_uri
+            end
+        elseif new_spec["data"] isa AbstractPath
+            as_uri = string(URI(new_spec["data"]))
+            new_spec["data"] = Dict{String,Any}("url" => is_windows() ? as_uri[1:5] * as_uri[7:end] : as_uri)
+        elseif new_spec["data"] isa URI
+            as_uri = string(new_spec["data"])
+            new_spec["data"] = Dict{String,Any}("url" => is_windows() ? as_uri[1:5] * as_uri[7:end] : as_uri)
+        elseif TableTraits.isiterabletable(new_spec["data"])
             it = IteratorInterfaceExtensions.getiterator(new_spec["data"])
 
             recs = [Dict(c[1]=>isa(c[2], DataValues.DataValue) ? (isnull(c[2]) ? nothing : get(c[2])) : c[2] for c in zip(keys(r), values(r))) for r in it]
