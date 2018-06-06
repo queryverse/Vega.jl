@@ -34,6 +34,8 @@ Base.Filesystem.mktempdir() do folder
     VegaLite.savespec(joinpath(folder,"test1.vegalite"), p)
     @test isfile(joinpath(folder,"test1.vegalite"))
 
+    @test_throws ArgumentError VegaLite.savefig(joinpath(folder,"test1.foo"), p)
+
     # TODO Enable once FileIO registration is merged
     # save(p, joinpath(folder,"test2.vegalite"))
     # @test isfile(joinpath(folder,"test2.vegalite"))
