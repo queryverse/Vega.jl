@@ -46,4 +46,10 @@ using VegaLite
 
 @test_throws ArgumentError VegaLite.parse_shortcut("bar():lij:lij")
 
+@test_throws ArgumentError VegaLite.parse_shortcut("count):o:foo")
+
+@test_throws ArgumentError VegaLite.parse_shortcut("count(bar(:o:foo")
+
+@test_throws ArgumentError VegaLite.parse_shortcut("count(bar):o:foo")
+
 end
