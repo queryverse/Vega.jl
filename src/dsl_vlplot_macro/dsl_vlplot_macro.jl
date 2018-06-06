@@ -138,31 +138,45 @@ function fix_shortcuts(spec::Dict{String,Any}, positional_key::String)
     return new_spec
 end
 
-macro vlplot(ex...)
-    ex = :({$(ex...)})
-    positional_key = gensym()
-    new_ex = MacroTools.prewalk(ex) do x
-        # @show x
-        if x isa Expr && x.head==:(=) && x.args[2] isa Symbol
-            return :($(string(x.args[1]))=>$(esc(x.args[2])))
-        elseif x isa Expr && x.head==:(=)
-                return :($(string(x.args[1]))=>$(x.args[2]))
-        elseif x isa Expr && x.head==:cell1d
-            args = Vector{Expr}(length(x.args))
-            for (i,v) in enumerate(x.args)
-                if v isa Expr && v.head==:(=)
-                    args[i] = v
-                else
-                    args[i] = Expr(:(=), positional_key, v)
-                end
-            end
-            return :(Dict{String,Any}($(args...)))
+function convert_curly_style_array(exprs, positional_key)
+    res = Expr(:vect)
+
+    for ex in exprs
+        if ex isa Expr && ex.head==:cell1d
+            push!(res.args, :( Dict{String,Any}($(convert_curly_style(ex.args, positional_key)...)) ))
         else
-            return x
+            push!(res.args, ex)
         end
     end
 
-    return :( VegaLite.VLSpec{:plot}(fix_shortcuts($new_ex, $(string(positional_key)))) )
+    return res
+end
+
+function convert_curly_style(exprs, positional_key)
+    new_exprs=[]
+    for ex in exprs
+        if ex isa Expr && ex.head==:(=)
+            if ex.args[2] isa Expr && ex.args[2].head==:cell1d
+                push!(new_exprs, :( $(string(ex.args[1])) => Dict{String,Any}($(convert_curly_style(ex.args[2].args, positional_key)...)) ))
+            elseif ex.args[2] isa Expr && ex.args[2].head==:vect
+                push!(new_exprs, :( $(string(ex.args[1])) => $(convert_curly_style_array(ex.args[2].args, positional_key)) ))
+            else
+                push!(new_exprs, :( $(string(ex.args[1])) => $(esc(ex.args[2])) ))
+            end
+        else
+            push!(new_exprs, :( $(string(positional_key)) => $ex ))
+        end
+    end
+
+    return new_exprs
+end
+
+macro vlplot(ex...)
+    positional_key = gensym()
+
+    new_ex = convert_curly_style(ex, positional_key)
+
+    return :( VegaLite.VLSpec{:plot}(fix_shortcuts(Dict{String,Any}($(new_ex...)), $(string(positional_key)))) )
 end
 
 function Base.:+(a::VLSpec{:plot}, b::VLSpec{:plot})
