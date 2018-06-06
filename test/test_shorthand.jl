@@ -37,4 +37,13 @@ using VegaLite
 @test VegaLite.parse_shortcut("month(foo):o") == ["timeUnit"=>:month, "field"=>"foo", "type"=>:ordinal]
 @test VegaLite.parse_shortcut("yearmonth(foo):quantitative") == ["timeUnit"=>:yearmonth, "field"=>"foo", "type"=>:quantitative]
 
+@test VegaLite.parse_shortcut("count()") == ["aggregate"=>:count, "type"=>:quantitative]
+@test VegaLite.parse_shortcut("count():o") == ["aggregate"=>:count, "type"=>:ordinal]
+
+@test_throws ArgumentError VegaLite.parse_shortcut("%lijasef9")
+
+@test_throws ArgumentError VegaLite.parse_shortcut("bar(foo)")
+
+@test_throws ArgumentError VegaLite.parse_shortcut("bar():lij:lij")
+
 end
