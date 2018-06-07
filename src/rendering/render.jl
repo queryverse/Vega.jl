@@ -97,7 +97,7 @@ function writehtml_partial(io::IO, spec::String; title="VegaLite plot")
     requirejs.config({
         paths: {
           vg: "https://cdnjs.cloudflare.com/ajax/libs/vega/3.3.1/vega.min.js?noext",
-          vl: "https://cdnjs.cloudflare.com/ajax/libs/vega-lite/2.5.1/vega-lite.min.js?noext",
+          vl: "https://cdnjs.cloudflare.com/ajax/libs/vega-lite/2.5.2/vega-lite.min.js?noext",
           vg_embed: "https://cdnjs.cloudflare.com/ajax/libs/vega-embed/3.14.0/vega-embed.min.js?noext"
         },
         shim: {
