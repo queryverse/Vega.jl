@@ -77,7 +77,7 @@ include("schema/func_definition.jl") # 5s
 include("schema/func_documentation.jl") # 3s
 include("schema/spec_validation.jl") # 0s
 
-include("dsl_helper_func/dsl_helper_func.jl")
+# include("dsl_helper_func/dsl_helper_func.jl")
 include("dsl_vlplot_macro/dsl_vlplot_macro.jl")
 include("dsl_str_macro/dsl_str_macro.jl")
 
@@ -90,58 +90,58 @@ include("rendering/fileio.jl")
 include("mime_wrapper.jl")
 
 
-function __init__()
+# function __init__()
 
-    global mk, enc
+#     global mk, enc
 
-    ### encoding family : enc.x.quantitative, ...
+#     ### encoding family : enc.x.quantitative, ...
 
-    function mkfunc1(dim, typ)
-        if typ == :value
-            function (val, args...; kwargs...)
-                pars = todicttree(args...; value=val, kwargs...)
-                mkSpec(:vlencoding; [(dim, pars);]...)
-            end
-        else
-            function (field, args...; kwargs...)
-                pars = todicttree(args...; field=field, typ=typ, kwargs...)
-                mkSpec(:vlencoding; [(dim, pars);]...)
-            end
-        end
-    end
+#     function mkfunc1(dim, typ)
+#         if typ == :value
+#             function (val, args...; kwargs...)
+#                 pars = todicttree(args...; value=val, kwargs...)
+#                 mkSpec(:vlencoding; [(dim, pars);]...)
+#             end
+#         else
+#             function (field, args...; kwargs...)
+#                 pars = todicttree(args...; field=field, typ=typ, kwargs...)
+#                 mkSpec(:vlencoding; [(dim, pars);]...)
+#             end
+#         end
+#     end
 
-    channels = Symbol.(collect(keys(refs["EncodingWithFacet"].props)))
-    chantyps = Symbol.(collect(union(refs["BasicType"].enum, refs["GeoType"].enum)))
-    push!(chantyps, :value)
+#     channels = Symbol.(collect(keys(refs["EncodingWithFacet"].props)))
+#     chantyps = Symbol.(collect(union(refs["BasicType"].enum, refs["GeoType"].enum)))
+#     push!(chantyps, :value)
 
-    typnt = NamedTuples.make_tuple( chantyps )
+#     typnt = NamedTuples.make_tuple( chantyps )
 
-    encs = []
-    for ch in channels
-        push!(encs, typnt( [ mkfunc1(ch, tp) for tp in chantyps ]... ) )
-    end
-    enc = NamedTuples.make_tuple( channels )( encs... )
+#     encs = []
+#     for ch in channels
+#         push!(encs, typnt( [ mkfunc1(ch, tp) for tp in chantyps ]... ) )
+#     end
+#     enc = NamedTuples.make_tuple( channels )( encs... )
 
-    #####  mark family : mk.line(), ...
+#     #####  mark family : mk.line(), ...
 
-    function mkfunc2(typ)
-        function (args...; kwargs...)
-            mkSpec(:vlmark, args...; typ=typ, kwargs...)
-        end
-    end
+#     function mkfunc2(typ)
+#         function (args...; kwargs...)
+#             mkSpec(:vlmark, args...; typ=typ, kwargs...)
+#         end
+#     end
 
 
-    # this fails at precompilation
-    marktyps = Symbol.(collect(refs["Mark"].enum))
-    marknt = NamedTuples.make_tuple( marktyps )
+#     # this fails at precompilation
+#     marktyps = Symbol.(collect(refs["Mark"].enum))
+#     marknt = NamedTuples.make_tuple( marktyps )
 
-    # => switch to explicit creation
-    # marktyps = Symbol[:tick, :bar, :square, :point, :line, :rect, :area, :circle, :rule, :text, :geoshape]
-    # marknt = @NT(tick, bar, square, point, line, rect, area, circle, rule, text, geoshape)
-    #
-    mk = marknt([ mkfunc2(typ) for typ in marktyps ]...)
+#     # => switch to explicit creation
+#     # marktyps = Symbol[:tick, :bar, :square, :point, :line, :rect, :area, :circle, :rule, :text, :geoshape]
+#     # marknt = @NT(tick, bar, square, point, line, rect, area, circle, rule, text, geoshape)
+#     #
+#     mk = marknt([ mkfunc2(typ) for typ in marktyps ]...)
 
-end
+# end
 
 
 
