@@ -42,4 +42,4 @@ Pkg.add("VegaLite")
 
 ## Documentation
 
-The current documentation can be found [here](https://fredo-dedup.github.io/VegaLite.jl/latest).
+The current documentation can be found [here](https://fredo-dedup.github.io/VegaLite.jl/stable).
