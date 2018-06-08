@@ -242,8 +242,6 @@ data |> @vlplot(
 
 ## Simple Bar Chart with Labels
 
-TODO Use shorthand for `typ=:text`.
-
 ```@example
 using VegaLite
 
@@ -261,7 +259,7 @@ using VegaLite
 @vlplot(:bar) +
 @vlplot(
     mark={
-        typ=:text,
+        :text,
         align=:left,
         baseline=:middle,
         dx=3
