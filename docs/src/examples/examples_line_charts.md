@@ -168,7 +168,121 @@ data |>
 
 ## Carbon Dioxide in the Atmosphere
 
-TODO
+```@example
+using VegaLite, VegaDatasets
+
+@vlplot(
+    data={
+        url=dataset("co2-concentration").path,
+        format={
+            parse={Date="utc:'%Y-%m-%d'"}
+        }
+    },
+    width=800,
+    height=500,
+    transform=[
+        {
+            calculate="year(datum.Date)",
+            as=:year
+        },
+        {
+            calculate="month(datum.Date)",
+            as=:month
+        },
+        {
+            calculate="floor(datum.year / 10) + 'x'",
+            as=:decade
+        },
+        {
+            calculate="(datum.year % 10) + (datum.month/12)",
+            as=:scaled_date
+        }
+    ]
+) +
+@vlplot(
+    :line,
+    x={
+        "scaled_date:q",
+        axis={
+            title="Year into Decade",
+            tickCount=11
+        }
+    },
+    y={
+        "CO2:q",
+        axis={title="CO2 concentration in ppm"},
+        scale={zero=false}
+    },
+    detail="decade:o",
+    color={"decade:n", legend={offset=40}}
+) +
+(
+    @vlplot(
+        transform=[
+            {
+                aggregate=[{
+                    op="argmin",
+                    field="scaled_date",
+                    as="start"
+                }, {
+                    op="argmax",
+                    field="scaled_date",
+                    as="end"
+                }],
+                groupby=["decade"]
+            },
+            {
+                calculate="datum.start.scaled_date",
+                as="scaled_date_start"
+            },
+            {
+                calculate="datum.start.CO2",
+                as="CO2_start"
+            },
+            {
+                calculate="datum.start.year",
+                as="year_start"
+            },
+            {
+                calculate="datum.end.scaled_date",
+                as="scaled_date_end"
+            },
+            {
+                calculate="datum.end.CO2",
+                as="CO2_end"
+            },
+            {
+                calculate="datum.end.year",
+                as="year_end"
+            }
+        ]
+    ) +
+    @vlplot(
+        mark={
+            :text,
+            aligh=:left,
+            baseline=:top,
+            dx=3,
+            dy=1
+        },
+        x="scaled_date_start:q",
+        y="CO2_start:q",
+        text="year_start:n"
+    ) +
+    @vlplot(
+        mark={
+            :text,
+            align=:left,
+            baseline=:bottom,
+            dx=3,
+            dy=1
+        },
+        x="scaled_date_end:q",
+        y="CO2_end:q",
+        text="year_end:n"
+    )
+)
+```
 
 ## Line Charts Showing Ranks Over Time
 
