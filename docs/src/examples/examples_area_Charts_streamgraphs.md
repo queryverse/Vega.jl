@@ -118,4 +118,39 @@ dataset("unemployment-across-industries") |>
 
 ## Horizon Graph
 
-TODO
+```@example
+using VegaLite, DataFrames
+
+data = DataFrame(
+    x=1:20,
+    y=[28,55,43,91,81,53,19,87,52,48,24,49,87,66,17,27,68,16,49,15]
+)
+
+data |>
+@vlplot(width=300, height=50, config={area={interpolate=:monotone}}) +
+@vlplot(
+    mark={
+        :area,
+        clip=true,
+        orient=:vertical
+    },
+    x={:x, scale={zero=false, nice=false}},
+    y={:y, scale={domain=[0,50]}},
+    opacity={value=0.6}
+) +
+@vlplot(
+    transform=[{calculate="datum.y-50", as=:ny}],
+    mark={
+        :area,
+        clip=true,
+        orient=:vertical
+    },
+    x=:x,
+    y={
+        "ny:q",
+        scale={domain=[0,50]},
+        axis={title="y"}
+    },
+    opacity={value=0.3}
+)
+```
