@@ -56,4 +56,44 @@ dataset("cars") |>
 
 ## Interactive Scatterplot Matrix
 
-TODO
+```@example
+using VegaLite, VegaDatasets
+
+dataset("cars") |> 
+@vlplot(
+    repeat={
+        row=[:Horsepower, :Acceleration, :Miles_per_Gallon],
+        column=[:Miles_per_Gallon, :Acceleration, :Horsepower]
+    }
+) +
+@vlplot(
+    :point,
+    selection={
+        brush={
+            typ=:interval,
+            resolve=:union,
+            on="[mousedown[event.shiftKey], window:mouseup] > window:mousemove!",
+            translate="[mousedown[event.shiftKey], window:mouseup] > window:mousemove!",
+            zoom="wheel![event.shiftKey]"
+        },
+        grid={
+            typ=:interval,
+            resolve=:global,
+            bind=:scales,
+            translate="[mousedown[!event.shiftKey], window:mouseup] > window:mousemove!",
+            zoom="wheel![!event.shiftKey]"
+        }
+    },
+    x={field={repeat=:column}, typ=:quantitative},
+    y={field={repeat=:row}, typ=:quantitative},
+    color={
+        condition={
+            selection=:brush,
+            field=:Origin,
+            typ=:nominal
+        },
+        value=:grey
+    }
+)
+```
+
