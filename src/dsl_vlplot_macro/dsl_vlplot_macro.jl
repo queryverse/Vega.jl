@@ -87,7 +87,7 @@ function fix_shortcuts(spec::Dict{String,Any}, positional_key::String)
             if haskey(transform, "from") && haskey(transform["from"], "data")
                 if transform["from"]["data"] isa Dict && haskey(transform["from"]["data"], "url")
                     if transform["from"]["data"]["url"] isa AbstractPath
-                        as_uri = string(URI(transform["data"]["url"]))
+                        as_uri = string(URI(transform["from"]["data"]["url"]))
                         transform["from"]["data"]["url"] = is_windows() ? as_uri[1:5] * as_uri[7:end] : as_uri
                     elseif transform["from"]["data"]["url"] isa URI
                         as_uri = string(transform["from"]["data"]["url"])
