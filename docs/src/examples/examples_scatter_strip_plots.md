@@ -90,8 +90,6 @@ dataset("cars") |>
 
 ## Bubble Plot (Gapminder)
 
-TODO Add interactive selection
-
 ```@example
 using VegaLite, VegaDatasets
 
@@ -99,6 +97,9 @@ dataset("gapminder-health-income") |>
 @vlplot(
     :circle,
     width=500,height=300,
+    selection={
+        view={typ=:interval, bind=:scales}
+    },
     y={:health, scale={zero=false}},
     x={:income, scale={typ=:log}},
     size=:population,
