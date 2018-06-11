@@ -12,6 +12,7 @@ makedocs(
   pages = [
     "Home" => "index.md",
     "Getting Started" => Any[
+        "Installation" => "gettingstarted/installation.md",
         "Quick Tour" => "gettingstarted/quick.md"
     ],
     "User Guide" => Any[

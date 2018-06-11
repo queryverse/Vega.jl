@@ -19,11 +19,3 @@ dataset("cars") |>
     height=400
 )
 ```
-
-## Installation
-
-To install [VegaLite.jl](https://github.com/fredo-dedup/VegaLite.jl), run the following julia code:
-
-```julia
-Pkg.add("VegaLite")
-```
