@@ -13,7 +13,7 @@ makedocs(
     "Home" => "index.md",
     "Getting Started" => Any[
         "Installation" => "gettingstarted/installation.md",
-        "Quick Tour" => "gettingstarted/quick.md"
+        "Tutorial" => "gettingstarted/tutorial.md"
     ],
     "User Guide" => Any[
         "Vega-lite specifications" => "userguide/vlspec.md",
