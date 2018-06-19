@@ -166,7 +166,44 @@ Channels have a large number of properties that you can customize in this way, t
 
 ## Marks
 
-TODO
+Our examples all used a `point` mark so far, but Vega-Lite supports many more types of [marks](https://vega.github.io/vega-lite/docs/mark.html). The following example uses a `line` mark instead of the `point` mark we have used so far:
+
+```@example
+using VegaLite, VegaDatasets, Query
+
+dataset("stocks") |>
+@filter(_.symbol=="GOOG") |>
+@vlplot(:line, x={"date:t", axis={format="%Y"}}, y=:price)
+```
+
+Note how we specify the `line` mark type as the first positional argument to the `@vlplot` macro call. This examples also showcases a number of other features. First, it uses [Query.jl](https://github.com/davidanthoff/Query.jl) to filter the dataset before we plot it (we only want to plot the stock price for Google). The example also introduces a encoding channel type we haven't seen before: we are using a `temporal` channel type here (configured with the `:t` part in `"date:t"`). The `temporal` type is specifically designed for date and time information. We are also changing how the values of the x axis are displayed in the plot by specifying a custom format string for the x axis.
+
+Sometimes we will need to configure more aspects of the mark than just the type of mark. In that case we can pass additional properties by using the composite syntax we have seen before. In the following example we are using a `line` mark, and we are customizing the color of the line and are also configuring it to show points on top of the line itself:
+
+```@example
+using VegaLite, VegaDatasets, Query
+
+dataset("stocks") |>
+@filter(_.symbol=="GOOG") |>
+@vlplot(
+    mark={
+        :line,
+        point=true,
+        color=:red
+    },
+    x={
+        "date:t",
+        axis={
+            format="%Y"
+        }
+    },
+    y=:price
+)
+```
+
+Note how we have to use the more explicit named keyword syntax `mark={}` when we want to specify more mark properties inside the `@vlplot` macro call. We can still pass the mark type as a positional first argument inside the value we assign to `mark`, though.
+
+There are many different mark types in Vega-Lite, with many different options to customize their appearance. The original [Vega-Lite documentation](https://vega.github.io/vega-lite/docs/mark.html) describes all these options in detail.
 
 ## Aggregations
 

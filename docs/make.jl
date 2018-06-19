@@ -4,6 +4,7 @@ info("Building docs...")
 
 Pkg.add("DataFrames")
 Pkg.add("VegaDatasets")
+Pkg.add("Query")
 
 makedocs(
   modules=[VegaLite],
