@@ -155,7 +155,7 @@ schema = JSON.parsefile(fn)
 # collect(Iterators.filter(n -> startswith(n, "TopLevel"), keys(schema["definitions"])))
 
 refs = Dict{String, SpecDef}()
-rootSpec = toDef(schema["definitions"]["TopLevelSpec"])
+rootSpec = toDef(schema["definitions"]["TopLevelExtendedSpec"])
 
 # length(refs) # 124
 # dl = rootSpec.items[2].props["layer"]
