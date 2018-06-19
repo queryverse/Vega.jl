@@ -14,6 +14,10 @@ function convert_to_svg(v::VLSpec{:plot})
     close(p_in)
     res = readstring(p_out)
     close(p_out)
+    wait(p)
+    if p.exitcode!=0
+        throw(ArgumentError("Invalid spec"))
+    end
     return res
 end
 
