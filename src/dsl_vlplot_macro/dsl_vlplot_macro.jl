@@ -91,14 +91,14 @@ function fix_shortcuts(spec::Dict{String,Any}, positional_key::String)
                         transform["from"]["data"]["url"] = is_windows() ? as_uri[1:5] * as_uri[7:end] : as_uri
                     elseif transform["from"]["data"]["url"] isa URI
                         as_uri = string(transform["from"]["data"]["url"])
-                        transform["from"]["data"]["url"] = is_windows() ? as_uri[1:5] * as_uri[7:end] : as_uri
+                        transform["from"]["data"]["url"] = is_windows() && transform["from"]["data"]["url"].scheme=="file" ? as_uri[1:5] * as_uri[7:end] : as_uri
                     end
                 elseif transform["from"]["data"] isa AbstractPath
                     as_uri = string(URI(transform["from"]["data"]))
                     transform["from"]["data"] = Dict{String,Any}("url" => is_windows() ? as_uri[1:5] * as_uri[7:end] : as_uri)
                 elseif transform["from"]["data"] isa URI
                     as_uri = string(transform["from"]["data"])
-                    transform["from"]["data"] = Dict{String,Any}("url" => is_windows() ? as_uri[1:5] * as_uri[7:end] : as_uri)
+                    transform["from"]["data"] = Dict{String,Any}("url" => is_windows() && transform["from"]["data"].scheme=="file" ? as_uri[1:5] * as_uri[7:end] : as_uri)
                 elseif TableTraits.isiterabletable(transform["from"]["data"])
                     it = IteratorInterfaceExtensions.getiterator(transform["from"]["data"])
         
@@ -118,14 +118,14 @@ function fix_shortcuts(spec::Dict{String,Any}, positional_key::String)
                 new_spec["data"]["url"] = is_windows() ? as_uri[1:5] * as_uri[7:end] : as_uri
             elseif new_spec["data"]["url"] isa URI
                 as_uri = string(new_spec["data"]["url"])
-                new_spec["data"]["url"] = is_windows() ? as_uri[1:5] * as_uri[7:end] : as_uri
+                new_spec["data"]["url"] = is_windows() && new_spec["data"]["url"].scheme=="file" ? as_uri[1:5] * as_uri[7:end] : as_uri
             end
         elseif new_spec["data"] isa AbstractPath
             as_uri = string(URI(new_spec["data"]))
             new_spec["data"] = Dict{String,Any}("url" => is_windows() ? as_uri[1:5] * as_uri[7:end] : as_uri)
         elseif new_spec["data"] isa URI
             as_uri = string(new_spec["data"])
-            new_spec["data"] = Dict{String,Any}("url" => is_windows() ? as_uri[1:5] * as_uri[7:end] : as_uri)
+            new_spec["data"] = Dict{String,Any}("url" => is_windows() && new_spec["data"].scheme=="file" ? as_uri[1:5] * as_uri[7:end] : as_uri)
         elseif TableTraits.isiterabletable(new_spec["data"])
             it = IteratorInterfaceExtensions.getiterator(new_spec["data"])
 
