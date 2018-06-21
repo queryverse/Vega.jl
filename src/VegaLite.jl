@@ -19,6 +19,7 @@ import IterableTables
 
 export renderer, actionlinks
 export png, svg, jgp, pdf, savefig, loadspec, savespec, @vl_str, @vlplot
+export @vg_str
 export load, save
 
 export mk, enc
@@ -70,6 +71,7 @@ actionlinks(b::Bool) = (global ACTIONSLINKS ; ACTIONSLINKS = b)
 
 ########################  includes  #####################################
 
+include("vgspec.jl")
 include("vlspec.jl")
 
 include("schema/schema_parsing.jl") # 8s
