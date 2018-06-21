@@ -207,12 +207,90 @@ There are many different mark types in Vega-Lite, with many different options to
 
 ## Aggregations
 
-TODO
+The following graph shows many individual data points for each x axis value:
 
-## Configurations
+```@example
+using VegaLite, VegaDatasets
 
-TODO
+dataset("cars") |> @vlplot(:point, x=:Origin, y=:Miles_per_Gallon)
+```
+
+In such situations it can often be more interesting to compute an aggregate value for each x axis value, for example the mean miles per gallon number for each region:
+
+```@example
+using VegaLite, VegaDatasets
+
+dataset("cars") |> @vlplot(:point, x=:Origin, y="average(Miles_per_Gallon)")
+```
+
+Here we are making use of another shorthand syntax option in [VegaLite.jl](https://github.com/fredo-dedup/VegaLite.jl). We can specify an aggregation operation in the form of a function call (e.g. `average(...)`) and then pass the name of the column for which we want to compute the aggregation as an argument (e.g. `average(Miles_per_Gallon)`). Vega-Lite supports many different [aggregations](https://vega.github.io/vega-lite/docs/aggregate.html#ops). For example the next plot shows the minimum miles per gallon per region:
+
+```@example
+using VegaLite, VegaDatasets
+
+dataset("cars") |> @vlplot(:bar, x=:Origin, y="min(Miles_per_Gallon)")
+```
+
+This example also uses a different mark, namely the `bar` mark to create a bar plot.
+
+There is one aggregation operator that works slightly different, namely the `count` aggregation. It simply counts the number of rows in each group, so one does not have to specify a column to be aggregated:
+
+```@example
+using VegaLite, VegaDatasets
+
+dataset("cars") |> @vlplot(:bar, x=:Origin, y="count()")
+```
+
+Aggregations can of course be used for any encoding channel, we can for example easily create a horizontal bar chart:
+
+
+```@example
+using VegaLite, VegaDatasets
+
+dataset("cars") |> @vlplot(:bar, x="count()", y=:Origin)
+```
+
+## Config
+
+Almost all aspects of a Vega-Lite plot can be configured and customized. Many of these choices can be set by using the `config` keyword in the `@vlplot` macro call. For example, the following plot adds a title to the plot and the configures the title to use a red font:
+
+```@example
+using VegaLite, VegaDatasets
+
+dataset("cars") |>
+@vlplot(
+    :point,
+    x=:Miles_per_Gallon,
+    y=:Acceleration,
+    title="Cars",
+    config={
+        title={
+            color=:red
+        }
+    }
+)
+```
+
+The original [Vega-Lite documentation](https://vega.github.io/vega-lite/docs/config.html) describes all config options in great detail.
 
 ## File IO
 
-TODO
+Plots that are created with [VegaLite.jl](https://github.com/fredo-dedup/VegaLite.jl) can be saved to disc in a number of formats (PNG, SVG, PDF, ESP). To save a plot, simply call the `save` function:
+
+```@example
+using VegaLite, VegaDatasets
+
+p = dataset("cars") |> @vlplot(:bar, x="count()", y=:Origin)
+
+save("myplot.png", p)
+```
+
+You can also pipe a plot into the `save` function:
+
+```@example
+using VegaLite, VegaDatasets
+
+dataset("cars") |>
+@vlplot(:bar, x="count()", y=:Origin) |>
+save("myplot.pdf")
+```
