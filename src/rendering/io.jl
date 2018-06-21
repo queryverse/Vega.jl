@@ -44,6 +44,11 @@ function loadspec(filename::AbstractString)
     return VLSpec{:plot}(JSON.parse(s))
 end
 
+function loadvgspec(filename::AbstractString)
+    s = readstring(filename)
+    return VGSpec(JSON.parse(s))
+end
+
 """
     savespec(filename::AbstractString, v::VLSpec{:plot}; include_data=false)
 
@@ -52,6 +57,16 @@ The `include_data` argument controls whether the data should be included
 in the saved specification file.
 """
 function savespec(filename::AbstractString, v::VLSpec{:plot}; include_data=false)
+    output_dict = copy(v.params)
+    if !include_data
+        delete!(output_dict, "data")
+    end
+    open(filename, "w") do f
+        JSON.print(f, output_dict)
+    end
+end
+
+function savevgspec(filename::AbstractString, v::VGSpec; include_data=false)
     output_dict = copy(v.params)
     if !include_data
         delete!(output_dict, "data")

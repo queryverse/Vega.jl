@@ -56,11 +56,64 @@ function writehtml_full(io::IO, spec::String; title="VegaLite plot")
   """)
 end
 
+function writevghtml_full(io::IO, spec::String; title="Vega plot")
+  divid = "vg" * randstring(3)
+
+  println(io,
+  """
+  <html>
+    <head>
+      <title>$title</title>
+      <meta charset="UTF-8">
+      <script src="file://$(asset("vega.min.js"))"></script>
+      <script src="file://$(asset("vega-embed.min.js"))"></script>
+    </head>
+    <body>
+      <div id="$divid"></div>
+    </body>
+
+    <style media="screen">
+      .vega-actions a {
+        margin-right: 10px;
+        font-family: sans-serif;
+        font-size: x-small;
+        font-style: italic;
+      }
+    </style>
+
+    <script type="text/javascript">
+
+      var opt = {
+        mode: "vega",
+        renderer: "$RENDERER",
+        actions: $ACTIONSLINKS
+      }
+
+      var spec = $spec
+
+      vegaEmbed('#$divid', spec, opt);
+
+    </script>
+
+  </html>
+  """)
+end
+
 function writehtml_full(spec::String; title="VegaLite plot")
   tmppath = string(tempname(), ".vegalite.html")
 
   open(tmppath, "w") do io
     writehtml_full(io, spec, title=title)
+  end
+
+  tmppath
+end
+
+function write_vg_html_full(spec::String; title="Vega plot")
+  tmppath = string(tempname(), ".vega.html")
+
+  open(tmppath, "w") do io
+    writevghtml_full(io, spec, title=title)
   end
 
   tmppath
@@ -150,5 +203,10 @@ end
 function Base.display(d::Base.REPL.REPLDisplay, plt::VLSpec{:plot})
   checkplot(plt)
   tmppath = writehtml_full(JSON.json(plt.params))
+  launch_browser(tmppath) # Open the browser
+end
+
+function Base.display(d::Base.REPL.REPLDisplay, plt::VGSpec)
+  tmppath = write_vg_html_full(JSON.json(plt.params))
   launch_browser(tmppath) # Open the browser
 end
