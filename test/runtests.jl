@@ -5,6 +5,7 @@ using VegaLite
 
 include("testhelper_create_vg_plot.jl")
 include("test_io.jl")
+include("test_show.jl")
 include("test_base.jl")
 include("test_macro.jl")
 include("test_shorthand.jl")

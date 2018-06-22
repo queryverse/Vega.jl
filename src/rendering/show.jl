@@ -44,7 +44,7 @@ Base.Multimedia.istextmime(::MIME{Symbol("application/vnd.vega.v3+json")}) = tru
 
 function Base.show(io::IO, m::MIME"application/vnd.vegalite.v2+json", v::VLSpec{:plot})
      print(io, JSON.json(v.params))
- end
+end
 
 function Base.show(io::IO, m::MIME"application/vnd.vega.v3+json", v::VGSpec)
     print(io, JSON.json(v.params))

@@ -61,15 +61,14 @@ Base.Filesystem.mktempdir() do folder
 
     @test_throws ArgumentError VegaLite.savefig(joinpath(folder,"test1.foo"), p)
 
-    # save(p, joinpath(folder,"test2.vegalite"))
-    # @test isfile(joinpath(folder,"test2.vegalite"))
+    save(joinpath(folder,"test2.vegalite"), p)
+    @test isfile(joinpath(folder,"test2.vegalite"))
 
     p2 = VegaLite.loadspec(joinpath(folder,"test1.vegalite"))
     @test isa(p2, VegaLite.VLSpec)
 
-    # TODO Enable once FileIO registration is merged
-    # p2 = load(joinpath(folder,"test1.vegalite"))
-    # @test isa(p2, VLSpec)
+    p2 = load(joinpath(folder,"test1.vegalite"))
+    @test isa(p2, VegaLite.VLSpec)
 
     vgpl1 = getvgplot()
 
@@ -78,6 +77,17 @@ Base.Filesystem.mktempdir() do folder
     vgpl2 = VegaLite.loadvgspec(joinpath(folder,"test1.vega"))
 
     @test vgpl1.params == vgpl1.params
+
+    # TODO Enable once FileIO stuff is merged
+    # save(joinpath(folder,"test3.vega"), vgpl1)
+    # @test isfile(joinpath(folder,"test3.vega"))
+
+    # vgpl3 = load(joinpath(folder,"test3.vega"))
+    # @test isa(vgpl2, VegaLite.VGSpec)
+
+    # save(joinpath(folder,"test4.vega"), vgpl1, include_data=true)
+    # @test isfile(joinpath(folder,"test4.vega"))
+
 end
 
 end
