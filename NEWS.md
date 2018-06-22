@@ -1,3 +1,8 @@
+# VegaLite.jl v0.3.2 Release Notes
+* Various bug fixes
+* Add @vg_str macro and VGSpec
+* Documentation updates
+
 # VegaLite.jl v0.3.1 Release Notes
 * Update Vega-Lite to version 2.5.2
 * Fix precompile bug
