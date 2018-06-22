@@ -14,7 +14,7 @@ This section will give a brief overview of these options. Other sections will de
 
 ## The `@vlplot` macro
 
-The `@vlplot` macro is the main way to specify plots in [VegaLite.jl](https://github.com/fredo-dedup/VegaLite.jl). The macro uses a syntax that is closely aligned with the JSON format of the original [Vega-Lite](https://vega.github.io/vega-lite/) specification. It is very simple to take a vega-lite specification and "translate" it into a corresponding `@vlplot` macro call. In addition, the macro provides a number of convenient syntax features that allow for a concise expression of common vega-lite patterns. These shorthand give [VegaLite.jl]() a syntax that can be used in a productive way for exploratory data analysis.
+The `@vlplot` macro is the main way to specify plots in [VegaLite.jl](https://github.com/fredo-dedup/VegaLite.jl). The macro uses a syntax that is closely aligned with the JSON format of the original [Vega-Lite](https://vega.github.io/vega-lite/) specification. It is very simple to take a vega-lite specification and "translate" it into a corresponding `@vlplot` macro call. In addition, the macro provides a number of convenient syntax features that allow for a concise expression of common vega-lite patterns. These shorthand give [VegaLite.jl](https://github.com/fredo-dedup/VegaLite.jl) a syntax that can be used in a productive way for exploratory data analysis.
 
 A very simple [Vega-Lite](https://vega.github.io/vega-lite/) JSON specification looks like this:
 

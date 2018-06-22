@@ -1,12 +1,6 @@
-!!! note
+# Output
 
-    This section is outdated and does not reflect the latest API of the package.
-
-## Output
-
-### On evaluation
-
-### Saving to a file
+## Saving to a file
 
 ```@docs
 pdf
@@ -14,9 +8,4 @@ png
 svg
 ```
 
-Or you can use a single saving functions that guesses the image format from
-the extension of the provided filename
-
-```@docs
-savefig
-```
+In addition you can also use the `save` (reexported from VegaLite.jl) function from the [FileIO.jl](https://github.com/JuliaIO/FileIO.jl) package to save plots
