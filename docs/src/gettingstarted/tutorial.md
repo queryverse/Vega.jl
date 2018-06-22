@@ -294,3 +294,7 @@ dataset("cars") |>
 @vlplot(:bar, x="count()", y=:Origin) |>
 save("myplot.pdf")
 ```
+
+## Next steps
+
+There are two main sources of information if you want to learn more about plotting with [VegaLite.jl](https://github.com/fredo-dedup/VegaLite.jl). The first is the excellent [Vega-Lite documentation](https://vega.github.io/vega-lite/). The documentation describes the JSON original Vega-Lite version, but it should be fairly easy to understand how those examples translate into the Julia equivalent. The second source is are the remaining sections in this documentation of [VegaLite.jl](https://github.com/fredo-dedup/VegaLite.jl). The section about the `@vlplot` macro should be especially useful for understanding how the JSON Vega-Lite syntax can be translated into the equivalent julia version.
