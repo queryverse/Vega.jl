@@ -28,4 +28,11 @@ using Base.Test
 
 @test (DataFrame(a=[1]) |> @vlplot(:point)).params == @vlplot(:point, data=DataFrame(a=[1])).params
 
+@test @vlplot("point", transform=[{lookup="foo", from={data=p"/foo/bar", key="bar"}}]).params["transform"][1]["from"]["data"]["url"] == "file://foo/bar"
+@test @vlplot("point", transform=[{lookup="foo", from={data={url=p"/foo/bar"}, key="bar"}}]).params["transform"][1]["from"]["data"]["url"] == "file://foo/bar"
+@test @vlplot("point", transform=[{lookup="foo", from={data=URI("http://foo.com/bar.json"), key="bar"}}]).params["transform"][1]["from"]["data"]["url"] == "http://foo.com/bar.json"
+@test @vlplot("point", transform=[{lookup="foo", from={data={url=URI("http://foo.com/bar.json")}, key="bar"}}]).params["transform"][1]["from"]["data"]["url"] == "http://foo.com/bar.json"
+
+@test @vlplot("point", transform=[{lookup="foo", from={data=DataFrame(a=[1]), key="bar"}}]).params["transform"][1]["from"]["data"]["values"][1]["a"] == 1
+
 end
