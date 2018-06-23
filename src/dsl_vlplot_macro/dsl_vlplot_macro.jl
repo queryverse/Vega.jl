@@ -102,7 +102,7 @@ function fix_shortcuts(spec::Dict{String,Any}, positional_key::String)
                 elseif TableTraits.isiterabletable(transform["from"]["data"])
                     it = IteratorInterfaceExtensions.getiterator(transform["from"]["data"])
         
-                    recs = [Dict(c[1]=>isa(c[2], DataValues.DataValue) ? (isnull(c[2]) ? nothing : get(c[2])) : c[2] for c in zip(keys(r), values(r))) for r in it]
+                    recs = [Dict{String,Any}(string(c[1])=>isa(c[2], DataValues.DataValue) ? (isnull(c[2]) ? nothing : get(c[2])) : c[2] for c in zip(keys(r), values(r))) for r in it]
                 
                     transform["from"]["data"] = Dict{String,Any}("values" => recs)
                 end
