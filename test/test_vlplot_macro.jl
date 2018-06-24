@@ -61,4 +61,16 @@ using Base.Test
 }
 """).params
 
+@test @vlplot("point", x={"foo:q"}).params == (vl"""
+{
+    "mark": "point",
+    "encoding": {
+        "x": {
+            "field": "foo",
+            "type": "quantitative"
+        }
+    }
+}
+""").params
+
 end
