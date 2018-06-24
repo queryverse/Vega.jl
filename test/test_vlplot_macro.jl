@@ -73,4 +73,14 @@ using Base.Test
 }
 """).params
 
+@test (@vlplot(description="foo") + @vlplot(:point) + @vlplot(:circle)).params == @vlplot(description="foo", layer=[{mark=:point},{mark=:circle}]).params
+
+@test (@vlplot(facet={row={field=:foo, typ=:bar}}) + @vlplot(:point)).params == @vlplot(facet={row={field=:foo, typ=:bar}}, spec={mark=:point}).params
+
+@test (@vlplot(repeat={column=[:foo, :bar]}) + @vlplot(:point)).params == @vlplot(repeat={column=[:foo, :bar]}, spec={mark=:point}).params
+
+@test (@vlplot(description="foo") + [@vlplot(:point) @vlplot(:circle)]).params == @vlplot(description="foo", hconcat=[{mark=:point},{mark=:circle}]).params
+
+@test (@vlplot(description="foo") + [@vlplot(:point); @vlplot(:circle)]).params == @vlplot(description="foo", vconcat=[{mark=:point},{mark=:circle}]).params
+
 end
