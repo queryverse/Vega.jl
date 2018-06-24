@@ -35,4 +35,30 @@ using Base.Test
 
 @test @vlplot("point", transform=[{lookup="foo", from={data=DataFrame(a=[1]), key="bar"}}]).params["transform"][1]["from"]["data"]["values"][1]["a"] == 1
 
+@test [@vlplot("point") @vlplot("circle")].params == (vl"""
+{
+    "hconcat": [
+        {
+            "mark": "point"
+        },
+        {
+            "mark": "circle"
+        }
+    ]
+}
+""").params
+
+@test [@vlplot("point"); @vlplot("circle")].params == (vl"""
+{
+    "vconcat": [
+        {
+            "mark": "point"
+        },
+        {
+            "mark": "circle"
+        }
+    ]
+}
+""").params
+
 end
