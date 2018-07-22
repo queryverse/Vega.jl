@@ -3,8 +3,8 @@
 ###################################################################
 
 function prettydesc(desc::String)
-  res = replace(desc, "\n", " ") # remove all CR because they break formatting
-  res = replace(res, "__", "*")  # markdown italic compatibilty issue ?
+  res = replace(desc, "\n"=>" ") # remove all CR because they break formatting
+  res = replace(res, "__"=>"*")  # markdown italic compatibilty issue ?
   res
 end
 

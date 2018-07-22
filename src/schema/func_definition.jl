@@ -9,7 +9,7 @@ const jl2sp = Dict( (v,k) for (k,v) in sp2jl)
 ### conversion between property name in VegaLite and julia function name
 jlfunc(vln::String) = jlfunc(Symbol(vln))
 jlfunc(vln::Symbol) = Symbol("vl" * string(vln))
-vlname(fn::Symbol)  = replace(string(fn), r"^vl", "")
+vlname(fn::Symbol)  = replace(string(fn), r"^vl"=>"")
 
 
 ### step 1 : build a dict linking SpecDefs to (possibly several) parent SpecDef

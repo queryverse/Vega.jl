@@ -1,5 +1,5 @@
 using VegaLite
-using Base.Test
+using Test
 
 @testset "MimeWrapper" begin
 

@@ -200,13 +200,13 @@ function launch_browser(tmppath::String)
 end
 
 
-function Base.display(d::Base.REPL.REPLDisplay, plt::VLSpec{:plot})
+function Base.display(d::REPL.REPLDisplay, plt::VLSpec{:plot})
   checkplot(plt)
   tmppath = writehtml_full(JSON.json(plt.params))
   launch_browser(tmppath) # Open the browser
 end
 
-function Base.display(d::Base.REPL.REPLDisplay, plt::VGSpec)
+function Base.display(d::REPL.REPLDisplay, plt::VGSpec)
   tmppath = write_vg_html_full(JSON.json(plt.params))
   launch_browser(tmppath) # Open the browser
 end

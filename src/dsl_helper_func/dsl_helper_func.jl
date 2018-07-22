@@ -88,7 +88,7 @@ layer(args...)     = mkSpec(:vllayer, args...)
 # dat is a special case, we want to interpret correctly cases where an
 # iterable table is passed as an argument
 
-getrealvalue(v::DataValues.DataValue) = isnull(v) ? nothing : get(v)
+getrealvalue(v::DataValues.DataValue) = isna(v) ? nothing : get(v)
 getrealvalue(v) = v
 
 function vldata(args...; kwargs...)

@@ -6,24 +6,24 @@ using JSON
 
 @compat abstract type SpecDef end
 
-type ObjDef <: SpecDef
+mutable struct ObjDef <: SpecDef
   desc::String
   props::Dict{String, SpecDef}
   addprops::SpecDef
   required::Set{String}
 end
 
-type NumberDef <: SpecDef
+mutable struct NumberDef <: SpecDef
   desc::String
 end
 NumberDef(spec::Dict) = NumberDef(get(spec, "description", ""))
 
-type IntDef <: SpecDef
+mutable struct IntDef <: SpecDef
   desc::String
 end
 IntDef(spec::Dict)    = IntDef(get(spec, "description", ""))
 
-type StringDef <: SpecDef
+mutable struct StringDef <: SpecDef
   desc::String
   enum::Set{String}
 end
@@ -31,28 +31,28 @@ StringDef(spec::Dict) =
   StringDef(get(spec, "description", ""),
             Set{String}(get(spec, "enum", String[])))
 
-type BoolDef <: SpecDef
+mutable struct BoolDef <: SpecDef
   desc::String
 end
 BoolDef(spec::Dict)   = BoolDef(get(spec, "description", ""))
 
-type ArrayDef <: SpecDef
+mutable struct ArrayDef <: SpecDef
   desc::String
   items::SpecDef
 end
 ArrayDef(spec::Dict) =
   ArrayDef(get(spec, "description", ""), toDef(spec["items"]))
 
-type UnionDef <: SpecDef
+mutable struct UnionDef <: SpecDef
   desc::String
   items::Vector
 end
 
-type VoidDef <: SpecDef
+mutable struct VoidDef <: SpecDef
   desc::String
 end
 
-type AnyDef <: SpecDef
+mutable struct AnyDef <: SpecDef
   desc::String
 end
 
@@ -128,7 +128,7 @@ function toDef(spec::Dict)
       # reparse a second time to set correctly auto-referential children props
       temp = toDef(schema["definitions"][rname])
       # and update refs[rname]
-      for field in fieldnames(refs[rname])
+      for field in fieldnames(typeof(refs[rname]))
         setfield!(refs[rname], field, getfield(temp, field))
       end
     end

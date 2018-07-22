@@ -2,7 +2,7 @@ using VegaLite
 using FilePaths
 using URIParser
 using DataFrames
-using Base.Test
+using Test
 
 @testset "@vlplot macro" begin
 

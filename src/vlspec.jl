@@ -14,11 +14,11 @@ function (p::VLSpec{:plot})(data)
 
     it = IteratorInterfaceExtensions.getiterator(data)
 
-    col_names = TableTraits.column_names(it)
-    col_types = TableTraits.column_types(it)
+    col_names = fieldnames(eltype(it))
+    col_types = [fieldtype(eltype(it),i) for i in col_names]
     col_type_mapping = Dict{Symbol,Type}(i[1]=>i[2] for i in zip(col_names,col_types))
     
-    recs = [Dict{String,Any}(string(c[1])=>isa(c[2], DataValues.DataValue) ? (isnull(c[2]) ? nothing : get(c[2])) : c[2] for c in zip(keys(r), values(r))) for r in it]
+    recs = [Dict{String,Any}(string(c[1])=>isa(c[2], DataValues.DataValue) ? (isna(c[2]) ? nothing : get(c[2])) : c[2] for c in zip(keys(r), values(r))) for r in it]
 
     new_dict = copy(p.params)
     new_dict["data"] = Dict{String,Any}("values" => recs)

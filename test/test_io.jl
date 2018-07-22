@@ -1,6 +1,7 @@
-using Base.Test
+using Test
 using VegaLite
 using DataFrames
+using Dates
 
 @testset "io" begin
 
