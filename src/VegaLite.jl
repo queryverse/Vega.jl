@@ -12,6 +12,7 @@ import MacroTools
 using URIParser
 using FilePaths
 using REPL, Dates
+using Random
 
 # This import can eventually be removed, it currently just makes sure
 # that the iterable tables integration for DataFrames and friends

@@ -35,7 +35,7 @@ function (p::VLSpec{:plot})(data)
                         v["type"] = "quantitative"
                     elseif jl_type <: AbstractString
                         v["type"] = "nominal"
-                    elseif jl_type <: Base.Dates.AbstractTime
+                    elseif jl_type <: AbstractTime
                         v["type"] = "temporal"
                     end
                 end

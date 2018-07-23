@@ -190,11 +190,11 @@ end
 opens a browser tab with the given html file
 """
 function launch_browser(tmppath::String)
-  if is_apple()
+  if Sys.isapple()
     run(`open $tmppath`)
-  elseif is_windows()
+  elseif Sys.iswindows()
     run(`cmd /c start $tmppath`)
-  elseif is_linux()
+  elseif Sys.islinux()
     run(`xdg-open $tmppath`)
   end
 end
