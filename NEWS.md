@@ -1,3 +1,6 @@
+# VegaLite.jl v0.3.4 Release Notes
+* Disable check against schema from julia for now
+
 # VegaLite.jl v0.3.3 Release Notes
 * Update Vega-Lite to version 2.6.0
 * Update Vega to version 4.0.0
