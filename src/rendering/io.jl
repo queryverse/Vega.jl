@@ -40,12 +40,12 @@ Load a vega-lite specification from a file with name `filename`. Returns
 a `VLSpec` object.
 """
 function loadspec(filename::AbstractString)
-    s = readstring(filename)
+    s = read(filename, String)
     return VLSpec{:plot}(JSON.parse(s))
 end
 
 function loadvgspec(filename::AbstractString)
-    s = readstring(filename)
+    s = read(filename, String)
     return VGSpec(JSON.parse(s))
 end
 

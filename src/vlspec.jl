@@ -35,7 +35,7 @@ function (p::VLSpec{:plot})(data)
                         v["type"] = "quantitative"
                     elseif jl_type <: AbstractString
                         v["type"] = "nominal"
-                    elseif jl_type <: AbstractTime
+                    elseif jl_type <: Dates.AbstractTime
                         v["type"] = "temporal"
                     end
                 end
@@ -60,7 +60,7 @@ function (p::VLSpec{:plot})(path::AbstractPath)
 
     # TODO This is a hack that might only work on Windows
     # Vega seems to not understand properly formed file URIs
-    new_dict["data"] = Dict{String,Any}("url" => is_windows() ? as_uri[1:5] * as_uri[7:end] : as_uri)
+    new_dict["data"] = Dict{String,Any}("url" => Sys.iswindows() ? as_uri[1:5] * as_uri[7:end] : as_uri)
 
     return VLSpec{:plot}(new_dict)
 end

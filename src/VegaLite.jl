@@ -1,13 +1,11 @@
-__precompile__()
-
 module VegaLite
 
-using JSON, Compat, Requires, NodeJS, Rsvg # 6s
+using JSON, Requires, NodeJS, Rsvg # 6s
 import Cairo
 import IteratorInterfaceExtensions # 1s
 import TableTraits # 0
 using FileIO # 17s !!!
-import DataValues  # 1s
+using DataValues  # 1s
 import MacroTools
 using URIParser
 using FilePaths

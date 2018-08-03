@@ -4,7 +4,7 @@
 
 using JSON
 
-@compat abstract type SpecDef end
+abstract type SpecDef end
 
 mutable struct ObjDef <: SpecDef
   desc::String
