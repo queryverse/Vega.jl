@@ -1,5 +1,6 @@
-using Base.Test
+using Test
 using VegaLite
+using Dates
 
 @testset "VegaLite" begin
 

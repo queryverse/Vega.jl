@@ -10,13 +10,14 @@ end
 function convert_to_svg(v::VLSpec{:plot})
     data = JSON.json(v.params)
     script_path = joinpath(@__DIR__, "compilesvg.js")
-    p_out, p_in, p = readandwrite(`$(nodejs_cmd()) $script_path`)
-    write(p_in, data)
-    flush(p_in)
-    close(p_in)
-    res = readstring(p_out)
-    close(p_out)
+    p = open(`$(nodejs_cmd()) $script_path`, "r+")
+    writer = @async begin
+        write(p, data)
+        close(p.in)
+    end
+    reader = @async read(p, String)
     wait(p)
+    res = fetch(reader)
     if p.exitcode!=0
         throw(ArgumentError("Invalid spec"))
     end
@@ -26,13 +27,14 @@ end
 function convert_to_svg(v::VGSpec)
     data = JSON.json(v.params)
     script_path = joinpath(@__DIR__, "compilevg2svg.js")
-    p_out, p_in, p = readandwrite(`$(nodejs_cmd()) $script_path`)
-    write(p_in, data)
-    flush(p_in)
-    close(p_in)
-    res = readstring(p_out)
-    close(p_out)
+    p = open(`$(nodejs_cmd()) $script_path`, "r+")
+    writer = @async begin
+        write(p, data)
+        close(p.in)
+    end
+    reader = @async read(p, String)
     wait(p)
+    res = fetch(reader)
     if p.exitcode!=0
         throw(ArgumentError("Invalid spec"))
     end

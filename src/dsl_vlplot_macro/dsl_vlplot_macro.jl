@@ -88,21 +88,21 @@ function fix_shortcuts(spec::Dict{String,Any}, positional_key::String)
                 if transform["from"]["data"] isa Dict && haskey(transform["from"]["data"], "url")
                     if transform["from"]["data"]["url"] isa AbstractPath
                         as_uri = string(URI(transform["from"]["data"]["url"]))
-                        transform["from"]["data"]["url"] = is_windows() ? as_uri[1:5] * as_uri[7:end] : as_uri
+                        transform["from"]["data"]["url"] = Sys.iswindows() ? as_uri[1:5] * as_uri[7:end] : as_uri
                     elseif transform["from"]["data"]["url"] isa URI
                         as_uri = string(transform["from"]["data"]["url"])
-                        transform["from"]["data"]["url"] = is_windows() && transform["from"]["data"]["url"].scheme=="file" ? as_uri[1:5] * as_uri[7:end] : as_uri
+                        transform["from"]["data"]["url"] = Sys.iswindows() && transform["from"]["data"]["url"].scheme=="file" ? as_uri[1:5] * as_uri[7:end] : as_uri
                     end
                 elseif transform["from"]["data"] isa AbstractPath
                     as_uri = string(URI(transform["from"]["data"]))
-                    transform["from"]["data"] = Dict{String,Any}("url" => is_windows() ? as_uri[1:5] * as_uri[7:end] : as_uri)
+                    transform["from"]["data"] = Dict{String,Any}("url" => Sys.iswindows() ? as_uri[1:5] * as_uri[7:end] : as_uri)
                 elseif transform["from"]["data"] isa URI
                     as_uri = string(transform["from"]["data"])
-                    transform["from"]["data"] = Dict{String,Any}("url" => is_windows() && transform["from"]["data"].scheme=="file" ? as_uri[1:5] * as_uri[7:end] : as_uri)
+                    transform["from"]["data"] = Dict{String,Any}("url" => Sys.iswindows() && transform["from"]["data"].scheme=="file" ? as_uri[1:5] * as_uri[7:end] : as_uri)
                 elseif TableTraits.isiterabletable(transform["from"]["data"])
                     it = IteratorInterfaceExtensions.getiterator(transform["from"]["data"])
         
-                    recs = [Dict{String,Any}(string(c[1])=>isa(c[2], DataValues.DataValue) ? (isnull(c[2]) ? nothing : get(c[2])) : c[2] for c in zip(keys(r), values(r))) for r in it]
+                    recs = [Dict{String,Any}(string(c[1])=>isa(c[2], DataValues.DataValue) ? (isna(c[2]) ? nothing : get(c[2])) : c[2] for c in zip(keys(r), values(r))) for r in it]
                 
                     transform["from"]["data"] = Dict{String,Any}("values" => recs)
                 end
@@ -115,21 +115,21 @@ function fix_shortcuts(spec::Dict{String,Any}, positional_key::String)
         if new_spec["data"] isa Dict && haskey(new_spec["data"], "url")
             if new_spec["data"]["url"] isa AbstractPath
                 as_uri = string(URI(new_spec["data"]["url"]))
-                new_spec["data"]["url"] = is_windows() ? as_uri[1:5] * as_uri[7:end] : as_uri
+                new_spec["data"]["url"] = Sys.iswindows() ? as_uri[1:5] * as_uri[7:end] : as_uri
             elseif new_spec["data"]["url"] isa URI
                 as_uri = string(new_spec["data"]["url"])
-                new_spec["data"]["url"] = is_windows() && new_spec["data"]["url"].scheme=="file" ? as_uri[1:5] * as_uri[7:end] : as_uri
+                new_spec["data"]["url"] = Sys.iswindows() && new_spec["data"]["url"].scheme=="file" ? as_uri[1:5] * as_uri[7:end] : as_uri
             end
         elseif new_spec["data"] isa AbstractPath
             as_uri = string(URI(new_spec["data"]))
-            new_spec["data"] = Dict{String,Any}("url" => is_windows() ? as_uri[1:5] * as_uri[7:end] : as_uri)
+            new_spec["data"] = Dict{String,Any}("url" => Sys.iswindows() ? as_uri[1:5] * as_uri[7:end] : as_uri)
         elseif new_spec["data"] isa URI
             as_uri = string(new_spec["data"])
-            new_spec["data"] = Dict{String,Any}("url" => is_windows() && new_spec["data"].scheme=="file" ? as_uri[1:5] * as_uri[7:end] : as_uri)
+            new_spec["data"] = Dict{String,Any}("url" => Sys.iswindows() && new_spec["data"].scheme=="file" ? as_uri[1:5] * as_uri[7:end] : as_uri)
         elseif TableTraits.isiterabletable(new_spec["data"])
             it = IteratorInterfaceExtensions.getiterator(new_spec["data"])
 
-            recs = [Dict{String,Any}(string(c[1])=>isa(c[2], DataValues.DataValue) ? (isnull(c[2]) ? nothing : get(c[2])) : c[2] for c in zip(keys(r), values(r))) for r in it]
+            recs = [Dict{String,Any}(string(c[1])=>isa(c[2], DataValues.DataValue) ? (isna(c[2]) ? nothing : get(c[2])) : c[2] for c in zip(keys(r), values(r))) for r in it]
         
             new_spec["data"] = Dict{String,Any}("values" => recs)
         end
@@ -142,7 +142,7 @@ function convert_curly_style_array(exprs, positional_key)
     res = Expr(:vect)
 
     for ex in exprs
-        if ex isa Expr && ex.head==:cell1d
+        if ex isa Expr && ex.head==:braces
             push!(res.args, :( Dict{String,Any}($(convert_curly_style(ex.args, positional_key)...)) ))
         else
             push!(res.args, ex)
@@ -156,7 +156,7 @@ function convert_curly_style(exprs, positional_key)
     new_exprs=[]
     for ex in exprs
         if ex isa Expr && ex.head==:(=)
-            if ex.args[2] isa Expr && ex.args[2].head==:cell1d
+            if ex.args[2] isa Expr && ex.args[2].head==:braces
                 push!(new_exprs, :( $(string(ex.args[1])) => Dict{String,Any}($(convert_curly_style(ex.args[2].args, positional_key)...)) ))
             elseif ex.args[2] isa Expr && ex.args[2].head==:vect
                 push!(new_exprs, :( $(string(ex.args[1])) => $(convert_curly_style_array(ex.args[2].args, positional_key)) ))

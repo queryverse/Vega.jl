@@ -9,13 +9,13 @@ function tokenize_shorthand(s::AbstractString)
             end
             push!(tokens,s[i:i])
             curr_start = nextind(s,i)
-        elseif !(isalnum(s[i]) || s[i] in ('_'))
+        elseif !(isletter(s[i]) || isnumeric(s[i]) || s[i] in ('_'))
             throw(ArgumentError("Invalid shortcut string"))
         end
 
         i = nextind(s,i)
 
-        if i>endof(s)
+        if i>lastindex(s)
             if i>curr_start
                 push!(tokens,s[curr_start:prevind(s,i)])
             end

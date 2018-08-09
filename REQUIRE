@@ -1,5 +1,4 @@
-julia 0.6
-Compat 0.9.1
+julia 0.7
 JSON
 Requires
 NodeJS
@@ -9,9 +8,7 @@ IteratorInterfaceExtensions 0.0.1
 TableTraits 0.0.2
 IterableTables
 FileIO 0.9.1
-Juno
 DataValues
 MacroTools
-NamedTuples
 URIParser
 FilePaths

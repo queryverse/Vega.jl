@@ -2,7 +2,7 @@ using VegaLite
 using FilePaths
 using URIParser
 using DataFrames
-using Base.Test
+using Test
 
 @testset "@vlplot macro" begin
 
@@ -28,8 +28,8 @@ using Base.Test
 
 @test (DataFrame(a=[1]) |> @vlplot(:point)).params == @vlplot(:point, data=DataFrame(a=[1])).params
 
-@test @vlplot("point", transform=[{lookup="foo", from={data=p"/foo/bar", key="bar"}}]).params["transform"][1]["from"]["data"]["url"] == (is_windows() ? "file://foo/bar" : "file:///foo/bar")
-@test @vlplot("point", transform=[{lookup="foo", from={data={url=p"/foo/bar"}, key="bar"}}]).params["transform"][1]["from"]["data"]["url"] == (is_windows() ? "file://foo/bar" : "file:///foo/bar")
+@test @vlplot("point", transform=[{lookup="foo", from={data=p"/foo/bar", key="bar"}}]).params["transform"][1]["from"]["data"]["url"] == (Sys.iswindows() ? "file://foo/bar" : "file:///foo/bar")
+@test @vlplot("point", transform=[{lookup="foo", from={data={url=p"/foo/bar"}, key="bar"}}]).params["transform"][1]["from"]["data"]["url"] == (Sys.iswindows() ? "file://foo/bar" : "file:///foo/bar")
 @test @vlplot("point", transform=[{lookup="foo", from={data=URI("http://foo.com/bar.json"), key="bar"}}]).params["transform"][1]["from"]["data"]["url"] == "http://foo.com/bar.json"
 @test @vlplot("point", transform=[{lookup="foo", from={data={url=URI("http://foo.com/bar.json")}, key="bar"}}]).params["transform"][1]["from"]["data"]["url"] == "http://foo.com/bar.json"
 

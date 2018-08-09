@@ -1,6 +1,6 @@
 using VegaLite
 using JSON
-using Base.Test
+using Test
 
 @testset "macro" begin
 

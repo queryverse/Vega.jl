@@ -1,16 +1,16 @@
-__precompile__()
-
 module VegaLite
 
-using JSON, Compat, Requires, NodeJS, Rsvg, NamedTuples # 6s
+using JSON, Requires, NodeJS, Rsvg # 6s
 import Cairo
 import IteratorInterfaceExtensions # 1s
 import TableTraits # 0
 using FileIO # 17s !!!
-import DataValues  # 1s
+using DataValues  # 1s
 import MacroTools
 using URIParser
 using FilePaths
+using REPL, Dates
+using Random
 
 # This import can eventually be removed, it currently just makes sure
 # that the iterable tables integration for DataFrames and friends
@@ -84,7 +84,6 @@ include("dsl_vlplot_macro/dsl_vlplot_macro.jl")
 include("dsl_str_macro/dsl_str_macro.jl")
 
 include("rendering/render.jl")
-include("rendering/juno_integration.jl")
 include("rendering/io.jl")
 include("rendering/show.jl")
 include("rendering/fileio.jl")

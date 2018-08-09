@@ -1,10 +1,10 @@
-using Base.Test
+using Test
 using VegaLite
 
 @testset "base" begin
 
 equiv(a::VegaLite.VLSpec, b::VegaLite.VLSpec) = false
-equiv{T}(a::VegaLite.VLSpec{T}, b::VegaLite.VLSpec{T}) =
+equiv(a::VegaLite.VLSpec{T}, b::VegaLite.VLSpec{T}) where {T} =
   ==(a.params,b.params)
 
 ###
@@ -20,7 +20,7 @@ actionlinks(false)
 @test actionlinks() == false
 
 ###
-ts = collect(linspace(0,2,100))
+ts = collect(range(0,stop=2,length=100))
 rs = Float64[ rand()*0.1 + cos(x) for x in ts]
 datvals = [ Dict(:time => t, :res => r) for (t,r) in zip(ts, rs) ]
 

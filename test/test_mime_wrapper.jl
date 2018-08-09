@@ -1,5 +1,5 @@
 using VegaLite
-using Base.Test
+using Test
 
 @testset "MimeWrapper" begin
 
@@ -7,7 +7,7 @@ p = @vlplot(:point)
 
 mp = VegaLite.MimeWrapper{MIME"image/png"}(p)
 
-@test mimewritable("application/vnd.vegalite.v2+json", mp) == false
-@test mimewritable("image/png", mp) == true
+@test showable("application/vnd.vegalite.v2+json", mp) == false
+@test showable("image/png", mp) == true
 
 end
