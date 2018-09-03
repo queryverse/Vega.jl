@@ -1,3 +1,6 @@
+# VegaLite.jl v0.4.0 Release Notes
+* Drop julia 0.6 support, add julia 0.7 support
+
 # VegaLite.jl v0.3.4 Release Notes
 * Disable check against schema from julia for now
 
