@@ -18,7 +18,7 @@ using Random
 import IterableTables
 
 export renderer, actionlinks
-export png, svg, jgp, pdf, savefig, loadspec, savespec, @vl_str, @vlplot
+export @vl_str, @vlplot
 export @vg_str
 export load, save
 
