@@ -9,28 +9,28 @@ p = DataFrame(x = [1,2,3], y=[1,2,3]) |> @vlplot(:point, x="x:q", y="y:q")
 vgp = getvgplot()
 
 Base.Filesystem.mktempdir() do folder
-    svg(joinpath(folder,"test1.svg"), p)
+    VegaLite.svg(joinpath(folder,"test1.svg"), p)
     @test isfile(joinpath(folder,"test1.svg"))
 
-    pdf(joinpath(folder,"test1.pdf"), p)
+    VegaLite.pdf(joinpath(folder,"test1.pdf"), p)
     @test isfile(joinpath(folder,"test1.pdf"))
 
-    png(joinpath(folder,"test1.png"), p)
+    VegaLite.png(joinpath(folder,"test1.png"), p)
     @test isfile(joinpath(folder,"test1.png"))
 
     VegaLite.eps(joinpath(folder,"test1.eps"), p)
     @test isfile(joinpath(folder,"test1.eps"))
 
-    savefig(joinpath(folder,"test2.svg"), p)
+    VegaLite.savefig(joinpath(folder,"test2.svg"), p)
     @test isfile(joinpath(folder,"test2.svg"))
 
-    savefig(joinpath(folder,"test2.pdf"), p)
+    VegaLite.savefig(joinpath(folder,"test2.pdf"), p)
     @test isfile(joinpath(folder,"test2.pdf"))
 
-    savefig(joinpath(folder,"test2.png"), p)
+    VegaLite.savefig(joinpath(folder,"test2.png"), p)
     @test isfile(joinpath(folder,"test2.png"))
 
-    savefig(joinpath(folder,"test2.eps"), p)
+    VegaLite.savefig(joinpath(folder,"test2.eps"), p)
     @test isfile(joinpath(folder,"test2.eps"))
 
     save(joinpath(folder,"test2.svg"), p)
