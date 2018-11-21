@@ -132,6 +132,31 @@ function fix_shortcuts(spec::Dict{String,Any}, positional_key::String)
             recs = [Dict{String,Any}(string(c[1])=>isa(c[2], DataValues.DataValue) ? (isna(c[2]) ? nothing : get(c[2])) : c[2] for c in zip(keys(r), values(r))) for r in it]
         
             new_spec["data"] = Dict{String,Any}("values" => recs)
+
+            # detect proper type for encoding
+            col_names = fieldnames(eltype(it))
+            col_types = [fieldtype(eltype(it),i) for i in col_names]
+            col_type_mapping = Dict{Symbol,Type}(i[1]=>i[2] for i in zip(col_names,col_types))
+            if haskey(new_spec, "encoding")
+                for (k,v) in new_spec["encoding"]
+                    if !haskey(v, "type")
+                        if !haskey(v, "aggregate") && haskey(v, "field") && haskey(col_type_mapping,Symbol(v["field"]))
+                            jl_type = col_type_mapping[Symbol(v["field"])]
+                            if jl_type <: DataValues.DataValue
+                                jl_type = eltype(jl_type)
+                            end
+                            if jl_type <: Number
+                                v["type"] = "quantitative"
+                            elseif jl_type <: AbstractString
+                                v["type"] = "nominal"
+                            elseif jl_type <: Dates.AbstractTime
+                                v["type"] = "temporal"
+                            end
+                        end
+                    end
+                end
+            end
+
         end
     end
 
