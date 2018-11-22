@@ -9,3 +9,4 @@ deps/npm-debug.log
 .directory
 .ipynb_checkpoints
 deps/build.log
+docs/Manifest.toml
