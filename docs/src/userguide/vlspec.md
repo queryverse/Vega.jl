@@ -4,7 +4,7 @@ A [Vega-Lite](https://vega.github.io/vega-lite/) plot specification is represent
 1. The `@vlplot` macro is the main way to create `VLSpec` instances in code.
 2. Using the `vl` string macro, you can write [Vega-Lite](https://vega.github.io/vega-lite/) specifications as JSON in your julia code.
 3. You can load [Vega-Lite](https://vega.github.io/vega-lite/) specifications from disc with the `load` function.
-4. The [DataVoyager.jl](https://github.com/davidanthoff/DataVoyager.jl) package provides a graphical user interface that you can use to create [Vega-Lite](https://vega.github.io/vega-lite/) specification.
+4. The [DataVoyager.jl](https://github.com/queryverse/DataVoyager.jl) package provides a graphical user interface that you can use to create [Vega-Lite](https://vega.github.io/vega-lite/) specification.
 
 There are two main things one can do with a `VLSpec` object:
 1. One can display it in various front ends.
@@ -128,15 +128,15 @@ savespec("myfigure.vegalite", spec)
 
     Using the `load` and `save` function will be enabled in a future release. For now you should use `loadspec` and `savespec` instead (both of these functions will be deprecated once `load` and `save` are enabled).
 
-## [DataVoyager.jl](https://github.com/davidanthoff/DataVoyager.jl)
+## [DataVoyager.jl](https://github.com/queryverse/DataVoyager.jl)
 
-The [DataVoyager.jl](https://github.com/davidanthoff/DataVoyager.jl) package provides a graphical UI for data exploration that is based on vega-lite. One can use that tool to create a figure in the UI, and then export the corresponding vega-lite specification for use with this package here.
+The [DataVoyager.jl](https://github.com/queryverse/DataVoyager.jl) package provides a graphical UI for data exploration that is based on vega-lite. One can use that tool to create a figure in the UI, and then export the corresponding vega-lite specification for use with this package here.
 
 ## Displaying plots
 
 [VegaLite.jl](https://github.com/fredo-dedup/VegaLite.jl) integrates into the default julia multimedia system for viewing plots. This means that in order to show a plot `p` you would simply call the `display(p)` function. Most interactive julia environments (REPL, IJulia, Jupyter Lab, nteract etc.) automatically call `display` on the value of the last interactive command for you.
 
-Simply viewing plots should work out of the box in all known julia environments. If you plan to use the interactive features of [VegaLite.jl](https://github.com/fredo-dedup/VegaLite.jl) the story becomes slightly more nuanced: while many environments (REPL, [Jupyter Lab](https://github.com/jupyterlab/jupyterlab), [nteract](https://github.com/nteract/nteract), [ElectronDisplay.jl](https://github.com/davidanthoff/ElectronDisplay.jl)) support interactive [VegaLite.jl](https://github.com/fredo-dedup/VegaLite.jl) plots by default, there are others that either need some extra configuration work ([Jupyter Notebook](http://jupyter.org/)), or don't support interactive plots.
+Simply viewing plots should work out of the box in all known julia environments. If you plan to use the interactive features of [VegaLite.jl](https://github.com/fredo-dedup/VegaLite.jl) the story becomes slightly more nuanced: while many environments (REPL, [Jupyter Lab](https://github.com/jupyterlab/jupyterlab), [nteract](https://github.com/nteract/nteract), [ElectronDisplay.jl](https://github.com/queryverse/ElectronDisplay.jl)) support interactive [VegaLite.jl](https://github.com/fredo-dedup/VegaLite.jl) plots by default, there are others that either need some extra configuration work ([Jupyter Notebook](http://jupyter.org/)), or don't support interactive plots.
 
 ## Saving plots
 

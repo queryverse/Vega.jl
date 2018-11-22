@@ -1,16 +1,16 @@
 # Installation
 
-To install [VegaLite.jl](https://github.com/fredo-dedup/VegaLite.jl), run the following julia code:
+To install [VegaLite.jl](https://github.com/fredo-dedup/VegaLite.jl), run the following command in the julia Pkg REPL-mode:
 
 ```julia
-Pkg.add("VegaLite")
+(v1.0) pkg> add VegaLite
 ```
 
 ## REPL frontends
 
 If you create plots from the standard julia REPL, they will show up in a browser window when displayed.
 
-As an alternative you can install [ElectronDisplay.jl](https://github.com/davidanthoff/ElectronDisplay.jl) with `Pkg.add("ElectronDisplay")`. Whenever you load that package with `using ElectronDisplay`, any plot you display will then show up in an [electron](https://electronjs.org/) based window instead of a browser window.
+As an alternative you can install [ElectronDisplay.jl](https://github.com/queryverse/ElectronDisplay.jl) with `Pkg.add("ElectronDisplay")`. Whenever you load that package with `using ElectronDisplay`, any plot you display will then show up in an [electron](https://electronjs.org/) based window instead of a browser window.
 
 ## Notebook frontends
 
@@ -34,7 +34,7 @@ Neither of the plot panes currently support the interactive features of [VegaLit
 
 ## Example Datasets
 
-Many of the examples in the documentation use data from the [Vega Datasets](https://github.com/vega/vega-datasets) repository. You can access these datasets easily with the julia package [VegaDatasets.jl](https://github.com/davidanthoff/VegaDatasets.jl). To install that package, run the following julia code:
+Many of the examples in the documentation use data from the [Vega Datasets](https://github.com/vega/vega-datasets) repository. You can access these datasets easily with the julia package [VegaDatasets.jl](https://github.com/queryverse/VegaDatasets.jl). To install that package, run the following julia code:
 
 ```julia
 Pkg.add("VegaDatasets")

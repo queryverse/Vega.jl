@@ -8,9 +8,9 @@ Plots are a way to visualize data, and therefore every plot starts with some dat
 
 The definition of tabular data we are using here is very simple: think of a table that has a header and consists of a number of columns and rows. The header gives each column a name. The rows correspond to the actual data. Columns don't have to be of the same data type, i.e. you can have one column that contains `String`s, and another that contains `Float64` values.
 
-[VegaLite.jl](https://github.com/fredo-dedup/VegaLite.jl) can digest many different julia types that store tabular data. You can, for example, plot data that is stored in a `DataFrame`, [JuliaDB.jl](https://github.com/JuliaComputing/JuliaDB.jl) or loaded from disc with [CSVFiles.jl](https://github.com/davidanthoff/CSVFiles.jl). In this tutorial we will plot data that ships in the package [VegaDatasets.jl](https://github.com/davidanthoff/VegaDatasets.jl).
+[VegaLite.jl](https://github.com/fredo-dedup/VegaLite.jl) can digest many different julia types that store tabular data. You can, for example, plot data that is stored in a `DataFrame`, [JuliaDB.jl](https://github.com/JuliaComputing/JuliaDB.jl) or loaded from disc with [CSVFiles.jl](https://github.com/queryverse/CSVFiles.jl). In this tutorial we will plot data that ships in the package [VegaDatasets.jl](https://github.com/queryverse/VegaDatasets.jl).
 
-The dataset we will use for this tutorial is the `cars` dataset from the [VegaDatasets.jl](https://github.com/davidanthoff/VegaDatasets.jl). The dataset contains information about a couple hundred cars. We can load the dataset with the `dataset` function:
+The dataset we will use for this tutorial is the `cars` dataset from the [VegaDatasets.jl](https://github.com/queryverse/VegaDatasets.jl). The dataset contains information about a couple hundred cars. We can load the dataset with the `dataset` function:
 
 ```@example
 using VegaDatasets
@@ -176,7 +176,7 @@ dataset("stocks") |>
 @vlplot(:line, x={"date:t", axis={format="%Y"}}, y=:price)
 ```
 
-Note how we specify the `line` mark type as the first positional argument to the `@vlplot` macro call. This examples also showcases a number of other features. First, it uses [Query.jl](https://github.com/davidanthoff/Query.jl) to filter the dataset before we plot it (we only want to plot the stock price for Google). The example also introduces a encoding channel type we haven't seen before: we are using a `temporal` channel type here (configured with the `:t` part in `"date:t"`). The `temporal` type is specifically designed for date and time information. We are also changing how the values of the x axis are displayed in the plot by specifying a custom format string for the x axis.
+Note how we specify the `line` mark type as the first positional argument to the `@vlplot` macro call. This examples also showcases a number of other features. First, it uses [Query.jl](https://github.com/queryverse/Query.jl) to filter the dataset before we plot it (we only want to plot the stock price for Google). The example also introduces a encoding channel type we haven't seen before: we are using a `temporal` channel type here (configured with the `:t` part in `"date:t"`). The `temporal` type is specifically designed for date and time information. We are also changing how the values of the x axis are displayed in the plot by specifying a custom format string for the x axis.
 
 Sometimes we will need to configure more aspects of the mark than just the type of mark. In that case we can pass additional properties by using the composite syntax we have seen before. In the following example we are using a `line` mark, and we are customizing the color of the line and are also configuring it to show points on top of the line itself:
 
