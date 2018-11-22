@@ -1,14 +1,7 @@
 using Documenter, VegaLite
 
-info("Building docs...")
-
-Pkg.add("DataFrames")
-Pkg.add("VegaDatasets")
-Pkg.add("Query")
-
 makedocs(
   modules=[VegaLite],
-  format=:html,
   sitename = "VegaLite.jl",
   pages = [
     "Home" => "index.md",
@@ -47,9 +40,5 @@ makedocs(
 )
 
 deploydocs(
-    deps = nothing,
-    make = nothing,
-    target = "build",
     repo = "github.com/fredo-dedup/VegaLite.jl.git",
-    julia = "1.0"
 )
