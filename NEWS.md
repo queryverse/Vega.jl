@@ -1,3 +1,6 @@
+# VegaLite.jl v0.5.1 Release Notes
+* Fix bug related to the data keyword
+
 # VegaLite.jl v0.5.0 Release Notes
 * Remove exports for png, svg, jpg, pdf, savefig, loadspec and savespec
 
