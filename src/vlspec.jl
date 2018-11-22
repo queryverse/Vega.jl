@@ -9,22 +9,18 @@ struct VLSpec{T}
 end
 vltype(::VLSpec{T}) where T = T
 
-function (p::VLSpec{:plot})(data)
-    TableTraits.isiterabletable(data) || throw(ArgumentError("'data' is not a table."))
+function set_spec_data!(specdict, datait)
+    recs = [Dict{String,Any}(string(c[1])=>isa(c[2], DataValues.DataValue) ? (isna(c[2]) ? nothing : get(c[2])) : c[2] for c in zip(keys(r), values(r))) for r in datait]
+    specdict["data"] = Dict{String,Any}("values" => recs)
+end
 
-    it = IteratorInterfaceExtensions.getiterator(data)
-
-    col_names = fieldnames(eltype(it))
-    col_types = [fieldtype(eltype(it),i) for i in col_names]
+function detect_encoding_type!(specdict, datait)
+    col_names = fieldnames(eltype(datait))
+    col_types = [fieldtype(eltype(datait),i) for i in col_names]
     col_type_mapping = Dict{Symbol,Type}(i[1]=>i[2] for i in zip(col_names,col_types))
-    
-    recs = [Dict{String,Any}(string(c[1])=>isa(c[2], DataValues.DataValue) ? (isna(c[2]) ? nothing : get(c[2])) : c[2] for c in zip(keys(r), values(r))) for r in it]
 
-    new_dict = copy(p.params)
-    new_dict["data"] = Dict{String,Any}("values" => recs)
-
-    if haskey(new_dict, "encoding")
-        for (k,v) in new_dict["encoding"]
+    if haskey(specdict, "encoding")
+        for (k,v) in specdict["encoding"]
             if !haskey(v, "type")
                 if !haskey(v, "aggregate") && haskey(v, "field") && haskey(col_type_mapping,Symbol(v["field"]))
                     jl_type = col_type_mapping[Symbol(v["field"])]
@@ -42,6 +38,16 @@ function (p::VLSpec{:plot})(data)
             end
         end
     end
+end
+
+function (p::VLSpec{:plot})(data)
+    TableTraits.isiterabletable(data) || throw(ArgumentError("'data' is not a table."))
+
+    new_dict = copy(p.params)
+
+    it = IteratorInterfaceExtensions.getiterator(data)
+    set_spec_data!(new_dict, it)
+    detect_encoding_type!(new_dict, it)
 
     return VLSpec{:plot}(new_dict)        
 end

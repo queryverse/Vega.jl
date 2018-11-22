@@ -128,10 +128,8 @@ function fix_shortcuts(spec::Dict{String,Any}, positional_key::String)
             new_spec["data"] = Dict{String,Any}("url" => Sys.iswindows() && new_spec["data"].scheme=="file" ? as_uri[1:5] * as_uri[7:end] : as_uri)
         elseif TableTraits.isiterabletable(new_spec["data"])
             it = IteratorInterfaceExtensions.getiterator(new_spec["data"])
-
-            recs = [Dict{String,Any}(string(c[1])=>isa(c[2], DataValues.DataValue) ? (isna(c[2]) ? nothing : get(c[2])) : c[2] for c in zip(keys(r), values(r))) for r in it]
-        
-            new_spec["data"] = Dict{String,Any}("values" => recs)
+            set_spec_data!(new_spec, it)
+            detect_encoding_type!(new_spec, it)
         end
     end
 

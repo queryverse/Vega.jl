@@ -83,4 +83,6 @@ using Test
 
 @test (@vlplot(description="foo") + [@vlplot(:point); @vlplot(:circle)]).params == @vlplot(description="foo", vconcat=[{mark=:point},{mark=:circle}]).params
 
+@test (@vlplot(:point, x=:a)(DataFrame(a=[1])).params == @vlplot(:point, data=DataFrame(a=[1]), x=:a).params)
+
 end
