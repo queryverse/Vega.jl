@@ -34,6 +34,16 @@ data |> @vlplot(:point)
 
 While this code produces a plot, it is not a very useful plot. Vega-Lite is actually drawing a point for every row in our input dataset. But it is drawing all these points on top of each other, which makes the plot so uninteresting.
 
+By the way, the code above is based on the premise that it is executed in the Julia command line (REPL). When the code is executed from within a script (or a function), the plot needs to be explicitly displayed as
+
+```@example
+using VegaLite, VegaDatasets
+
+data = dataset("cars")
+
+data |> @vlplot(:point) |> display
+```
+
 To create a more interesting plot, we next need to specify how Vega-Lite should connect key properties of the points (for example their position) with the data that we passed it. These connections are called "encodings" in Vega-Lite. We will start out by specifying how both the x and y position encoding channel for the points should take values from the data we passed:
 
 ```@example
