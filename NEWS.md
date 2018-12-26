@@ -1,3 +1,6 @@
+# VegaLite.jl v0.5.2 Release Notes
+* Update dependencies
+
 # VegaLite.jl v0.5.1 Release Notes
 * Fix bug related to the data keyword
 
