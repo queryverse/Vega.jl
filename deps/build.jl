@@ -6,7 +6,7 @@ using BinDeps
 uschema   = "https://vega.github.io/schema/vega-lite/v2.6.0.json"
 uvega     = "https://cdnjs.cloudflare.com/ajax/libs/vega/4.4.0/vega.min.js"
 uvegalite = "https://cdnjs.cloudflare.com/ajax/libs/vega-lite/2.6.0/vega-lite.min.js"
-uembed    = "https://cdnjs.cloudflare.com/ajax/libs/vega-embed/3.26.1/vega-embed.min.js"
+uembed    = "https://cdnjs.cloudflare.com/ajax/libs/vega-embed/3.29.1/vega-embed.min.js"
 
 destdir      = joinpath(@__DIR__, "lib")
 
