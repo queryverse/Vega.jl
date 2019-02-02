@@ -1,3 +1,7 @@
+# VegaLite.jl v0.5.3 Release Notes
+* Update dependencies
+* Fix bug when multiple tooltips are passed to the channel
+
 # VegaLite.jl v0.5.2 Release Notes
 * Update dependencies
 
