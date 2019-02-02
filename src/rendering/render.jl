@@ -151,7 +151,7 @@ function writehtml_partial(io::IO, spec::String; title="VegaLite plot")
         paths: {
           vg: "https://cdnjs.cloudflare.com/ajax/libs/vega/4.4.0/vega.min.js?noext",
           vl: "https://cdnjs.cloudflare.com/ajax/libs/vega-lite/2.6.0/vega-lite.min.js?noext",
-          vg_embed: "https://cdnjs.cloudflare.com/ajax/libs/vega-embed/3.26.1/vega-embed.min.js?noext"
+          vg_embed: "https://cdnjs.cloudflare.com/ajax/libs/vega-embed/3.29.1/vega-embed.min.js?noext"
         },
         shim: {
           vg_embed: {deps: ["vg.global", "vl.global"]},
