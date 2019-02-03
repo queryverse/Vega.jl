@@ -21,7 +21,7 @@ function detect_encoding_type!(specdict, datait)
 
     if haskey(specdict, "encoding")
         for (k,v) in specdict["encoding"]
-            if !haskey(v, "type")
+            if v isa Dict && !haskey(v, "type")
                 if !haskey(v, "aggregate") && haskey(v, "field") && haskey(col_type_mapping,Symbol(v["field"]))
                     jl_type = col_type_mapping[Symbol(v["field"])]
                     if jl_type <: DataValues.DataValue
