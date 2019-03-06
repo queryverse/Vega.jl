@@ -12,11 +12,12 @@ makedocs(
     "User Guide" => Any[
         "Vega-lite specifications" => "userguide/vlspec.md",
         "The @vlplot command" => "userguide/vlplotmacro.md",
-        "Data sources" => "userguide/data.md"
+        "Data sources" => "userguide/data.md",
+        "Using Vega" => "userguide/vega.md"
     ],
     "Examples" => Any[
         "Simple Charts" => "examples/examples_simplecharts.md",
-        "Single-View Plots" => Any[            
+        "Single-View Plots" => Any[
             "Bar Charts & Histograms" => "examples/examples_barchartshistograms.md",
             "Scatter & Strip Plots" => "examples/examples_scatter_strip_plots.md",
             "Line Charts" => "examples/examples_line_charts.md",

@@ -11,5 +11,5 @@ function fileio_load(f::FileIO.File{FileIO.format"vega"})
 end
 
 function fileio_save(file::FileIO.File{FileIO.format"vega"}, data::VGSpec; include_data=true)
-    savevgspec(file.filename, data, include_data=include_data)
+    savespec(file.filename, data, include_data=include_data)
 end

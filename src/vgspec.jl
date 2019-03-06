@@ -1,3 +1,3 @@
-struct VGSpec
+struct VGSpec <: AbstractVegaSpec
     params::Union{Dict, Vector}
 end

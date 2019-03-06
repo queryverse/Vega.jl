@@ -71,6 +71,7 @@ actionlinks(b::Bool) = (global ACTIONSLINKS ; ACTIONSLINKS = b)
 
 ########################  includes  #####################################
 
+abstract type AbstractVegaSpec end
 include("vgspec.jl")
 include("vlspec.jl")
 

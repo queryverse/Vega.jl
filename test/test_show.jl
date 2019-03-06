@@ -14,10 +14,10 @@ vg = VegaLite.VGSpec(Dict{String,Any}())
 
 @test istextmime("application/vnd.vegalite.v2+json")
 
-@test istextmime("application/vnd.vega.v3+json")
+@test istextmime("application/vnd.vega.v4+json")
 
 @test sprint(show, "application/vnd.vegalite.v2+json", @vlplot(:point)) == "{\"mark\":\"point\"}"
 
-@test sprint(show, "application/vnd.vega.v3+json", vg"{}") == "{}"
+@test sprint(show, "application/vnd.vega.v4+json", vg"{}") == "{}"
 
 end

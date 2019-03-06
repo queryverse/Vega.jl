@@ -10,3 +10,4 @@ deps/npm-debug.log
 .ipynb_checkpoints
 deps/build.log
 docs/Manifest.toml
+Manifest.toml
