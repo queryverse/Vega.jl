@@ -73,7 +73,7 @@ Base.Filesystem.mktempdir() do folder
 
     vgpl1 = getvgplot()
 
-    VegaLite.savevgspec(joinpath(folder,"test1.vega"), vgpl1, include_data=true)
+    VegaLite.savespec(joinpath(folder,"test1.vega"), vgpl1, include_data=true)
 
     vgpl2 = VegaLite.loadvgspec(joinpath(folder,"test1.vega"))
 

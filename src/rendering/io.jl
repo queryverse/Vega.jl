@@ -44,6 +44,12 @@ function loadspec(filename::AbstractString)
     return VLSpec{:plot}(JSON.parse(s))
 end
 
+"""
+    loadvgspec(filename::AbstractString)
+
+Load a vega specification from a file with name `filename`. Returns
+a `VGSpec` object.
+"""
 function loadvgspec(filename::AbstractString)
     s = read(filename, String)
     return VGSpec(JSON.parse(s))
@@ -56,17 +62,7 @@ Save the plot `v` as a vega-lite specification file with the name `filename`.
 The `include_data` argument controls whether the data should be included
 in the saved specification file.
 """
-function savespec(filename::AbstractString, v::VLSpec{:plot}; include_data=false)
-    output_dict = copy(v.params)
-    if !include_data
-        delete!(output_dict, "data")
-    end
-    open(filename, "w") do f
-        JSON.print(f, output_dict)
-    end
-end
-
-function savevgspec(filename::AbstractString, v::VGSpec; include_data=false)
+function savespec(filename::AbstractString, v::AbstractVegaSpec; include_data=false)
     output_dict = copy(v.params)
     if !include_data
         delete!(output_dict, "data")

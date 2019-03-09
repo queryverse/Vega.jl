@@ -4,7 +4,7 @@
 #
 ###############################################################################
 
-struct VLSpec{T}
+struct VLSpec{T} <: AbstractVegaSpec
     params::Union{Dict, Vector}
 end
 vltype(::VLSpec{T}) where T = T
@@ -49,7 +49,7 @@ function (p::VLSpec{:plot})(data)
     set_spec_data!(new_dict, it)
     detect_encoding_type!(new_dict, it)
 
-    return VLSpec{:plot}(new_dict)        
+    return VLSpec{:plot}(new_dict)
 end
 
 function (p::VLSpec{:plot})(uri::URI)
