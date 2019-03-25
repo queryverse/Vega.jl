@@ -37,7 +37,7 @@ function decode_typ(s::AbstractString)
         s="temporal"
     end
 
-    if s in union(VegaLite.refs["BasicType"].enum, VegaLite.refs["GeoType"].enum)
+    if s in union(vlschema.data["definitions"]["StandardType"]["enum"], vlschema.data["definitions"]["TypeForShape"]["enum"])
         return "type"=>s
     else
         throw(ArgumentError("Invalid type."))
@@ -46,9 +46,13 @@ end
 
 function decode_func(s::AbstractString)
     s = lowercase(s)
-    if s in VegaLite.refs["AggregateOp"].enum
+    if s in vlschema.data["definitions"]["AggregateOp"]["enum"]
         return "aggregate"=>s
-    elseif s in union(VegaLite.refs["LocalMultiTimeUnit"].enum,VegaLite.refs["LocalSingleTimeUnit"].enum,VegaLite.refs["UtcMultiTimeUnit"].enum,VegaLite.refs["UtcSingleTimeUnit"].enum)
+    elseif s in union(
+                vlschema.data["definitions"]["LocalMultiTimeUnit"]["enum"],
+                vlschema.data["definitions"]["LocalSingleTimeUnit"]["enum"],
+                vlschema.data["definitions"]["UtcMultiTimeUnit"]["enum"],
+                vlschema.data["definitions"]["UtcSingleTimeUnit"]["enum"])
         return "timeUnit"=>s
     else
         throw(ArgumentError("Unknown aggregation function or time unit '$s'."))
