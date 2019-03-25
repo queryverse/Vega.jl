@@ -44,12 +44,19 @@ function fix_shortcuts(spec::Dict{String,Any}, positional_key::String)
     end
 
     # Move top level channels into encoding
+    encodings_to_be_moved = filter(i->i!="facet", collect(keys(vlschema.data["definitions"]["FacetedEncoding"]["properties"])))
     for k in collect(keys(spec))
-        if string(k) in collect(keys(VegaLite.refs["EncodingWithFacet"].props))
+        if string(k) in encodings_to_be_moved
             if !haskey(spec,"encoding")
                 spec["encoding"] = Dict{String,Any}()
             end
             spec["encoding"][k] = spec[k]
+            delete!(spec,k)
+        elseif string(k)=="wrap"
+            if !haskey(spec,"encoding")
+                spec["encoding"] = Dict{String,Any}()
+            end
+            spec["encoding"]["facet"] = spec[k]
             delete!(spec,k)
         end
     end

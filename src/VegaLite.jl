@@ -11,6 +11,7 @@ using URIParser
 using FilePaths
 using REPL, Dates
 using Random
+import JSONSchema
 
 # This import can eventually be removed, it currently just makes sure
 # that the iterable tables integration for DataFrames and friends
@@ -28,6 +29,8 @@ export vlplot, vldata
 
 export config, selection, resolve, projection, facet, spec, rep
 export transform, hconcat, vconcat, layer
+
+global vlschema = JSONSchema.Schema(JSON.parsefile(joinpath(@__DIR__, "..", "deps", "lib", "vega-lite-schema.json")))
 
 ########################  settings functions  ############################
 
@@ -74,11 +77,6 @@ actionlinks(b::Bool) = (global ACTIONSLINKS ; ACTIONSLINKS = b)
 abstract type AbstractVegaSpec end
 include("vgspec.jl")
 include("vlspec.jl")
-
-include("schema/schema_parsing.jl") # 8s
-include("schema/func_definition.jl") # 5s
-include("schema/func_documentation.jl") # 3s
-include("schema/spec_validation.jl") # 0s
 
 # include("dsl_helper_func/dsl_helper_func.jl")
 include("dsl_vlplot_macro/dsl_vlplot_macro.jl")
