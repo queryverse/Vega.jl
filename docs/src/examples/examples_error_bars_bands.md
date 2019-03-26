@@ -61,7 +61,7 @@ dataset("barley") |>
 using VegaLite, VegaDatasets
 
 dataset("cars") |>
-@vlplot(x="year(Year)) +
+@vlplot(x="year(Year)") +
 @vlplot(
     mark={:errorband, extend=:ci},
     y={
