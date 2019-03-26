@@ -24,7 +24,7 @@ dataset("barley") |>
         :errorbar,
         extent=:ci
      },
-     x={:yield, title="Barley Yield"}
+     x={"yield:q", title="Barley Yield"}
 )
 ```
 
