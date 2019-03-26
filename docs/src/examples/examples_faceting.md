@@ -83,7 +83,7 @@ dataset("barley") |>
     y={
         "variety:o",
         sort={
-            encoding=:x,,
+            encoding=:x,
             order=:descending
         },
         scale={rangeStep=12}},
