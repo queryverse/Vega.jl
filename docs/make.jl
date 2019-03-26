@@ -24,7 +24,7 @@ makedocs(
             "Area Charts & Streamgraphs" => "examples/examples_area_Charts_streamgraphs.md",
             "Table-based Plots" => "examples/examples_table_based_plots.md"
         ],
-        "Layered Plots" => Any[
+        "Composite Mark" => Any[
             "Error Bars & Error Bands" => "examples/examples_error_bars_bands.md",
             "Box Plots" => "examples/examples_box_plots.md"
         ],

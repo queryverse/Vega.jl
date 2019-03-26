@@ -100,7 +100,7 @@ dataset("gapminder-health-income") |>
     selection={
         view={typ=:interval, bind=:scales}
     },
-    y={:health, scale={zero=false}},
+    y={:health, scale={zero=false}, axis={minExtent=30}},
     x={:income, scale={typ=:log}},
     size=:population,
     color={value="#000"}
@@ -124,16 +124,14 @@ dataset("disasters") |>
         stroke=:black,
         strokeWidth=1
     },
-    enc={
-        x={"Year:o", axis={labelAngle=0}},
-        y={:Entity, axis={title=""}},
-        size={
-            :Deaths,
-            legend={title="Annual Global Deaths"},
-            scale={range=[0,5000]}
-        },
-        color={:Entity, legend=nothing}
-    }
+    x={"Year:o", axis={labelAngle=0}},
+    y={:Entity, axis={title=""}},
+    size={
+        :Deaths,
+        legend={title="Annual Global Deaths"},
+        scale={range=[0,5000]}
+    },
+    color={:Entity, legend=nothing}
 )
 ```
 

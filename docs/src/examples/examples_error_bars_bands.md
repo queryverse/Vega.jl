@@ -6,7 +6,7 @@
 using VegaLite, VegaDatasets
 
 dataset("barley") |>
-@vlplot() +
+@vlplot(y="variety:o") +
 @vlplot(
     mark={
         :point,
@@ -15,14 +15,17 @@ dataset("barley") |>
     x={
         "mean(yield)",
         scale={zero=false},
-        axis={title="Barley Yield"}
+        title="Barley Yield"
     },
-    y={
-        "variety:o",
-        color={value=:black}
-    }
+    color={value=:black}
 ) +
-@vlplot(:rule, x="ci0(yield)", x2="ci1(yield)", y="variety:o")
+@vlplot(
+    mark={
+        :errorbar,
+        extent=:ci
+     },
+     x={:yield, title="Barley Yield"}
+)
 ```
 
 ## Error Bars showing Standard Deviation
@@ -32,17 +35,7 @@ using VegaLite, VegaDatasets
 
 dataset("barley") |>
 @vlplot(
-    transform=[
-        {
-            aggregate=[
-                {op=:mean, field=:yield, as=:mean},
-                {op=:stdev, field=:yield, as=:stdev}
-            ],
-            groupby=[:variety]
-        },
-        {calculate="datum.mean-datum.stdev", as=:lower},
-        {calculate="datum.mean+datum.stdev", as=:upper}
-    ]
+    y="variety:o"
 ) +
 @vlplot(
     mark={
@@ -50,14 +43,16 @@ dataset("barley") |>
         filled=true
     },
     x={
-        "mean:q",
+        "mean(yield)",
         scale={zero=false},
-        axis={title="Barley Yield"}
+        title="Barley Yield"
     },
-    y="variety:o",
     color={value=:black}
 ) +
-@vlplot(:rule, x="upper:q", x2="lower:q", y="variety:o")
+@vlplot(
+    mark={:rule, extend=:stdev},
+    x={:yield, title="Barley Yield"}
+)
 ```
 
 ## Line Chart with Confidence Interval Band
@@ -66,20 +61,16 @@ dataset("barley") |>
 using VegaLite, VegaDatasets
 
 dataset("cars") |>
-@vlplot() +
+@vlplot(x="year(Year)) +
 @vlplot(
-    :area,
-    x="year(Year):t",
+    mark={:errorband, extend=:ci},
     y={
-        "ci0(Miles_per_Gallon)",
-        axis={title="Mean of Miles per Gallon (95% CIs)"}
-    },
-    y2="ci1(Miles_per_Gallon)",
-    opacity={value=0.3}
+        :Miles_per_Gallon,
+        title="Mean of Miles per Gallon (95% CIs)"
+    }
 ) +
 @vlplot(
     :line,
-    x="year(Year)",
     y="mean(Miles_per_Gallon)"
 )
 ```
@@ -96,24 +87,9 @@ dataset("cars") |>
     x=:Horsepower,
     y=:Miles_per_Gallon
 ) +
-(
-    @vlplot(
-        transform=[
-            {aggregate=[
-                {op=:mean, field=:Miles_per_Gallon, as=:mean_MPG},
-                {op=:stdev, field=:Miles_per_Gallon, as=:dev_MPG}
-                ],
-                groupby=[]
-            },
-            {calculate="datum.mean_MPG - datum.dev_MPG", as=:lower},
-            {calculate="datum.mean_MPG + datum.dev_MPG", as=:upper}
-        ]) +
-    @vlplot(:rule,y={"mean_MPG:q",axis=nothing}) +
-    @vlplot(
-        :rect,
-        y={"lower:q",axis=nothing},
-        y2="upper:q",
-        opacity={value=0.2}
-    )
+@vlplot(:rule,y={"mean(Miles_per_Gallon)") +
+@vlplot(
+    mark={:errorband, extent=:stdev, opacity=0.2},
+    y={"Miles_per_Gallon", title="Miles per Gallon"
 )
 ```

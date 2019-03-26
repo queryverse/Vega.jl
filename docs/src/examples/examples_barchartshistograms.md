@@ -48,12 +48,11 @@ dataset("population") |>
         {filter="datum.year == 2000"},
         {calculate="datum.sex == 2 ? 'Female' : 'Male'", as="gender"}
     ],
-    enc={
-        column="age:o",
-        y={"sum(people)", axis={title="population", grid=false}},
-        x={"gender:n", scale={rangeStep=12}, axis={title=""}},
-        color={"gender:n", scale={range=["#EA98D2", "#659CCA"]}},
-    },
+    column="age:o",
+    y={"sum(people)", axis={title="population", grid=false}},
+    x={"gender:n", scale={rangeStep=12}, axis={title=""}},
+    color={"gender:n", scale={range=["#EA98D2", "#659CCA"]}},
+    spacing=10,
     config={
         view={stroke=:transparent},
         axis={domainWidth=1}
@@ -105,20 +104,18 @@ dataset("population") |>
         {filter="datum.year == 2000"},
         {calculate="datum.sex==2 ? 'Female' : 'Male'",as="gender"}
     ],
-    enc={
-        y={
-            "sum(people)",
-            axis={title="population"},
-            stack=:normalize
-        },
-        x={
-            "age:o",
-            scale={rangeStep=17}
-        },
-        color={
-            "gender:n",
-            scale={range=["#EA98D2", "#659CCA"]}
-        }
+    y={
+        "sum(people)",
+        axis={title="population"},
+        stack=:normalize
+    },
+    x={
+        "age:o",
+        scale={rangeStep=17}
+    },
+    color={
+        "gender:n",
+        scale={range=["#EA98D2", "#659CCA"]}
     }
 )
 ```
@@ -137,11 +134,9 @@ using VegaLite
             {task="C",start=8,stop=10}
         ]
     },
-    enc={
-        y="task:o",
-        x="start:q",
-        x2="stop:q"
-    }
+    y="task:o",
+    x="start:q",
+    x2="stop:q"
 )
 ```
 
@@ -177,12 +172,10 @@ dataset("population") |>
         {filter="datum.year==2000"},
         {calculate="datum.sex==2 ? 'Female' : 'Male'",as="gender"}
     ],
-    enc={
-        x={"age:o", scale={rangeStep=17}},
-        y={"sum(people)", axis={title="population"}, stack=nothing},
-        color={"gender:n", scale={range=["#e377c2", "#1f77b4"]}},
-        opacity={value=0.7}
-    }
+    x={"age:o", scale={rangeStep=17}},
+    y={"sum(people)", axis={title="population"}, stack=nothing},
+    color={"gender:n", scale={range=["#e377c2", "#1f77b4"]}},
+    opacity={value=0.7}
 )
 ```
 
@@ -264,8 +257,6 @@ using VegaLite
         baseline=:middle,
         dx=3
     },
-    enc={
-        text="b:q"
-    }
+    text="b:q"
 )
 ```

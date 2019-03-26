@@ -7,42 +7,9 @@ using VegaLite, VegaDatasets
 
 dataset("population") |>
 @vlplot(
-    transform=[{
-        aggregate=[
-            {op=:q1, field=:people, as=:lowerBox},
-            {op=:q3, field=:people, as=:upperBox},
-            {op=:median, field=:people, as=:midBox},
-            {op=:min, field=:people, as=:lowerWhisker},
-            {op=:max, field=:people, as=:upperWhisker}
-        ],
-        groupby=[:age]
-    }]
-) +
-@vlplot(
-    mark={:rule, style=:boxWhisker},
-    y={"lowerWhisker:q", axis={title="population"}},
-    y2="lowerBox:q",
-    x="age:o"
-) +
-@vlplot(
-    mark={:rule, style=:boxWhisker},
-    y="upperBox:q",
-    y2="upperWhisker:q",
-    x="age:o"
-) +
-@vlplot(
-    mark={:bar, style=:box},
-    y="lowerBox:q",
-    y2="upperBox:q",
+    mark={:boxplot, extent="min-max"},
     x="age:o",
-    size={value=5}
-) +
-@vlplot(
-    mark={:tick, style=:boxMid},
-    y="midBox:q",
-    x="age:o",
-    color={value=:white},
-    size={value=5}
+    y={:people, axis={title="population"}}
 )
 ```
 
@@ -53,53 +20,9 @@ using VegaLite, VegaDatasets
 
 dataset("population") |>
 @vlplot(
-    transform=[
-        {
-            aggregate=[
-                {op=:q1, field=:people, as=:lowerBox},
-                {op=:q3, field=:people, as=:upperBox},
-                {op=:median, field=:people, as=:midBox}
-            ],
-            groupby=[:age]
-        },
-        {
-            calculate="datum.upperBox - datum.lowerBox",
-            as=:IQR
-        },
-        {
-            calculate="datum.lowerBox - datum.IQR * 1.5",
-            as=:lowerWhisker
-        },
-        {
-            calculate="datum.upperBox + datum.IQR * 1.5",
-            as=:upperWhisker
-        }
-    ]
-) +
-@vlplot(
-    mark={:rule, style=:boxWhisker},
-    y={"lowerWhisker:q", axis={title="population"}},
-    y2="lowerBox:q",
-    x="age:o"
-) +
-@vlplot(
-    mark={:rule, style=:boxWhisker},
-    y="upperBox:q",
-    y2="upperWhisker:q",
-    x="age:o"
-) +
-@vlplot(
-    mark={:bar, style=:box},
-    y="lowerBox:q",
-    y2="upperBox:q",
+    mark={:boxplot, extend=1.5},
     x="age:o",
-    size={value=5}
-) +
-@vlplot(
-    mark={:tick, style=:boxMid},
-    y="midBox:q",
-    x="age:o",
-    color={value=:white},
+    y={:people, axis={title="population"}},
     size={value=5}
 )
 ```

@@ -34,7 +34,7 @@ dataset("barley") |>
 using VegaLite, VegaDatasets
 
 dataset("movies") |>
-@vlplot(:point, column="MPAA_Rating:o", x=:Worldwide_Gross, y=:US_DVD_Sales)
+@vlplot(:point, columns=2, wrap="MPAA_Rating:o", x=:Worldwide_Gross, y=:US_DVD_Sales)
 ```
 
 ## Trellis Histograms
@@ -77,13 +77,13 @@ using VegaLite, VegaDatasets
 dataset("barley") |>
 @vlplot(
     :point,
-    row="site:o",
+    columns=2,
+    wrap={"site:o", sort={op=:median, field=:yield}},
     x={"median(yield)", scale={zero=false}},
     y={
         "variety:o",
         sort={
-            "yield",
-            op=:median,
+            encoding=:x,,
             order=:descending
         },
         scale={rangeStep=12}},
@@ -103,7 +103,7 @@ dataset("stocks") |>
     transform=[{filter="datum.symbol !== 'GOOG'"}],
     x={
         "date:t",
-        axis={format="%Y",title="Time",grid=false}
+        axis={title="Time",grid=false}
     },
     y={
         :price,

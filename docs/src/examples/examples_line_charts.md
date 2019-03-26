@@ -11,12 +11,12 @@ dataset("stocks") |>
     transform=[
         {filter="datum.symbol=='GOOG'"}
     ],
-    x={"date:t", axis={format="%Y"}},
+    x="date:t",
     y=:price
 )
 ```
 
-## Line Chart with Overlaying Point Markers
+## Line Chart with Point Markers
 
 ```@example
 using VegaLite, VegaDatasets
@@ -26,13 +26,29 @@ dataset("stocks") |>
     transform=[{filter="datum.symbol==='GOOG'"}],
     mark={
         :line,
-        color=:green,
-        point={
-            color=:red
-        }
+        point=true
     },
-    x="date:t",
-    y=:price
+    x="year(date)",
+    y="mean(price)",
+    color=:symbol
+)
+```
+
+## Line Chart with Stroked Point Markers
+
+```@example
+using VegaLite, VegaDatasets
+
+dataset("stocks") |>
+@vlplot(
+    transform=[{filter="datum.symbol==='GOOG'"}],
+    mark={
+        :line,
+        point={filled=false, fill=:white}
+    },
+    x="year(date)",
+    y="mean(price)",
+    color=:symbol
 )
 ```
 
@@ -44,7 +60,7 @@ using VegaLite, VegaDatasets
 dataset("stocks") |>
 @vlplot(
     :line,
-    x={"date:t", axis={format="%Y"}},
+    x="date:t",
     y=:price,
     color=:symbol
 )
