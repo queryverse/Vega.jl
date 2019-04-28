@@ -7,7 +7,6 @@ _Julia bindings to Vega-Lite_
 [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://fredo-dedup.github.io/VegaLite.jl/dev)
 [![Build Status](https://travis-ci.org/fredo-dedup/VegaLite.jl.svg?branch=master)](https://travis-ci.org/fredo-dedup/VegaLite.jl)
 [![Build status](https://ci.appveyor.com/api/projects/status/b9cmmaquuc08n6uc/branch/master?svg=true)](https://ci.appveyor.com/project/fredo-dedup/vegalite-jl/branch/master)
-[![VegaLite](http://pkg.julialang.org/badges/VegaLite_0.6.svg)](http://pkg.julialang.org/?pkg=VegaLite&ver=0.6)
 [![Coverage Status](https://coveralls.io/repos/github/fredo-dedup/VegaLite.jl/badge.svg?branch=master)](https://coveralls.io/github/fredo-dedup/VegaLite.jl?branch=master)
 [![codecov](https://codecov.io/gh/fredo-dedup/VegaLite.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/fredo-dedup/VegaLite.jl)
 
