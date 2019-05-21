@@ -53,19 +53,28 @@ loadvgspec(filename::AbstractString) = open(loadvgspec, filename)
 loadvgspec(io::IO) = VGSpec(JSON.parse(io))
 
 """
-    savespec(filename::AbstractString, v::VLSpec{:plot}; include_data=false)
-    savespec(io::IO, v::VLSpec{:plot}; include_data=false)
+    savespec(filename::AbstractString, v::VLSpec{:plot})
+    savespec(io::IO, v::VLSpec{:plot})
 
 Save the plot `v` as a vega-lite specification file with the name `filename`.
-An `IO` object can also be passed. The `include_data` argument controls
-whether the data should be included in the saved specification file.
+An `IO` object can also be passed.
+
+# Keyword Arguments
+- `include_data::Bool`: The `include_data` argument controls
+  whether the data should be included in the saved specification file.
+- `indent::Union{Nothing,Integer}`: Pretty-print JSON output with given
+  indentation if `indent` is an integer.
 """
-function savespec(io::IO, v::AbstractVegaSpec; include_data=false)
+function savespec(io::IO, v::AbstractVegaSpec; include_data=false, indent=nothing)
     output_dict = copy(v.params)
     if !include_data
         delete!(output_dict, "data")
     end
-    JSON.print(io, output_dict)
+    if indent === nothing
+        JSON.print(io, output_dict)
+    else
+        JSON.print(io, output_dict, indent)
+    end
 end
 
 savespec(filename::AbstractString, v::AbstractVegaSpec; kwargs...) =
