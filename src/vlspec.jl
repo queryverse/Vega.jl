@@ -72,3 +72,4 @@ function (p::VLSpec{:plot})(path::AbstractPath)
 end
 
 Base.:(==)(x::VLSpec, y::VLSpec) = vltype(x) == vltype(y) && x.params == y.params
+Base.copy(spec::T) where {T <: VLSpec} = T(copy(spec.params))
