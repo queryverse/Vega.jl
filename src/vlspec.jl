@@ -73,3 +73,20 @@ end
 
 Base.:(==)(x::VLSpec, y::VLSpec) = vltype(x) == vltype(y) && x.params == y.params
 Base.copy(spec::T) where {T <: VLSpec} = T(copy(spec.params))
+
+"""
+    deletedata!(spec::VLSpec)
+
+Delete data from `spec` in-place.  See also [`deletedata`](@ref).
+"""
+function deletedata!(spec::VLSpec)
+    delete!(spec.params, "data")
+    return spec
+end
+
+"""
+    deletedata(spec::VLSpec)
+
+Create a copy of `spec` without data.  See also [`deletedata!`](@ref).
+"""
+deletedata(spec::VLSpec) = deletedata!(copy(spec))

@@ -22,6 +22,7 @@ export renderer, actionlinks
 export @vl_str, @vlplot
 export @vg_str
 export load, save
+export deletedata, deletedata!
 
 export mk, enc
 

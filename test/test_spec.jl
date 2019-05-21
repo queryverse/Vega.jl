@@ -40,7 +40,11 @@ p2 = vl"""
 }
 """
 
-delete!(p1.params, "data")
+p3 = deletedata(p1)
+@test p3 != p1
+@test p3 == p2
+
+deletedata!(p1)
 
 @test p1 == p2
 
