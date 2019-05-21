@@ -26,6 +26,10 @@ vlp = getvlplot()
         seek(io, 0)
         @test load(Stream(fmt, io)).params == plt.params
     end
+
+    let code = repr("text/plain", plt, context=:compact=>false)
+        @test include_string(@__MODULE__, code).params == plt.params
+    end
 end
 
 Base.Filesystem.mktempdir() do folder
