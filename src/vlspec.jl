@@ -70,3 +70,5 @@ function (p::VLSpec{:plot})(path::AbstractPath)
 
     return VLSpec{:plot}(new_dict)
 end
+
+Base.:(==)(x::VLSpec, y::VLSpec) = vltype(x) == vltype(y) && x.params == y.params
