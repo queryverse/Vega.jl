@@ -77,7 +77,7 @@ Base.Filesystem.mktempdir() do folder
 
     vgpl2 = VegaLite.loadvgspec(joinpath(folder,"test1.vega"))
 
-    @test vgpl1.params == vgpl1.params
+    @test vgpl1 == vgpl1
 
     # TODO Enable once FileIO stuff is merged
     # save(joinpath(folder,"test3.vega"), vgpl1)

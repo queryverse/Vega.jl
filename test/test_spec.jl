@@ -7,13 +7,13 @@ using VegaDatasets
 
 @testset "Spec" begin
 
-@test @vlplot()(URI("http://www.foo.com/bar.json")).params == vl"""
+@test @vlplot()(URI("http://www.foo.com/bar.json")) == vl"""
     {
         "data": {
             "url": "http://www.foo.com/bar.json"
         }
     }
-    """.params
+    """
 
 @test_throws ArgumentError @vlplot()(5)
 
@@ -40,9 +40,13 @@ p2 = vl"""
 }
 """
 
-delete!(p1.params, "data")
+p3 = deletedata(p1)
+@test p3 != p1
+@test p3 == p2
 
-@test p1.params == p2.params
+deletedata!(p1)
+
+@test p1 == p2
 
 p3 = DataFrame(a=[1,2,missing], b=[3.,2.,1.]) |> @vlplot(:point, x=:a, y=:b)
 
@@ -78,7 +82,7 @@ p4 = vl"""
 }
 """
 
-# @test p3.params == p4.params
+# @test p3 == p4
 
 p5 = dataset("cars").path |> @vlplot(:point, x=:Miles_per_Gallon, y=:Acceleration)
 

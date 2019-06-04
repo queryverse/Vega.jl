@@ -6,27 +6,27 @@ using Test
 
 @testset "@vlplot macro" begin
 
-@test @vlplot(mark={"point"}).params == (vl"""
+@test @vlplot(mark={"point"}) == (vl"""
     {"mark": {"type": "point"}}
-    """).params
+    """)
 
-@test @vlplot("point", data={values=[{a=1}]}).params == (vl"""
+@test @vlplot("point", data={values=[{a=1}]}) == (vl"""
     {"mark": "point", "data": {"values":[{"a": 1}]}}
-""").params
+""")
 
-@test @vlplot(:point, x=:foo).params == @vlplot(:point, enc={x=:foo}).params
+@test @vlplot(:point, x=:foo) == @vlplot(:point, enc={x=:foo})
 
-@test @vlplot(mark={typ=:point}).params == @vlplot(mark={:point}).params
+@test @vlplot(mark={typ=:point}) == @vlplot(mark={:point})
 
-@test (p"/foo/bar" |> @vlplot(:point)).params == @vlplot(:point, data=p"/foo/bar").params
+@test (p"/foo/bar" |> @vlplot(:point)) == @vlplot(:point, data=p"/foo/bar")
 
-@test (p"/foo/bar" |> @vlplot(:point)).params == @vlplot(:point, data={url=p"/foo/bar"}).params
+@test (p"/foo/bar" |> @vlplot(:point)) == @vlplot(:point, data={url=p"/foo/bar"})
 
-@test (URI("http://foo.com/bar.json") |> @vlplot(:point)).params == @vlplot(:point, data=URI("http://foo.com/bar.json")).params
+@test (URI("http://foo.com/bar.json") |> @vlplot(:point)) == @vlplot(:point, data=URI("http://foo.com/bar.json"))
 
-@test (URI("http://foo.com/bar.json") |> @vlplot(:point)).params == @vlplot(:point, data={url=URI("http://foo.com/bar.json")}).params
+@test (URI("http://foo.com/bar.json") |> @vlplot(:point)) == @vlplot(:point, data={url=URI("http://foo.com/bar.json")})
 
-@test (DataFrame(a=[1]) |> @vlplot(:point)).params == @vlplot(:point, data=DataFrame(a=[1])).params
+@test (DataFrame(a=[1]) |> @vlplot(:point)) == @vlplot(:point, data=DataFrame(a=[1]))
 
 @test @vlplot("point", transform=[{lookup="foo", from={data=p"/foo/bar", key="bar"}}]).params["transform"][1]["from"]["data"]["url"] == (Sys.iswindows() ? "file://foo/bar" : "file:///foo/bar")
 @test @vlplot("point", transform=[{lookup="foo", from={data={url=p"/foo/bar"}, key="bar"}}]).params["transform"][1]["from"]["data"]["url"] == (Sys.iswindows() ? "file://foo/bar" : "file:///foo/bar")
@@ -35,7 +35,7 @@ using Test
 
 @test @vlplot("point", transform=[{lookup="foo", from={data=DataFrame(a=[1]), key="bar"}}]).params["transform"][1]["from"]["data"]["values"][1]["a"] == 1
 
-@test [@vlplot("point") @vlplot("circle")].params == (vl"""
+@test [@vlplot("point") @vlplot("circle")] == (vl"""
 {
     "hconcat": [
         {
@@ -46,9 +46,9 @@ using Test
         }
     ]
 }
-""").params
+""")
 
-@test [@vlplot("point"); @vlplot("circle")].params == (vl"""
+@test [@vlplot("point"); @vlplot("circle")] == (vl"""
 {
     "vconcat": [
         {
@@ -59,9 +59,9 @@ using Test
         }
     ]
 }
-""").params
+""")
 
-@test @vlplot("point", x={"foo:q"}).params == (vl"""
+@test @vlplot("point", x={"foo:q"}) == (vl"""
 {
     "mark": "point",
     "encoding": {
@@ -71,18 +71,18 @@ using Test
         }
     }
 }
-""").params
+""")
 
-@test (@vlplot(description="foo") + @vlplot(:point) + @vlplot(:circle)).params == @vlplot(description="foo", layer=[{mark=:point},{mark=:circle}]).params
+@test (@vlplot(description="foo") + @vlplot(:point) + @vlplot(:circle)) == @vlplot(description="foo", layer=[{mark=:point},{mark=:circle}])
 
-@test (@vlplot(facet={row={field=:foo, typ=:bar}}) + @vlplot(:point)).params == @vlplot(facet={row={field=:foo, typ=:bar}}, spec={mark=:point}).params
+@test (@vlplot(facet={row={field=:foo, typ=:bar}}) + @vlplot(:point)) == @vlplot(facet={row={field=:foo, typ=:bar}}, spec={mark=:point})
 
-@test (@vlplot(repeat={column=[:foo, :bar]}) + @vlplot(:point)).params == @vlplot(repeat={column=[:foo, :bar]}, spec={mark=:point}).params
+@test (@vlplot(repeat={column=[:foo, :bar]}) + @vlplot(:point)) == @vlplot(repeat={column=[:foo, :bar]}, spec={mark=:point})
 
-@test (@vlplot(description="foo") + [@vlplot(:point) @vlplot(:circle)]).params == @vlplot(description="foo", hconcat=[{mark=:point},{mark=:circle}]).params
+@test (@vlplot(description="foo") + [@vlplot(:point) @vlplot(:circle)]) == @vlplot(description="foo", hconcat=[{mark=:point},{mark=:circle}])
 
-@test (@vlplot(description="foo") + [@vlplot(:point); @vlplot(:circle)]).params == @vlplot(description="foo", vconcat=[{mark=:point},{mark=:circle}]).params
+@test (@vlplot(description="foo") + [@vlplot(:point); @vlplot(:circle)]) == @vlplot(description="foo", vconcat=[{mark=:point},{mark=:circle}])
 
-@test (@vlplot(:point, x=:a)(DataFrame(a=[1])).params == @vlplot(:point, data=DataFrame(a=[1]), x=:a).params)
+@test (@vlplot(:point, x=:a)(DataFrame(a=[1])) == @vlplot(:point, data=DataFrame(a=[1]), x=:a))
 
 end
