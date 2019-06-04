@@ -169,7 +169,7 @@ function convert_curly_style(exprs, positional_key)
                 push!(new_exprs, :( $(string(ex.args[1])) => $(esc(ex.args[2])) ))
             end
         else
-            push!(new_exprs, :( $(string(positional_key)) => $ex ))
+            push!(new_exprs, :( $(string(positional_key)) => $(esc(ex)) ))
         end
     end
 
