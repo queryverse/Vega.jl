@@ -4,7 +4,7 @@
 var fs = require('fs'),
     path = require('path'),
     rw = require('../../assets/rw/index.js'),
-    vega = require('../../assets/vega/lib/vega.min.js');
+    vega = require('../../assets/vega/vega.min.js');
 
 // set baseURL if provided on command line
 var base = 'file://' + process.cwd() + path.sep;
