@@ -29,14 +29,14 @@ function convert_to_svg(v::VGSpec)
     return convert_to_svg(v, script_path)
 end
 
-Base.Multimedia.istextmime(::MIME{Symbol("application/vnd.vegalite.v2+json")}) = true
-Base.Multimedia.istextmime(::MIME{Symbol("application/vnd.vega.v4+json")}) = true
+Base.Multimedia.istextmime(::MIME{Symbol("application/vnd.vegalite.v3+json")}) = true
+Base.Multimedia.istextmime(::MIME{Symbol("application/vnd.vega.v5+json")}) = true
 
-function Base.show(io::IO, m::MIME"application/vnd.vegalite.v2+json", v::VLSpec{:plot})
+function Base.show(io::IO, m::MIME"application/vnd.vegalite.v3+json", v::VLSpec{:plot})
      print(io, JSON.json(v.params))
 end
 
-function Base.show(io::IO, m::MIME"application/vnd.vega.v4+json", v::VGSpec)
+function Base.show(io::IO, m::MIME"application/vnd.vega.v5+json", v::VGSpec)
     print(io, JSON.json(v.params))
 end
 
