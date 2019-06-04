@@ -10,7 +10,7 @@ module.exports = function(filename, options) {
 
     while (true) { // eslint-disable-line no-constant-condition
       try {
-        var buffer = new Buffer(bufferSize),
+        var buffer = Buffer.alloc(bufferSize),
             bytesRead = fs.readSync(fd, buffer, 0, bufferSize);
       } catch (e) {
         if (e.code === "EOF") break;
