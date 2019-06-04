@@ -30,7 +30,7 @@ export vlplot, vldata
 export config, selection, resolve, projection, facet, spec, rep
 export transform, hconcat, vconcat, layer
 
-global vlschema = JSONSchema.Schema(JSON.parsefile(joinpath(@__DIR__, "..", "deps", "lib", "vega-lite-schema.json")))
+global vlschema = JSONSchema.Schema(JSON.parsefile(joinpath(@__DIR__, "..", "assets", "vega", "vega-lite-schema.json")))
 
 ########################  settings functions  ############################
 
