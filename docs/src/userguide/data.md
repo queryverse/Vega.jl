@@ -1,10 +1,10 @@
 # Data
 
-[VegaLite.jl](https://github.com/fredo-dedup/VegaLite.jl) accepts data to be plotted in a variety of different formats and provides a number of different ways to reference that data. The most typical way to plot data is that you have your data in some julia data structure, and then add this data to the Vega-Lite specification itself for plotting. As an alternative, Vega-Lite also accepts URLs that point to data sources either on disc or on the web for plotting. Data that you want to plot will typically be in a tabular form.
+[VegaLite.jl](https://github.com/queryverse/VegaLite.jl) accepts data to be plotted in a variety of different formats and provides a number of different ways to reference that data. The most typical way to plot data is that you have your data in some julia data structure, and then add this data to the Vega-Lite specification itself for plotting. As an alternative, Vega-Lite also accepts URLs that point to data sources either on disc or on the web for plotting. Data that you want to plot will typically be in a tabular form.
 
 ## Inline data
 
-Any julia data structure data supports the iterable tables interface from the [TableTraits.jl](https://github.com/queryverse/TableTraits.jl) package can be used as an inline data source with [VegaLite.jl](https://github.com/fredo-dedup/VegaLite.jl). In practice that covers most tabular data structures in the julia ecosystem: [DataFrames.jl](https://github.com/JuliaData/DataFrames.jl), [JuliaDB.jl](https://github.com/JuliaComputing/JuliaDB.jl), [IndexedTables.jl](https://github.com/JuliaComputing/IndexedTables.jl), various file IO packages ([CSVFiles.jl](https://github.com/queryverse/CSVFiles.jl), [FeatherFiles.jl](https://github.com/queryverse/FeatherFiles.jl), [ExcelFiles.jl](https://github.com/queryverse/ExcelFiles.jl), [StatFiles.jl](https://github.com/queryverse/StatFiles.jl), [ParquetFiles.jl](https://github.com/queryverse/ParquetFiles.jl)) and any [Query.jl](https://github.com/queryverse/Query.jl) result that has a tabular form.
+Any julia data structure data supports the iterable tables interface from the [TableTraits.jl](https://github.com/queryverse/TableTraits.jl) package can be used as an inline data source with [VegaLite.jl](https://github.com/queryverse/VegaLite.jl). In practice that covers most tabular data structures in the julia ecosystem: [DataFrames.jl](https://github.com/JuliaData/DataFrames.jl), [JuliaDB.jl](https://github.com/JuliaComputing/JuliaDB.jl), [IndexedTables.jl](https://github.com/JuliaComputing/IndexedTables.jl), various file IO packages ([CSVFiles.jl](https://github.com/queryverse/CSVFiles.jl), [FeatherFiles.jl](https://github.com/queryverse/FeatherFiles.jl), [ExcelFiles.jl](https://github.com/queryverse/ExcelFiles.jl), [StatFiles.jl](https://github.com/queryverse/StatFiles.jl), [ParquetFiles.jl](https://github.com/queryverse/ParquetFiles.jl)) and any [Query.jl](https://github.com/queryverse/Query.jl) result that has a tabular form.
 
 There are two ways to add an inline data source to a Vega-Lite plot: 1) by piping the data source into a plot, or 2) by using the `data` keyword from within a `@vlplot` call.
 
@@ -16,7 +16,7 @@ Any tabular data can be piped into a plot by using the `|>` operator. For exampl
 df |> @vlplot(:point, x=:a, y=:b)
 ```
 
-As mentioned above, you are not restricted to piping `DataFrame`s into a plot, but can in fact plot any iterable table. The following example loads some data from a CSV file using [CSVFiles.jl](https://github.com/queryverse/CSVFiles.jl), filters it with [Query.jl](https://github.com/queryverse/Query.jl) and then plots it with [VegaLite.jl](https://github.com/fredo-dedup/VegaLite.jl):
+As mentioned above, you are not restricted to piping `DataFrame`s into a plot, but can in fact plot any iterable table. The following example loads some data from a CSV file using [CSVFiles.jl](https://github.com/queryverse/CSVFiles.jl), filters it with [Query.jl](https://github.com/queryverse/Query.jl) and then plots it with [VegaLite.jl](https://github.com/queryverse/VegaLite.jl):
 
 ```julia
 load("my_data.csv") |> @filter(_.a>30) |> @vlplot(:point, x=:a, y=:b)
@@ -39,7 +39,7 @@ This method also accepts any iterable table.
 
 Sometimes it can be convenient to not embed the source data in the actual Vega-Lite specification, but instead just embed a link to some data in a file. Vega-Lite can read data in a variety of formats (CSV, TSV, JSON etc.), and you can again either pipe a reference into a plot or use the `data` keyword to specify an external link.
 
-[VegaLite.jl](https://github.com/fredo-dedup/VegaLite.jl) uses the `URI` type from the [URIParser.jl](https://github.com/JuliaWeb/URIParser.jl) package to represent URIs, and the [FilePaths.jl](https://github.com/rofinn/FilePaths.jl) package to represent filesystem paths. For example, to create a path, you can use the `p` string macro:
+[VegaLite.jl](https://github.com/queryverse/VegaLite.jl) uses the `URI` type from the [URIParser.jl](https://github.com/JuliaWeb/URIParser.jl) package to represent URIs, and the [FilePaths.jl](https://github.com/rofinn/FilePaths.jl) package to represent filesystem paths. For example, to create a path, you can use the `p` string macro:
 
 ```julia
 using FilePaths

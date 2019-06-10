@@ -78,7 +78,7 @@ data |>
 
 ## Shorthand string syntax for encodings
 
-[VegaLite.jl](https://github.com/fredo-dedup/VegaLite.jl) provides a similar string shorthand syntax for encodings as [Altair](https://altair-viz.github.io/) (the Python wrapper around Vega-Lite).
+[VegaLite.jl](https://github.com/queryverse/VegaLite.jl) provides a similar string shorthand syntax for encodings as [Altair](https://altair-viz.github.io/) (the Python wrapper around Vega-Lite).
 
 Almost any channel encoding in a specification will have the keys `field` and `typ`, as in `x={field=:a, typ=:ordinal}`. Because these patterns are so common, we provide a shorthand string syntax for this case. Using the shorthand one can write the channel encoding as `x={"a:o"}`. These string shorthands have to appear as the first positional argument inside the curly brackets `{}` for the encoding channel. The pattern inside the string is that one specifies the name of the field before the `:`, and then the first letter of the type of encoding (`o` for ordinal, `q` for quantitative etc.).
 
