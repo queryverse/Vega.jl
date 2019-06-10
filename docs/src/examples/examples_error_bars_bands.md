@@ -63,9 +63,9 @@ using VegaLite, VegaDatasets
 dataset("cars") |>
 @vlplot(x="year(Year)") +
 @vlplot(
-    mark={:errorband, extend=:ci},
+    mark={:errorband, extent=:ci},
     y={
-        :Miles_per_Gallon,
+        "Miles_per_Gallon:q",
         title="Mean of Miles per Gallon (95% CIs)"
     }
 ) +
@@ -90,6 +90,6 @@ dataset("cars") |>
 @vlplot(:rule,y={"mean(Miles_per_Gallon)") +
 @vlplot(
     mark={:errorband, extent=:stdev, opacity=0.2},
-    y={"Miles_per_Gallon", title="Miles per Gallon"
+    y={"Miles_per_Gallon", title="Miles per Gallon"}
 )
 ```
