@@ -18,8 +18,8 @@ Base.Filesystem.mktempdir() do folder
     VegaLite.png(joinpath(folder,"test1.png"), p)
     @test isfile(joinpath(folder,"test1.png"))
 
-    VegaLite.eps(joinpath(folder,"test1.eps"), p)
-    @test isfile(joinpath(folder,"test1.eps"))
+    # VegaLite.eps(joinpath(folder,"test1.eps"), p)
+    # @test isfile(joinpath(folder,"test1.eps"))
 
     VegaLite.savefig(joinpath(folder,"test2.svg"), p)
     @test isfile(joinpath(folder,"test2.svg"))
@@ -30,8 +30,8 @@ Base.Filesystem.mktempdir() do folder
     VegaLite.savefig(joinpath(folder,"test2.png"), p)
     @test isfile(joinpath(folder,"test2.png"))
 
-    VegaLite.savefig(joinpath(folder,"test2.eps"), p)
-    @test isfile(joinpath(folder,"test2.eps"))
+    # VegaLite.savefig(joinpath(folder,"test2.eps"), p)
+    # @test isfile(joinpath(folder,"test2.eps"))
 
     save(joinpath(folder,"test2.svg"), p)
     @test isfile(joinpath(folder,"test2.svg"))
@@ -42,8 +42,8 @@ Base.Filesystem.mktempdir() do folder
     save(joinpath(folder,"test2.png"), p)
     @test isfile(joinpath(folder,"test2.png"))
 
-    save(joinpath(folder,"test2.eps"), p)
-    @test isfile(joinpath(folder,"test2.eps"))
+    # save(joinpath(folder,"test2.eps"), p)
+    # @test isfile(joinpath(folder,"test2.eps"))
 
     save(joinpath(folder,"test4.svg"), vgp)
     @test isfile(joinpath(folder,"test4.svg"))
@@ -54,8 +54,8 @@ Base.Filesystem.mktempdir() do folder
     save(joinpath(folder,"test4.png"), vgp)
     @test isfile(joinpath(folder,"test4.png"))
 
-    save(joinpath(folder,"test4.eps"), vgp)
-    @test isfile(joinpath(folder,"test4.eps"))
+    # save(joinpath(folder,"test4.eps"), vgp)
+    # @test isfile(joinpath(folder,"test4.eps"))
 
     VegaLite.savespec(joinpath(folder,"test1.vegalite"), p)
     @test isfile(joinpath(folder,"test1.vegalite"))
