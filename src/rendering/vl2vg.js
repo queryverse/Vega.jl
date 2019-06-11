@@ -14,14 +14,20 @@ function read() {
 };
 
 function compile(vlSpec) {
-    const result = vl.compile(vlSpec);
+    try {
+        const result = vl.compile(vlSpec);
 
-    // TODO: deal with errors
-    const vgSpec = result.spec;
+        // TODO: deal with errors
+        const vgSpec = result.spec;
 
-    process.stdout.write(JSON.stringify(vgSpec) + '\n');
+        process.stdout.write(JSON.stringify(vgSpec) + '\n');
+    }
+    catch (err) {
+        console.error(err)
+        process.exit(1)
+    }
 }
 
 read()
     .then(text => compile(JSON.parse(text)))
-    .catch(err => console.error(err)); // eslint-disable-line no-console
+    .catch(err => console.error(err));
