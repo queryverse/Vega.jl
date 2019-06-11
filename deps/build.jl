@@ -1,4 +1,4 @@
 # install NodeJS modules
 using NodeJS
 
-run(Cmd(`$(npm_cmd()) install --production --no-bin-links --no-package-lock --no-optional`, dir=@__DIR__))
+run(Cmd(`$(npm_cmd()) install --scripts-prepend-node-path=true --production --no-package-lock --no-optional`, dir=@__DIR__))

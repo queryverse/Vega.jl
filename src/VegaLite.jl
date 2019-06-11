@@ -1,7 +1,6 @@
 module VegaLite
 
-using JSON, Requires, NodeJS, Rsvg # 6s
-import Cairo
+using JSON, NodeJS # 6s
 import IteratorInterfaceExtensions # 1s
 import TableTraits # 0
 using FileIO # 17s !!!

@@ -3,7 +3,6 @@ uuid = "112f6efa-9a02-5b7d-90c0-432ed331239a"
 version = "1.0.0-DEV"
 
 [deps]
-Cairo = "159f3aea-2a34-519c-b102-8c37f9878175"
 DataValues = "e7dc6d0d-1eca-5fa6-8ad6-5aecde8b7ea5"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
@@ -16,8 +15,6 @@ MacroTools = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
 NodeJS = "2bd173c7-0d6d-553b-b6af-13a54713934c"
 REPL = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
-Requires = "ae029012-a4dd-5104-9daa-d747884805df"
-Rsvg = "c4c386cf-5103-5370-be45-f3a111cca3b8"
 TableTraits = "3783bdb8-4a98-5b6b-af9a-565f29a5fe9c"
 URIParser = "30578b45-9adc-5946-b283-645ec420af67"
 

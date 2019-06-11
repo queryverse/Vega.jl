@@ -19,6 +19,42 @@ function convert_to_svg(v::AbstractVegaSpec, script_path::String)
     return res
 end
 
+function convert_vl_to_vg(v::VLSpec{:plot})
+    vl2vg_script_path = joinpath(@__DIR__, "vl2vg.js")
+    data = JSON.json(v.params)
+    p = open(`$(nodejs_cmd()) $vl2vg_script_path`, "r+")
+    writer = @async begin
+        write(p, data)
+        close(p.in)
+    end
+    reader = @async read(p, String)
+    wait(p)
+    res = fetch(reader)
+    if p.exitcode!=0
+        throw(ArgumentError("Invalid spec"))
+    end
+    return res
+end
+
+function convert_vl_to_x(v::VLSpec{:plot}, second_script)
+    vl2vg_script_path = joinpath(@__DIR__, "vl2vg.js")
+    full_second_script_path = joinpath(@__DIR__, "..", "..", "deps", "node_modules", "vega-cli", "bin", second_script)
+    data = JSON.json(v.params)
+    p = open(pipeline(`$(nodejs_cmd()) $vl2vg_script_path`, `$(nodejs_cmd()) $full_second_script_path`), "r+")
+    writer = @async begin
+        write(p, data)
+        close(p.in)
+    end
+    reader = @async read(p, String)
+    wait(p)
+    res = fetch(reader)
+    # if p.exitcode!=0
+    #     throw(ArgumentError("Invalid spec"))
+    # end
+    return res
+end
+
+
 function convert_to_svg(v::VLSpec{:plot})
     script_path = joinpath(@__DIR__, "compilesvg.js")
     return convert_to_svg(v, script_path)
@@ -40,14 +76,14 @@ function Base.show(io::IO, m::MIME"application/vnd.vega.v5+json", v::VGSpec)
     print(io, JSON.json(v.params))
 end
 
-function Base.show(io::IO, m::MIME"image/svg+xml", v::AbstractVegaSpec)
-   svgHeader = """
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-"""
+function Base.show(io::IO, m::MIME"application/vnd.vega.v5+json", v::VLSpec{:plot})
 
-    print(io, svgHeader)
-    print(io, convert_to_svg(v))
+    print(io, convert_vl_to_vg(v))
+end
+
+function Base.show(io::IO, m::MIME"image/svg+xml", v::VLSpec{:plot})
+    @info "YES"
+    print(io, convert_vl_to_x(v, "vg2svg"))
 end
 
 function Base.show(io::IO, m::MIME"application/pdf", v::AbstractVegaSpec)
