@@ -3,8 +3,8 @@
 // import required libraries
 var fs = require('fs'),
     path = require('path'),
-    rw = require('../../assets/rw/index.js'),
-    vega = require('../../assets/vega/vega.min.js');
+    rw = require('../../deps/node_modules/rw'),
+    vega = require('../../deps/node_modules/vega');
 
 // set baseURL if provided on command line
 var base = 'file://' + process.cwd() + path.sep;
