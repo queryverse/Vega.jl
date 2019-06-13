@@ -85,4 +85,23 @@ using Test
 
 @test (@vlplot(:point, x=:a)(DataFrame(a=[1])) == @vlplot(:point, data=DataFrame(a=[1]), x=:a))
 
+@test @vlplot("point",  wrap=:x) == vl"""
+{
+    "mark": "point",
+    "encoding": {
+        "facet": {"field": "x"}
+    }
+}
+"""
+
+@test @vlplot("point", enc={x=:foo}, wrap=:x) == vl"""
+{
+    "mark": "point",
+    "encoding": {
+        "x": {"field": "foo"},
+        "facet": {"field": "x"}
+    }
+}
+"""
+
 end
