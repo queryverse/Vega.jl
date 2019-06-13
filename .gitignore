@@ -12,3 +12,4 @@ deps/node_modules/
 deps/lib/
 deps/npm-debug.log
 deps/build.log
+lcov.info
