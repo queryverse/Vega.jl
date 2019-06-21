@@ -1,3 +1,8 @@
+# VegaLite.jl v0.7.0 Release Notes
+* Drop dependency on Cairo.jl and Rsvg.jl
+* Update to vega-lite 3 and vega 5
+* Drop support for eps file saving (breaking)
+
 # VegaLite.jl v0.6.0 Release Notes
 * Improved vega support
 * Documentation for vega support
