@@ -1,6 +1,6 @@
 name = "VegaLite"
 uuid = "112f6efa-9a02-5b7d-90c0-432ed331239a"
-version = "0.7.0"
+version = "0.7.1-DEV"
 
 [deps]
 DataValues = "e7dc6d0d-1eca-5fa6-8ad6-5aecde8b7ea5"
