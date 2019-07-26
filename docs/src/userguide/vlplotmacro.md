@@ -48,8 +48,7 @@ We had to make the following adjustments to the original JSON specification:
 1. The outer pair of `{}` brackets was removed, the parenthesis `()` of the macro call instead deliminate the beginning and end of the specification.
 2. The quotation marks `"` around keys like `mark` are removed.
 3. The JSON key-value separator `:` was replaced with `=`.
-4. Any key that is named `type` in the JSON specification has to be renamed to `typ` in the `@vlplot` macro (`type` is a reserved keyword in julia and can therefore not be used here).
-5. Any `null` value in the JSON specification should be replaced with `nothing` in the `@vlplot` call.
+4. Any `null` value in the JSON specification should be replaced with `nothing` in the `@vlplot` call.
 
 These five rules should be sufficient to translate any valid JSON Vega-Lite specification into a corresponding `@vlplot` macro call.
 
