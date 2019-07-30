@@ -24,6 +24,7 @@ export load, save
 export deletedata, deletedata!
 
 global vlschema = JSONSchema.Schema(JSON.parsefile(joinpath(@__DIR__, "..", "assets", "vega", "vega-lite-schema.json")))
+global vgschema = JSONSchema.Schema(JSON.parsefile(joinpath(@__DIR__, "..", "assets", "vega", "vega-schema.json")))
 
 ########################  settings functions  ############################
 
