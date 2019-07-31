@@ -38,7 +38,7 @@ function (p::VGSpec)(uri::URI, name::String)
     updated = false
     for def in new_dict["data"]
         if def["name"] == name
-            def["url"] = as_uri
+            def["url"] = string(uri)
             updated = true
         end
     end
@@ -63,7 +63,7 @@ function (p::VGSpec)(path::AbstractPath, name::String)
 
     for def in new_dict["data"]
         if def["name"] == name
-            def["uri"] = as_uri
+            def["url"] = as_uri
         end
     end
 
@@ -78,7 +78,10 @@ end
 Delete data from `spec` in-place.  See also [`deletedata`](@ref).
 """
 function deletedata!(spec::VGSpec)
-    delete!(spec.params, "data")
+    for def in spec.params["data"]
+        haskey(def, "values") && delete!(def, "values")
+        haskey(def, "url") && delete!(def, "url")
+    end
     return spec
 end
 
@@ -90,4 +93,4 @@ Create a copy of `spec` without data.  See also [`deletedata!`](@ref).
 deletedata(spec::VGSpec) = deletedata!(copy(spec))
 
 Base.:(==)(x::VGSpec, y::VGSpec) = x.params == y.params
-Base.copy(spec::VGSpec) = VGSpec(copy(spec))
+Base.copy(spec::VGSpec) = VGSpec(copy(spec.params))

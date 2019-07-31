@@ -32,7 +32,11 @@ makedocs(
             "Faceting (Trellis Plot / Small Multiples)" => "examples/examples_faceting.md",
             "Repeat & Concatenation" => "examples/examples_repeat_concatenation.md"
         ],
-        "Maps (Geographic Displays)" => "examples/examples_maps.md"
+        "Maps (Geographic Displays)" => "examples/examples_maps.md",
+        "Vega" => [
+            "Single Data Source" => "examples/examples_vega_single_data_source.md",
+            "Multiple Data Source" => "examples/examples_vega_multi_data_source.md"
+        ]
     ],
     "Reference Manual" => [
         "Global settings" => "referencemanual/global.md",
