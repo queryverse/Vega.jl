@@ -61,9 +61,11 @@ function (p::VGSpec)(path::AbstractPath, name::String)
         as_uri = as_uri[1:5] * as_uri[7:end]
     end
 
+    updated = false
     for def in new_dict["data"]
         if def["name"] == name
             def["url"] = as_uri
+            updated = true
         end
     end
 

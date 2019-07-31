@@ -18,6 +18,15 @@ include("testhelper_create_vg_plot.jl")
     }
     """
 
+@test vg"""{ "data": [ { "name": "test" } ] }"""(Path("/julia/dev"), "test") == vg"""
+    {
+        "data": [{
+            "name": "test",
+            "url": "file:///julia/dev"
+        }]
+    }
+    """
+
 df = DataFrame(a=[1.,2.], b=["A", "B"], c=[Date(2000), Date(2001)])
 
 p1 = getvgplot()
