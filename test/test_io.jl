@@ -2,11 +2,35 @@ using Test
 using VegaLite
 using DataFrames
 using Dates
+using FileIO
 
 @testset "io" begin
 
 p = DataFrame(x = [1,2,3], y=[1,2,3]) |> @vlplot(:point, x="x:q", y="y:q")
 vgp = getvgplot()
+vlp = getvlplot()
+
+@testset "$fmt (indent=$(repr(indent)))" for (fmt, plt) in [
+    (format"vegalite", vlp)
+    # (format"vega", vgp)  # waiting for FileIO
+],
+    indent in [nothing, 4]
+
+    let json = sprint(io -> save(Stream(fmt, io), plt, indent=indent)),
+        code = "vg\"\"\"$json\"\"\""
+        @test include_string(@__MODULE__, code).params == plt.params
+    end
+
+    let io = IOBuffer()
+        save(Stream(fmt, io), plt, indent=indent)
+        seek(io, 0)
+        @test load(Stream(fmt, io)).params == plt.params
+    end
+
+    let code = repr("text/plain", plt, context=:compact=>false)
+        @test include_string(@__MODULE__, code).params == plt.params
+    end
+end
 
 Base.Filesystem.mktempdir() do folder
     VegaLite.svg(joinpath(folder,"test1.svg"), p)
