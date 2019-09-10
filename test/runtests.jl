@@ -12,6 +12,7 @@ include("test_macro.jl")
 include("test_shorthand.jl")
 include("test_spec.jl")
 include("test_mime_wrapper.jl")
+include("test_vg.jl")
 include("test_vlplot_macro.jl")
 
 end

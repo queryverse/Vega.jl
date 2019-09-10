@@ -81,7 +81,7 @@ function fix_shortcuts(spec::Dict{String,Any}, positional_key::String)
             if v isa Symbol
                 new_encoding_dict[k] = Dict{String,Any}("field"=>string(v))
             elseif v isa String
-                new_encoding_dict[k] = Dict{String,Any}(parse_shortcut(v)...)   
+                new_encoding_dict[k] = Dict{String,Any}(parse_shortcut(v)...)
             else
                 new_encoding_dict[k] = v
             end
@@ -108,12 +108,12 @@ function fix_shortcuts(spec::Dict{String,Any}, positional_key::String)
                     transform["from"]["data"] = Dict{String,Any}("url" => Sys.iswindows() && transform["from"]["data"].scheme=="file" ? as_uri[1:5] * as_uri[7:end] : as_uri)
                 elseif TableTraits.isiterabletable(transform["from"]["data"])
                     it = IteratorInterfaceExtensions.getiterator(transform["from"]["data"])
-        
+
                     recs = [Dict{String,Any}(string(c[1])=>isa(c[2], DataValues.DataValue) ? (isna(c[2]) ? nothing : get(c[2])) : c[2] for c in zip(keys(r), values(r))) for r in it]
-                
+
                     transform["from"]["data"] = Dict{String,Any}("values" => recs)
                 end
-        
+
             end
         end
     end
@@ -135,7 +135,7 @@ function fix_shortcuts(spec::Dict{String,Any}, positional_key::String)
             new_spec["data"] = Dict{String,Any}("url" => Sys.iswindows() && new_spec["data"].scheme=="file" ? as_uri[1:5] * as_uri[7:end] : as_uri)
         elseif TableTraits.isiterabletable(new_spec["data"])
             it = IteratorInterfaceExtensions.getiterator(new_spec["data"])
-            set_spec_data!(new_spec, it)
+            vl_set_spec_data!(new_spec, it)
             detect_encoding_type!(new_spec, it)
         end
     end
@@ -198,7 +198,7 @@ function Base.:+(a::VLSpec{:plot}, b::VLSpec{:plot})
         end
         push!(new_spec["layer"], deepcopy(b.params))
     end
-    
+
     return VLSpec{:plot}(new_spec)
 end
 
