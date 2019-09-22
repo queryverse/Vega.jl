@@ -95,4 +95,3 @@ Create a copy of `spec` without data.  See also [`deletedata!`](@ref).
 deletedata(spec::VGSpec) = deletedata!(copy(spec))
 
 Base.:(==)(x::VGSpec, y::VGSpec) = x.params == y.params
-Base.copy(spec::VGSpec) = VGSpec(copy(spec.params))
