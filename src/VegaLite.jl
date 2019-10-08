@@ -11,6 +11,7 @@ using FilePaths
 using REPL, Dates
 using Random
 import JSONSchema
+using Setfield: Setfield, PropertyLens, @lens, @set
 
 # This import can eventually be removed, it currently just makes sure
 # that the iterable tables integration for DataFrames and friends
