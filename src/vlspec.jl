@@ -5,7 +5,7 @@
 ###############################################################################
 
 struct VLSpec{T} <: AbstractVegaSpec
-    params::Union{Dict, Vector}
+    params::Dict
 end
 vltype(::VLSpec{T}) where T = T
 

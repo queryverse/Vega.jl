@@ -1,5 +1,5 @@
 struct VGSpec <: AbstractVegaSpec
-    params::Union{Dict, Vector}
+    params::Dict
 end
 
 # data is an array in vega
