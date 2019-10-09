@@ -14,7 +14,16 @@ Base.propertynames(spec::ObjectLike) =
     [Symbol(key) for key in keys(getparams(spec))]
 
 function Base.getproperty(spec::ObjectLike, name::Symbol)
-    name === :params && return getparams(spec)
+    if name === :params
+        Base.depwarn(
+            """
+            Using `spec.params["NAME"]` to obtain vega-lite property is deprecated.
+            Please use `spec.NAME` instead.
+            """,
+            :getproperty,
+        )
+        return getparams(spec)
+    end
     params = getparams(spec)
     value = params[keytype(params)(name)]
     if value isa Dict

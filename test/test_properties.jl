@@ -12,5 +12,6 @@ end
 vlp = getvlplot()
 @test vlp.mark isa String
 @test vlp.encoding.x.field isa String
+@test_deprecated vlp.params["mark"] isa String
 
 end
