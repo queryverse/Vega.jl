@@ -44,7 +44,7 @@ end
 function (p::VLSpec{:plot})(data)
     TableTraits.isiterabletable(data) || throw(ArgumentError("'data' is not a table."))
 
-    new_dict = copy(p.params)
+    new_dict = copy(getparams(p))
 
     it = IteratorInterfaceExtensions.getiterator(data)
     vl_set_spec_data!(new_dict, it)
@@ -54,14 +54,14 @@ function (p::VLSpec{:plot})(data)
 end
 
 function (p::VLSpec{:plot})(uri::URI)
-    new_dict = copy(p.params)
+    new_dict = copy(getparams(p))
     new_dict["data"] = Dict{String,Any}("url" => string(uri))
 
     return VLSpec{:plot}(new_dict)
 end
 
 function (p::VLSpec{:plot})(path::AbstractPath)
-    new_dict = copy(p.params)
+    new_dict = copy(getparams(p))
 
     as_uri = string(URI(path))
 
@@ -72,7 +72,7 @@ function (p::VLSpec{:plot})(path::AbstractPath)
     return VLSpec{:plot}(new_dict)
 end
 
-Base.:(==)(x::VLSpec, y::VLSpec) = vltype(x) == vltype(y) && x.params == y.params
+Base.:(==)(x::VLSpec, y::VLSpec) = vltype(x) == vltype(y) && getparams(x) == getparams(y)
 
 """
     deletedata!(spec::VLSpec)
@@ -80,7 +80,7 @@ Base.:(==)(x::VLSpec, y::VLSpec) = vltype(x) == vltype(y) && x.params == y.param
 Delete data from `spec` in-place.  See also [`deletedata`](@ref).
 """
 function deletedata!(spec::VLSpec)
-    delete!(spec.params, "data")
+    delete!(getparams(spec), "data")
     return spec
 end
 

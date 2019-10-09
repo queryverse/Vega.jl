@@ -1,5 +1,6 @@
 using Test
 using VegaLite
+using VegaLite: getparams
 using DataFrames
 using Dates
 using FileIO
@@ -18,17 +19,17 @@ vlp = getvlplot()
 
     let json = sprint(io -> save(Stream(fmt, io), plt, indent=indent)),
         code = "vg\"\"\"$json\"\"\""
-        @test include_string(@__MODULE__, code).params == plt.params
+        @test include_string(@__MODULE__, code).params == getparams(plt)
     end
 
     let io = IOBuffer()
         save(Stream(fmt, io), plt, indent=indent)
         seek(io, 0)
-        @test load(Stream(fmt, io)).params == plt.params
+        @test load(Stream(fmt, io)).params == getparams(plt)
     end
 
     let code = repr("text/plain", plt, context=:compact=>false)
-        @test include_string(@__MODULE__, code).params == plt.params
+        @test include_string(@__MODULE__, code).params == getparams(plt)
     end
 end
 

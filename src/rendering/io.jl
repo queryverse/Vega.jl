@@ -66,7 +66,7 @@ An `IO` object can also be passed.
   indentation if `indent` is an integer.
 """
 function savespec(io::IO, v::AbstractVegaSpec; include_data=false, indent=nothing)
-    output_dict = copy(v.params)
+    output_dict = copy(getparams(v))
     if !include_data
         delete!(output_dict, "data")
     end

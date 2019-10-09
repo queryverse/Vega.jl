@@ -202,11 +202,11 @@ end
 
 function Base.display(d::REPL.REPLDisplay, plt::VLSpec{:plot})
   # checkplot(plt)
-  tmppath = writehtml_full(JSON.json(plt.params))
+  tmppath = writehtml_full(JSON.json(getparams(plt)))
   launch_browser(tmppath) # Open the browser
 end
 
 function Base.display(d::REPL.REPLDisplay, plt::VGSpec)
-  tmppath = write_vg_html_full(JSON.json(plt.params))
+  tmppath = write_vg_html_full(JSON.json(getparams(plt)))
   launch_browser(tmppath) # Open the browser
 end
