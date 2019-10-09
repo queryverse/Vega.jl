@@ -185,18 +185,18 @@ macro vlplot(ex...)
 end
 
 function Base.:+(a::VLSpec{:plot}, b::VLSpec{:plot})
-    new_spec = deepcopy(a.params)
+    new_spec = deepcopy(getparams(a))
     if haskey(new_spec, "facet") || haskey(new_spec, "repeat")
-        new_spec["spec"] = deepcopy(b.params)
-    elseif haskey(b.params, "vconcat")
-        new_spec["vconcat"] = deepcopy(b.params["vconcat"])
-    elseif haskey(b.params, "hconcat")
-        new_spec["hconcat"] = deepcopy(b.params["hconcat"])
+        new_spec["spec"] = deepcopy(getparams(b))
+    elseif haskey(getparams(b), "vconcat")
+        new_spec["vconcat"] = deepcopy(getparams(b)["vconcat"])
+    elseif haskey(getparams(b), "hconcat")
+        new_spec["hconcat"] = deepcopy(getparams(b)["hconcat"])
     else
         if !haskey(new_spec,"layer")
             new_spec["layer"] = []
         end
-        push!(new_spec["layer"], deepcopy(b.params))
+        push!(new_spec["layer"], deepcopy(getparams(b)))
     end
 
     return VLSpec{:plot}(new_spec)
@@ -204,34 +204,34 @@ end
 
 function Base.hcat(A::VLSpec{:plot}...)
     spec = VLSpec{:plot}(Dict{String,Any}())
-    spec.params["hconcat"] = []
+    getparams(spec)["hconcat"] = []
     for i in A
-        push!(spec.params["hconcat"], deepcopy(i.params))
+        push!(getparams(spec)["hconcat"], deepcopy(getparams(i)))
     end
     return spec
 end
 
 function Base.vcat(A::VLSpec{:plot}...)
   spec = VLSpec{:plot}(Dict{String,Any}())
-  spec.params["vconcat"] = []
+  getparams(spec)["vconcat"] = []
   for i in A
-      push!(spec.params["vconcat"], deepcopy(i.params))
+      push!(getparams(spec)["vconcat"], deepcopy(getparams(i)))
   end
   return spec
 end
 
 function interactive()
     i -> begin
-        i.params["selection"] = Dict{String,Any}()
-        i.params["selection"]["selector001"] = Dict{String,Any}()
-        i.params["selection"]["selector001"]["type"] = "interval"
-        i.params["selection"]["selector001"]["bind"] = "scales"
-        i.params["selection"]["selector001"]["encodings"] = ["x", "y"]
-        i.params["selection"]["selector001"]["on"] = "[mousedown, window:mouseup] > window:mousemove!"
-        i.params["selection"]["selector001"]["translate"] = "[mousedown, window:mouseup] > window:mousemove!"
-        i.params["selection"]["selector001"]["zoom"] = "wheel!"
-        i.params["selection"]["selector001"]["mark"] = Dict("fill"=>"#333", "fillOpacity"=>0.125, "stroke"=>"white")
-        i.params["selection"]["selector001"]["resolve"] = "global"
+        getparams(i)["selection"] = Dict{String,Any}()
+        getparams(i)["selection"]["selector001"] = Dict{String,Any}()
+        getparams(i)["selection"]["selector001"]["type"] = "interval"
+        getparams(i)["selection"]["selector001"]["bind"] = "scales"
+        getparams(i)["selection"]["selector001"]["encodings"] = ["x", "y"]
+        getparams(i)["selection"]["selector001"]["on"] = "[mousedown, window:mouseup] > window:mousemove!"
+        getparams(i)["selection"]["selector001"]["translate"] = "[mousedown, window:mouseup] > window:mousemove!"
+        getparams(i)["selection"]["selector001"]["zoom"] = "wheel!"
+        getparams(i)["selection"]["selector001"]["mark"] = Dict("fill"=>"#333", "fillOpacity"=>0.125, "stroke"=>"white")
+        getparams(i)["selection"]["selector001"]["resolve"] = "global"
         return i
     end
 end

@@ -19,7 +19,7 @@ end
 function (p::VGSpec)(data, name::String)
     TableTraits.isiterabletable(data) || throw(ArgumentError("'data' is not a table."))
 
-    new_dict = copy(p.params)
+    new_dict = copy(getparams(p))
 
     @assert haskey(new_dict, "data") "Must have data array in specification"
 
@@ -31,7 +31,7 @@ function (p::VGSpec)(data, name::String)
 end
 
 function (p::VGSpec)(uri::URI, name::String)
-    new_dict = copy(p.params)
+    new_dict = copy(getparams(p))
 
     @assert haskey(new_dict, "data") "Must have data array in specification"
 
@@ -49,7 +49,7 @@ function (p::VGSpec)(uri::URI, name::String)
 end
 
 function (p::VGSpec)(path::AbstractPath, name::String)
-    new_dict = copy(p.params)
+    new_dict = copy(getparams(p))
 
     @assert haskey(new_dict, "data") "Must have data array in specification"
 
@@ -80,7 +80,7 @@ end
 Delete data from `spec` in-place.  See also [`deletedata`](@ref).
 """
 function deletedata!(spec::VGSpec)
-    for def in spec.params["data"]
+    for def in getparams(spec)["data"]
         haskey(def, "values") && delete!(def, "values")
         haskey(def, "url") && delete!(def, "url")
     end
@@ -94,4 +94,4 @@ Create a copy of `spec` without data.  See also [`deletedata!`](@ref).
 """
 deletedata(spec::VGSpec) = deletedata!(copy(spec))
 
-Base.:(==)(x::VGSpec, y::VGSpec) = x.params == y.params
+Base.:(==)(x::VGSpec, y::VGSpec) = getparams(x) == getparams(y)

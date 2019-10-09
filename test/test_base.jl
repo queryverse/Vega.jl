@@ -1,11 +1,12 @@
 using Test
 using VegaLite
+using VegaLite: getparams
 
 @testset "base" begin
 
 equiv(a::VegaLite.VLSpec, b::VegaLite.VLSpec) = false
 equiv(a::VegaLite.VLSpec{T}, b::VegaLite.VLSpec{T}) where {T} =
-  ==(a.params,b.params)
+  ==(getparams(a),getparams(b))
 
 ###
 @test isa(renderer(), Symbol)
@@ -35,18 +36,18 @@ datvals = [ Dict(:time => t, :res => r) for (t,r) in zip(ts, rs) ]
 #                             vlaxis(title="values")),
 #               yquantitative(field=:*, aggregate=:count))
 
-# @test length(vs.params) == 2
-# @test haskey(vs.params, "x")
-# @test haskey(vs.params, "y")
-# @test length(vs.params["x"]) == 4
-# @test get(vs.params["x"], "axis", "") == Dict("title"=>"values")
-# @test get(vs.params["x"], "field", "") == :x
-# @test get(vs.params["x"], "type", "") == "quantitative"
-# @test get(vs.params["x"], "bin", "") == Dict("maxbins" => 20)
-# @test length(vs.params["y"]) == 3
-# @test get(vs.params["y"], "aggregate", "") == :count
-# @test get(vs.params["y"], "field", "") == :*
-# @test get(vs.params["y"], "type", "") == "quantitative"
+# @test length(getparams(vs)) == 2
+# @test haskey(getparams(vs), "x")
+# @test haskey(getparams(vs), "y")
+# @test length(getparams(vs)["x"]) == 4
+# @test get(getparams(vs)["x"], "axis", "") == Dict("title"=>"values")
+# @test get(getparams(vs)["x"], "field", "") == :x
+# @test get(getparams(vs)["x"], "type", "") == "quantitative"
+# @test get(getparams(vs)["x"], "bin", "") == Dict("maxbins" => 20)
+# @test length(getparams(vs)["y"]) == 3
+# @test get(getparams(vs)["y"], "aggregate", "") == :count
+# @test get(getparams(vs)["y"], "field", "") == :*
+# @test get(getparams(vs)["y"], "type", "") == "quantitative"
 
 
 # vs2 = xquantitative(field=:x, vlbin(maxbins=20),
