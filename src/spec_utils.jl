@@ -32,3 +32,15 @@ function Base.getproperty(spec::ObjectLike, name::Symbol)
         return value
     end
 end
+
+Setfield.set(spec::ObjectLike, ::typeof(@lens getparams(_)), params) =
+    typeof(spec)(params)
+
+function Setfield.set(spec::ObjectLike, ::PropertyLens{name}, value) where name
+    params = copy(getparams(spec))
+    params[keytype(params)(name)] = _maybeparams(value)
+    @set getparams(spec) = params
+end
+
+_maybeparams(value) = value
+_maybeparams(value::ObjectLike) = getparams(value)
