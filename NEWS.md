@@ -1,3 +1,6 @@
+# VegaLite.jl v1.0.0 Release Notes
+[TODO]
+
 # VegaLite.jl v0.7.0 Release Notes
 * Drop dependency on Cairo.jl and Rsvg.jl
 * Update to vega-lite 3 and vega 5
