@@ -58,14 +58,14 @@ Base.Filesystem.mktempdir() do folder
     # VegaLite.savefig(joinpath(folder,"test2.eps"), p)
     # @test isfile(joinpath(folder,"test2.eps"))
 
-    save(joinpath(folder,"test2.svg"), p)
-    @test isfile(joinpath(folder,"test2.svg"))
+    save(joinpath(folder,"test3.svg"), p)
+    @test isfile(joinpath(folder,"test3.svg"))
 
-    save(joinpath(folder,"test2.pdf"), p)
-    @test isfile(joinpath(folder,"test2.pdf"))
+    save(joinpath(folder,"test3.pdf"), p)
+    @test isfile(joinpath(folder,"test3.pdf"))
 
-    save(joinpath(folder,"test2.png"), p)
-    @test isfile(joinpath(folder,"test2.png"))
+    save(joinpath(folder,"test3.png"), p)
+    @test isfile(joinpath(folder,"test3.png"))
 
     # save(joinpath(folder,"test2.eps"), p)
     # @test isfile(joinpath(folder,"test2.eps"))
