@@ -4,7 +4,7 @@
 #
 ######################################################################
 
-asset(url...) = normpath(joinpath(@__DIR__, "../..", "assets", "vega", url...))
+asset(url...) = normpath(joinpath(vegaliate_app_path, "minified", url...))
 
 #Vega Scaffold: https://github.com/vega/vega/wiki/Runtime
 
@@ -21,9 +21,9 @@ function writehtml_full(io::IO, spec::String; title="VegaLite plot")
     <head>
       <title>$title</title>
       <meta charset="UTF-8">
-      <script src="file://$(asset("vega.min.js"))"></script>
-      <script src="file://$(asset("vega-lite.min.js"))"></script>
-      <script src="file://$(asset("vega-embed.min.js"))"></script>
+      <script>$(read(asset("vega.min.js"), String))</script>
+      <script>$(read(asset("vega-lite.min.js"), String))</script>
+      <script>$(read(asset("vega-embed.min.js"), String))</script>
     </head>
     <body>
       <div id="$divid"></div>
@@ -65,8 +65,8 @@ function writevghtml_full(io::IO, spec::String; title="Vega plot")
     <head>
       <title>$title</title>
       <meta charset="UTF-8">
-      <script src="file://$(asset("vega.min.js"))"></script>
-      <script src="file://$(asset("vega-embed.min.js"))"></script>
+      <script>$(read(asset("vega.min.js"), String))</script>
+      <script>$(read(asset("vega-embed.min.js"), String))</script>
     </head>
     <body>
       <div id="$divid"></div>

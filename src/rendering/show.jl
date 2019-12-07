@@ -20,9 +20,9 @@ function Base.show(io::IO, m::MIME"text/plain", v::AbstractVegaSpec)
 end
 
 function convert_vl_to_vg(v::VLSpec{:plot})
-    vl2vg_script_path = joinpath(@__DIR__, "vl2vg.js")
+    vl2vg_script_path = joinpath(vegaliate_app_path, "vl2vg.js")
     data = JSON.json(getparams(v))
-    p = open(`$(nodejs_cmd()) $vl2vg_script_path`, "r+")
+    p = open(Cmd(`$(nodejs_cmd()) $vl2vg_script_path`, dir=vegaliate_app_path), "r+")
     writer = @async begin
         write(p, data)
         close(p.in)
@@ -37,10 +37,10 @@ function convert_vl_to_vg(v::VLSpec{:plot})
 end
 
 function convert_vl_to_x(v::VLSpec{:plot}, second_script)
-    vl2vg_script_path = joinpath(@__DIR__, "vl2vg.js")
-    full_second_script_path = joinpath(@__DIR__, "..", "..", "deps", "node_modules", "vega-cli", "bin", second_script)
+    vl2vg_script_path = joinpath(vegaliate_app_path, "vl2vg.js")
+    full_second_script_path = joinpath(vegaliate_app_path, "node_modules", "vega-cli", "bin", second_script)
     data = JSON.json(getparams(v))
-    p = open(pipeline(`$(nodejs_cmd()) $vl2vg_script_path`, `$(nodejs_cmd()) $full_second_script_path`), "r+")
+    p = open(pipeline(Cmd(`$(nodejs_cmd()) $vl2vg_script_path`, dir=vegaliate_app_path), Cmd(`$(nodejs_cmd()) $full_second_script_path`, dir=vegaliate_app_path)), "r+")
     writer = @async begin
         write(p, data)
         close(p.in)
@@ -55,9 +55,44 @@ function convert_vl_to_x(v::VLSpec{:plot}, second_script)
 end
 
 function convert_vg_to_x(v::VGSpec, script)
-    full_script_path = joinpath(@__DIR__, "..", "..", "deps", "node_modules", "vega-cli", "bin", script)
+    full_script_path = joinpath(vegaliate_app_path, "node_modules", "vega-cli", "bin", script)
     data = JSON.json(getparams(v))
-    p = open(`$(nodejs_cmd()) $full_script_path`, "r+")
+    p = open(Cmd(`$(nodejs_cmd()) $full_script_path`, dir=vegaliate_app_path), "r+")
+    writer = @async begin
+        write(p, data)
+        close(p.in)
+    end
+    reader = @async read(p, String)
+    wait(p)
+    res = fetch(reader)
+    if p.exitcode!=0
+        throw(ArgumentError("Invalid spec"))
+    end
+    return res
+end
+
+function convert_vl_to_svg(v::VLSpec{:plot})
+    vl2vg_script_path = joinpath(vegaliate_app_path, "vl2vg.js")
+    vg2svg_script_path = joinpath(vegaliate_app_path, "vg2svg.js")
+    data = JSON.json(getparams(v))
+    p = open(pipeline(Cmd(`$(nodejs_cmd()) $vl2vg_script_path`, dir=vegaliate_app_path), Cmd(`$(nodejs_cmd()) $vg2svg_script_path`, dir=vegaliate_app_path)), "r+")
+    writer = @async begin
+        write(p, data)
+        close(p.in)
+    end
+    reader = @async read(p, String)
+    wait(p)
+    res = fetch(reader)
+    if p.processes[1].exitcode!=0 || p.processes[2].exitcode!=0
+        throw(ArgumentError("Invalid spec"))
+    end
+    return res
+end
+
+function convert_vg_to_svg(v::VGSpec)
+    vg2svg_script_path = joinpath(vegaliate_app_path, "vg2svg.js")
+    data = JSON.json(getparams(v))
+    p = open(Cmd(`$(nodejs_cmd()) $vg2svg_script_path`, dir=vegaliate_app_path), "r+")
     writer = @async begin
         write(p, data)
         close(p.in)
@@ -88,37 +123,109 @@ function Base.show(io::IO, m::MIME"application/vnd.vega.v5+json", v::VLSpec{:plo
 end
 
 function Base.show(io::IO, m::MIME"image/svg+xml", v::VLSpec{:plot})
-    print(io, convert_vl_to_x(v, "vg2svg"))
+    print(io, convert_vl_to_svg(v))
 end
 
 function Base.show(io::IO, m::MIME"image/svg+xml", v::VGSpec)
-    print(io, convert_vg_to_x(v, "vg2svg"))
+    print(io, convert_vg_to_svg(v))
 end
 
 function Base.show(io::IO, m::MIME"application/pdf", v::VLSpec{:plot})
-    print(io, convert_vl_to_x(v, "vg2pdf"))
+    if vegaliate_app_includes_canvas
+        print(io, convert_vl_to_x(v, "vg2pdf"))
+    else
+        svgstring = convert_vl_to_svg(v)
+
+        r = Rsvg.handle_new_from_data(svgstring)
+        d = Rsvg.handle_get_dimensions(r)
+
+        cs = Cairo.CairoPDFSurface(io, d.width,d.height)
+        try
+            c = Cairo.CairoContext(cs)
+            Rsvg.handle_render_cairo(c,r)
+        finally
+            Cairo.finish(cs)
+        end
+    end
 end
 
 function Base.show(io::IO, m::MIME"application/pdf", v::VGSpec)
-    print(io, convert_vg_to_x(v, "vg2pdf"))
+    if vegaliate_app_includes_canvas
+        print(io, convert_vg_to_x(v, "vg2pdf"))
+    else
+        svgstring = convert_vg_to_svg(v)
+
+        r = Rsvg.handle_new_from_data(svgstring)
+        d = Rsvg.handle_get_dimensions(r)
+
+        cs = Cairo.CairoPDFSurface(io, d.width,d.height)
+        try
+            c = Cairo.CairoContext(cs)
+            Rsvg.handle_render_cairo(c,r)
+        finally
+            Cairo.finish(cs)
+        end
+    end
 end
 
-# function Base.show(io::IO, m::MIME"application/eps", v::AbstractVegaSpec)
-#     svgstring = convert_to_svg(v)
+function Base.show(io::IO, m::MIME"application/eps", v::VLSpec{:plot})
+    svgstring = convert_vl_to_svg(v)
 
-#     r = Rsvg.handle_new_from_data(svgstring)
-#     d = Rsvg.handle_get_dimensions(r)
+    r = Rsvg.handle_new_from_data(svgstring)
+    d = Rsvg.handle_get_dimensions(r)
 
-#     cs = Cairo.CairoEPSSurface(io, d.width,d.height)
-#     c = Cairo.CairoContext(cs)
-#     Rsvg.handle_render_cairo(c,r)
-#     Cairo.finish(cs)
-# end
+    cs = Cairo.CairoEPSSurface(io, d.width,d.height)
+    try
+        c = Cairo.CairoContext(cs)
+        Rsvg.handle_render_cairo(c,r)
+    finally
+        Cairo.finish(cs)
+    end
+end
+
+function Base.show(io::IO, m::MIME"application/eps", v::VGSpec)
+    svgstring = convert_vg_to_svg(v)
+
+    r = Rsvg.handle_new_from_data(svgstring)
+    d = Rsvg.handle_get_dimensions(r)
+
+    cs = Cairo.CairoEPSSurface(io, d.width,d.height)
+    try
+        c = Cairo.CairoContext(cs)
+        Rsvg.handle_render_cairo(c,r)
+    finally
+        Cairo.finish(cs)
+    end
+end
 
 function Base.show(io::IO, m::MIME"image/png", v::VLSpec{:plot})
-    print(io, convert_vl_to_x(v, "vg2png"))
+    if vegaliate_app_includes_canvas
+        print(io, convert_vl_to_x(v, "vg2png"))
+    else
+        svgstring = convert_vl_to_svg(v)
+
+        r = Rsvg.handle_new_from_data(svgstring)
+        d = Rsvg.handle_get_dimensions(r)
+
+        cs = Cairo.CairoImageSurface(d.width,d.height,Cairo.FORMAT_ARGB32)
+        c = Cairo.CairoContext(cs)
+        Rsvg.handle_render_cairo(c,r)
+        Cairo.write_to_png(cs,io)
+    end
 end
 
 function Base.show(io::IO, m::MIME"image/png", v::VGSpec)
-    print(io, convert_vg_to_x(v, "vg2png"))
+    if vegaliate_app_includes_canvas
+        print(io, convert_vg_to_x(v, "vg2png"))
+    else
+        svgstring = convert_vg_to_svg(v)
+
+        r = Rsvg.handle_new_from_data(svgstring)
+        d = Rsvg.handle_get_dimensions(r)
+
+        cs = Cairo.CairoImageSurface(d.width,d.height,Cairo.FORMAT_ARGB32)
+        c = Cairo.CairoContext(cs)
+        Rsvg.handle_render_cairo(c,r)
+        Cairo.write_to_png(cs,io)
+    end
 end

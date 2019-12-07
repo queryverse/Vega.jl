@@ -12,6 +12,8 @@ using REPL, Dates
 using Random
 import JSONSchema
 using Setfield: Setfield, PropertyLens, @lens, @set
+import Cairo, Rsvg
+using Pkg.Artifacts
 
 # This import can eventually be removed, it currently just makes sure
 # that the iterable tables integration for DataFrames and friends
@@ -24,7 +26,10 @@ export @vg_str
 export load, save
 export deletedata, deletedata!
 
-global vlschema = JSONSchema.Schema(JSON.parsefile(joinpath(@__DIR__, "..", "assets", "vega", "vega-lite-schema.json")))
+const vegaliate_app_path = artifact"vegalite_app"
+const vegaliate_app_includes_canvas = ispath(joinpath(vegaliate_app_path, "node_modules", "canvas"))
+
+global vlschema = JSONSchema.Schema(JSON.parsefile(joinpath(vegaliate_app_path, "schemas", "vega-lite-schema.json")))
 
 ########################  settings functions  ############################
 
