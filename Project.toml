@@ -23,7 +23,7 @@ TableTraits = "3783bdb8-4a98-5b6b-af9a-565f29a5fe9c"
 URIParser = "30578b45-9adc-5946-b283-645ec420af67"
 
 [compat]
-Cairo = "0.8"
+Cairo = "1"
 DataValues = "0.4.4"
 FileIO = "1.0.1"
 FilePaths = "0.7, 0.8"

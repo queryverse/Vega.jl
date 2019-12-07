@@ -1,113 +1,113 @@
 [[vegalite_app]]
 arch = "i686"
-git-tree-sha1 = "d4dcabfb8c01168be9f732c96a9afa98fa935970"
+git-tree-sha1 = "a21fb78a1e9cb208cf307c78e43a09ae723558e7"
 libc = "glibc"
 os = "linux"
 
     [[vegalite_app.download]]
-    sha256 = "15526f7e5748716cf5e08f3d1b70a407f93ff77d2d7dddf5e41c4aff42e11430"
-    url = "https://github.com/queryverse/VegaLiteBuilder/releases/download/v1.0.0/vegaliteassets-1.0.0-i686-linux-gnu.tar.gz"
+    sha256 = "811ad5f74eafda4ea6e4878723c5b347e6c2a6f94ddfb15afbb171eedaf82499"
+    url = "https://github.com/queryverse/VegaLiteBuilder/releases/download/v2.0.0/vegaliteassets-2.0.0-i686-linux-gnu.tar.gz"
 [[vegalite_app]]
 arch = "x86_64"
-git-tree-sha1 = "d92d25499fbd0e4b76aef7ed127f3c79f337990a"
+git-tree-sha1 = "bff8925a634282cbf9bd4ee1e4d0daee6f65ea01"
 libc = "glibc"
 os = "linux"
 
     [[vegalite_app.download]]
-    sha256 = "b4932b2dd78f4be9721a18d5eb4825f049898e80383f281d7255979cacb16c9e"
-    url = "https://github.com/queryverse/VegaLiteBuilder/releases/download/v1.0.0/vegaliteassets-1.0.0-x86_64-linux-gnu.tar.gz"
+    sha256 = "5999ee5c222f3ded97ca35a70dc5876114fb19912b30aa65a17474be2d6daa6e"
+    url = "https://github.com/queryverse/VegaLiteBuilder/releases/download/v2.0.0/vegaliteassets-2.0.0-x86_64-linux-gnu.tar.gz"
 [[vegalite_app]]
 arch = "aarch64"
-git-tree-sha1 = "ab1442a79ecb8a31ef730258b21020945d2e964f"
+git-tree-sha1 = "380738b242341a37e5d4408d08f89c6555674a6c"
 libc = "glibc"
 os = "linux"
 
     [[vegalite_app.download]]
-    sha256 = "f4286100394edfef91112ba971b8fb05cb8d056e7fe7aeb8c29e9d692d131e23"
-    url = "https://github.com/queryverse/VegaLiteBuilder/releases/download/v1.0.0/vegaliteassets-1.0.0-aarch64-linux-gnu.tar.gz"
+    sha256 = "c0119be006c74c109a5453f899892555397cf7fb3f3df5984e26e7382526e0f0"
+    url = "https://github.com/queryverse/VegaLiteBuilder/releases/download/v2.0.0/vegaliteassets-2.0.0-aarch64-linux-gnu.tar.gz"
 [[vegalite_app]]
 arch = "armv7l"
-git-tree-sha1 = "640c0cdc6d4d91ba7402dfb6db19952f811a1562"
+git-tree-sha1 = "dd364d401f2ad8b252eb54971751f91b9d83cf3e"
 libc = "glibc"
 os = "linux"
 
     [[vegalite_app.download]]
-    sha256 = "8fb7667fb8f54829b19f17ac3edf7639f19f72719dcfebfa209db6cec901d8b7"
-    url = "https://github.com/queryverse/VegaLiteBuilder/releases/download/v1.0.0/vegaliteassets-1.0.0-arm-linux-gnueabihf.tar.gz"
+    sha256 = "4c01d14512bab72c8378709b7ed3df3ec28801ac437abe9271abba73ec763c6a"
+    url = "https://github.com/queryverse/VegaLiteBuilder/releases/download/v2.0.0/vegaliteassets-2.0.0-arm-linux-gnueabihf.tar.gz"
 [[vegalite_app]]
 arch = "powerpc64le"
-git-tree-sha1 = "7a4779bf542e172b2987a453751fae28f2462e4a"
+git-tree-sha1 = "aacc6b438bc9a5eac4336fd19288efbaed56b3d9"
 libc = "glibc"
 os = "linux"
 
     [[vegalite_app.download]]
-    sha256 = "39780f6f23f8d6d9efec9d3b4e499d4c916669ff18ed1ebfa6d5a88c91f00900"
-    url = "https://github.com/queryverse/VegaLiteBuilder/releases/download/v1.0.0/vegaliteassets-1.0.0-powerpc64le-linux-gnu.tar.gz"
+    sha256 = "4186eddb5dd9ab4d6d18d3ab1c56a1979b23258e8b50c435fba1cc3f4a4e6a0b"
+    url = "https://github.com/queryverse/VegaLiteBuilder/releases/download/v2.0.0/vegaliteassets-2.0.0-powerpc64le-linux-gnu.tar.gz"
 [[vegalite_app]]
 arch = "i686"
-git-tree-sha1 = "fb7393b5c058dc3fe5d2a21f64d5153689e38a24"
+git-tree-sha1 = "6454370c4224dc673daf84a922974622e1ccacba"
 libc = "musl"
 os = "linux"
 
     [[vegalite_app.download]]
-    sha256 = "ba853fbfd2370a7f3fb917f1feb3ff9701c350a2cab6472d8ac38d294e2e3e48"
-    url = "https://github.com/queryverse/VegaLiteBuilder/releases/download/v1.0.0/vegaliteassets-1.0.0-i686-linux-musl.tar.gz"
+    sha256 = "c2a340854bf9c4d75b73142305722e7a2ffb588e60f47c8872a3ff46fb2a2e61"
+    url = "https://github.com/queryverse/VegaLiteBuilder/releases/download/v2.0.0/vegaliteassets-2.0.0-i686-linux-musl.tar.gz"
 [[vegalite_app]]
 arch = "x86_64"
-git-tree-sha1 = "983566e6b279fc4482d5989ca479c749122ec7cd"
+git-tree-sha1 = "8aa48eccb101188f373500947cf6034c47c8059c"
 libc = "musl"
 os = "linux"
 
     [[vegalite_app.download]]
-    sha256 = "e7ac8515299c287720d8ce165b35de36a15d9de357dda8b5cacf843215e0b235"
-    url = "https://github.com/queryverse/VegaLiteBuilder/releases/download/v1.0.0/vegaliteassets-1.0.0-x86_64-linux-musl.tar.gz"
+    sha256 = "2dcacda2857663677658fee10c3fb39b80e75c82e831b636f04e55fe5bd529e4"
+    url = "https://github.com/queryverse/VegaLiteBuilder/releases/download/v2.0.0/vegaliteassets-2.0.0-x86_64-linux-musl.tar.gz"
 [[vegalite_app]]
 arch = "aarch64"
-git-tree-sha1 = "7abe7c3b819e1920e9ab23e1d6a157a74477ad2c"
+git-tree-sha1 = "41124d6f73243d7e9b49149b8b5783b531761dc7"
 libc = "musl"
 os = "linux"
 
     [[vegalite_app.download]]
-    sha256 = "198a273d93acab4efa2b1327b9b3bd061c078a14bbff00548b83da7de998d471"
-    url = "https://github.com/queryverse/VegaLiteBuilder/releases/download/v1.0.0/vegaliteassets-1.0.0-aarch64-linux-musl.tar.gz"
+    sha256 = "9ef94d7efd7f5e30dbe8a920a7562c558ffa293660b5cf36c0ac328056909620"
+    url = "https://github.com/queryverse/VegaLiteBuilder/releases/download/v2.0.0/vegaliteassets-2.0.0-aarch64-linux-musl.tar.gz"
 [[vegalite_app]]
 arch = "armv7l"
-git-tree-sha1 = "694863ee584fd6a25fe512b1591309435a5b3ada"
+git-tree-sha1 = "eb637fa085c5d6ef197620d5254462580bf8ff37"
 libc = "musl"
 os = "linux"
 
     [[vegalite_app.download]]
-    sha256 = "f4e2abd18ac9f33473e01e160c2131c83960b7f9131227dfb5c25e9acb48e17d"
-    url = "https://github.com/queryverse/VegaLiteBuilder/releases/download/v1.0.0/vegaliteassets-1.0.0-arm-linux-musleabihf.tar.gz"
+    sha256 = "0769485f5af34f8af06aff8ebaff295561f50218b24b4790f15f3ca192131e54"
+    url = "https://github.com/queryverse/VegaLiteBuilder/releases/download/v2.0.0/vegaliteassets-2.0.0-arm-linux-musleabihf.tar.gz"
 [[vegalite_app]]
 arch = "x86_64"
-git-tree-sha1 = "57ee33928ba4598b1317d36e54fd0e4fe3dc332d"
+git-tree-sha1 = "957d74145a022f816c65dee6ff58b4817f6bc7d6"
 os = "macos"
 
     [[vegalite_app.download]]
-    sha256 = "05cd010fd457587a994fc1f34b01e9b041d754b7b66197825ef4e5f13888b4b1"
-    url = "https://github.com/queryverse/VegaLiteBuilder/releases/download/v1.0.0/vegaliteassets-1.0.0-x86_64-apple-darwin14.tar.gz"
+    sha256 = "b11076d4e98b52f2e557fee09366eec2344efd10af1604d673d7deaf31f79246"
+    url = "https://github.com/queryverse/VegaLiteBuilder/releases/download/v2.0.0/vegaliteassets-2.0.0-x86_64-apple-darwin14.tar.gz"
 [[vegalite_app]]
 arch = "x86_64"
-git-tree-sha1 = "78c98547e94839a6411a5e6ffaa525c52dff6435"
+git-tree-sha1 = "c2e0ba071017ff50e2021cbc05596d675a820e35"
 os = "freebsd"
 
     [[vegalite_app.download]]
-    sha256 = "5fc902b8015351b4e85786c89b12cecb3739f2ccab9be205d30cc942e272b79e"
-    url = "https://github.com/queryverse/VegaLiteBuilder/releases/download/v1.0.0/vegaliteassets-1.0.0-x86_64-unknown-freebsd11.1.tar.gz"
+    sha256 = "e797b0912be22a443c635942ae9bbe967f2eb00f2fd316ea32e8bd4112b30d65"
+    url = "https://github.com/queryverse/VegaLiteBuilder/releases/download/v2.0.0/vegaliteassets-2.0.0-x86_64-unknown-freebsd11.1.tar.gz"
 [[vegalite_app]]
 arch = "i686"
-git-tree-sha1 = "231e5bf51ad86114a1aac690999daf4d00e8a04f"
+git-tree-sha1 = "c89f3fd28b038d4e1c88fe4496e52a857b0a5f39"
 os = "windows"
 
     [[vegalite_app.download]]
-    sha256 = "14242645e33172bdc96ea2518bba4d35010c63ad003060df03931cf9a088c0ac"
-    url = "https://github.com/queryverse/VegaLiteBuilder/releases/download/v1.0.0/vegaliteassets-1.0.0-i686-w64-mingw32.tar.gz"
+    sha256 = "0ed0d11ab706d67eb7c39011bf75d8cc3a26440a76c2a61ff5109e572baa17ec"
+    url = "https://github.com/queryverse/VegaLiteBuilder/releases/download/v2.0.0/vegaliteassets-2.0.0-i686-w64-mingw32.tar.gz"
 [[vegalite_app]]
 arch = "x86_64"
-git-tree-sha1 = "fab400553863c74cbf581bc03c63dfd0ac421825"
+git-tree-sha1 = "3ace41a3932ffaf4167972af9db5f8f42b394cad"
 os = "windows"
 
     [[vegalite_app.download]]
-    sha256 = "a46b35a817e174153ac57d941899b1f25a405b5a84abbfdc2530b63d8e0eead3"
-    url = "https://github.com/queryverse/VegaLiteBuilder/releases/download/v1.0.0/vegaliteassets-1.0.0-x86_64-w64-mingw32.tar.gz"
+    sha256 = "cb89ba8e13b9d907adfbb0581d1f004e2096859ae3da75b26ab92c0cb634fb35"
+    url = "https://github.com/queryverse/VegaLiteBuilder/releases/download/v2.0.0/vegaliteassets-2.0.0-x86_64-w64-mingw32.tar.gz"
