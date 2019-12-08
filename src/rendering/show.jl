@@ -199,9 +199,13 @@ function Base.show(io::IO, m::MIME"application/eps", v::VGSpec)
 end
 
 function Base.show(io::IO, m::MIME"image/png", v::VLSpec{:plot})
+    @info "Trying to show as PNG"
     if vegaliate_app_includes_canvas
+        @info "Trying to show as PNG using canvas"
         print(io, convert_vl_to_x(v, "vg2png"))
+        @info "Succeeded showing plot as PNG"
     else
+        @info "Trying to show as PNG using SVG"
         svgstring = convert_vl_to_svg(v)
 
         r = Rsvg.handle_new_from_data(svgstring)
@@ -211,6 +215,7 @@ function Base.show(io::IO, m::MIME"image/png", v::VLSpec{:plot})
         c = Cairo.CairoContext(cs)
         Rsvg.handle_render_cairo(c,r)
         Cairo.write_to_png(cs,io)
+        @info "Succeeded showing plot as PNG using SVG"
     end
 end
 
