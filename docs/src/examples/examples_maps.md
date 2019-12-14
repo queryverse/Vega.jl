@@ -3,23 +3,32 @@
 ```@example
 using VegaLite, VegaDatasets
 
-us10m = dataset("us-10m").path
-unemployment = dataset("unemployment.tsv").path
+#browsers don't open local files, so instead of providing a filepath to VegaLite we provide the data inline
+
+#us10m = dataset("us-10m").path
+us10m = read(dataset("us-10m"),String);
+#unemployment = dataset("unemployment.tsv").path
+unemployment = read(dataset("unemployment.tsv").path,String);
 
 @vlplot(
     :geoshape,
     width=500, height=300,
     data={
-        url=us10m,
+        values=us10m,
         format={
-            typ=:topojson,
+            type=:topojson,
             feature=:counties
         }
     },
     transform=[{
         lookup=:id,
         from={
-            data=unemployment,
+            data={
+				values=unemployment,
+				format={
+					type=:tsv
+				}
+			},
             key=:id,
             fields=["rate"]
         }
