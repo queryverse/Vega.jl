@@ -24,11 +24,11 @@ unemployment = read(dataset("unemployment.tsv").path,String);
         lookup=:id,
         from={
             data={
-				values=unemployment,
-				format={
-					type=:tsv
-				}
-			},
+                values=unemployment,
+                format={
+                    type=:tsv
+                }
+            },
             key=:id,
             fields=["rate"]
         }
