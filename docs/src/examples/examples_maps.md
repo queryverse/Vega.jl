@@ -3,12 +3,8 @@
 ```@example
 using VegaLite, VegaDatasets
 
-#browsers don't open local files, so instead of providing a filepath to VegaLite we provide the data inline
-
-#us10m = dataset("us-10m").path
-us10m = read(dataset("us-10m"),String);
-#unemployment = dataset("unemployment.tsv").path
-unemployment = read(dataset("unemployment.tsv").path,String);
+us10m = dataset("us-10m")
+unemployment = dataset("unemployment")
 
 @vlplot(
     :geoshape,
@@ -23,12 +19,7 @@ unemployment = read(dataset("unemployment.tsv").path,String);
     transform=[{
         lookup=:id,
         from={
-            data={
-                values=unemployment,
-                format={
-                    type=:tsv
-                }
-            },
+            data=unemployment,
             key=:id,
             fields=["rate"]
         }
@@ -45,17 +36,9 @@ unemployment = read(dataset("unemployment.tsv").path,String);
 ```@example
 using VegaLite, VegaDatasets
 
-zipcodes=read(dataset("zipcodes").path,String);
-
-@vlplot(
+dataset("zipcodes") |> @vlplot(
     :circle,
     width=500, height=300,
-    data={
-        values=zipcodes,
-        format={
-            type=:csv
-        }
-    },
     transform=[{calculate="substring(datum.zip_code, 0, 1)", as=:digit}],
     projection={type=:albersUsa},
     longitude="longitude:q",
@@ -70,8 +53,8 @@ zipcodes=read(dataset("zipcodes").path,String);
 ```@example
 using VegaLite, VegaDatasets
 
-us10m = read(dataset("us-10m"),String);
-airports = read(dataset("airports").path,String);
+us10m = dataset("us-10m")
+airports = dataset("airports")
 
 @vlplot(width=500, height=300) +
 @vlplot(
@@ -91,12 +74,7 @@ airports = read(dataset("airports").path,String);
 ) +
 @vlplot(
     :circle,
-    data={
-        values=airports,
-        format={
-            type=:csv
-        }
-    },
+    data=airports,
     projection={type=:albersUsa},
     longitude="longitude:q",
     latitude="latitude:q",
@@ -110,9 +88,9 @@ airports = read(dataset("airports").path,String);
 ```@example
 using VegaLite, VegaDatasets
 
-us10m = read(dataset("us-10m"),String);
-airports = read(dataset("airports").path,String);
-flightsairport = read(dataset("flights-airport").path,String);
+us10m = dataset("us-10m")
+airports = dataset("airports")
+flightsairport = dataset("flights-airport")
 
 @vlplot(width=800, height=500) +
 @vlplot(
@@ -132,12 +110,7 @@ flightsairport = read(dataset("flights-airport").path,String);
 ) +
 @vlplot(
     :circle,
-    data={
-        values=airports,
-        format={
-            type=:csv
-        }
-    },
+    data=airports,
     projection={type=:albersUsa},
     longitude="longitude:q",
     latitude="latitude:q",
@@ -146,23 +119,13 @@ flightsairport = read(dataset("flights-airport").path,String);
 ) +
 @vlplot(
     :rule,
-    data={
-        values=flightsairport,
-        format={
-            type=:csv
-        }
-    },
+    data=flightsairport,
     transform=[
         {filter={field=:origin,equal=:SEA}},
         {
             lookup=:origin,
             from={
-                data={
-                    values=airports,
-                    format={
-                        type=:csv
-                    }
-                },
+                data=airports,
                 key=:iata,
                 fields=["latitude", "longitude"]
             },
@@ -171,12 +134,7 @@ flightsairport = read(dataset("flights-airport").path,String);
         {
             lookup=:destination,
             from={
-                data={
-                    values=airports,
-                    format={
-                        type=:csv
-                    }
-                },
+                data=airports,
                 key=:iata,
                 fields=["latitude", "longitude"]
             },
@@ -196,8 +154,8 @@ flightsairport = read(dataset("flights-airport").path,String);
 ```@example
 using VegaLite, VegaDatasets
 
-us10m = read(dataset("us-10m"),String);
-rows = read(dataset("population_engineers_hurricanes").path,String);
+us10m = dataset("us-10m")
+rows = dataset("population_engineers_hurricanes")
 
 @vlplot(
     description="the population per state, engineers per state, and hurricanes per state",
@@ -208,43 +166,36 @@ rows = read(dataset("population_engineers_hurricanes").path,String);
         scale={
             color=:independent
         }
-    },
-    spec={
-        width=500,
-        height=300,
-        data={
-            values=rows,
-            format={
-                type=:csv
-            }
+    }
+) +
+@vlplot(
+    width=500,
+    height=300,
+    data=rows,
+    transform=[{
+        lookup=:id,
+        from={
+            data={
+                values=us10m,
+                format={
+                    type=:topojson,
+                    feature=:states
+                }
+            },
+            key=:id
         },
-        transform=[{
-            lookup=:id,
-            from={
-                data={
-                    values=us10m,
-                    format={
-                        type=:topojson,
-                        feature=:states
-                    }
-                },
-                key=:id
-            },
-            as=:geo
-        }],
-        projection={type=:albersUsa},
-        mark=:geoshape,
-        encoding={
-            shape={
-                field=:geo,
-                type=:geojson
-            },
-            color={
-                field={repeat=:row},
-                type=:quantitative
-            }
-        }
-    }   
+        as=:geo
+    }],
+    projection={type=:albersUsa},
+    mark=:geoshape,
+    shape={
+        field=:geo,
+        type=:geojson
+    },
+    color={
+        field={repeat=:row},
+        type=:quantitative
+    }
 )
 ```
 
@@ -253,8 +204,8 @@ rows = read(dataset("population_engineers_hurricanes").path,String);
 ```@example
 using VegaLite, VegaDatasets
 
-us10m = read(dataset("us-10m"),String);
-capitals = read(dataset("us-state-capitals").path,String);
+us10m = dataset("us-10m")
+capitals = dataset("us-state-capitals")
 
 @vlplot(width=800, height=500) +
 @vlplot(
@@ -274,12 +225,7 @@ capitals = read(dataset("us-state-capitals").path,String);
 ) +
 @vlplot(
     :circle,
-    data={
-        values=capitals,
-        format={
-            type=:json
-        }
-    },
+    data=capitals,
     longitude="lon:q",
     latitude="lat:q",
     color={value=:orange}
@@ -289,12 +235,7 @@ capitals = read(dataset("us-state-capitals").path,String);
         type=:text,
         dy=-10
     },
-    data={
-        values=capitals,
-        format={
-            type=:json
-        }
-    },
+    data=capitals,
     longitude="lon:q",
     latitude="lat:q",
     text={
@@ -309,8 +250,8 @@ capitals = read(dataset("us-state-capitals").path,String);
 ```@example
 using VegaLite, VegaDatasets
 
-us10m = read(dataset("us-10m"),String);
-airports = read(dataset("airports").path,String);
+us10m = dataset("us-10m")
+airports = dataset("airports")
 
 @vlplot(width=800, height=500) +
 @vlplot(
@@ -330,12 +271,7 @@ airports = read(dataset("airports").path,String);
 ) +
 @vlplot(
     :circle,
-    data={
-        values=airports,
-        format={
-            type=:csv
-        }
-    },
+    data=airports,
     projection={type=:albersUsa},
     longitude="longitude:q",
     latitude="latitude:q",
@@ -359,12 +295,7 @@ airports = read(dataset("airports").path,String);
     transform=[{
         lookup=:airport,
         from={
-            data={
-                values=airports,
-                format={
-                    type=:csv
-                }
-            },
+            data=airports,
             key=:iata,
             fields=["latitude","longitude"]
         }
@@ -381,19 +312,14 @@ airports = read(dataset("airports").path,String);
 ```@example
 using VegaLite, VegaDatasets
 
-us10m = read(dataset("us-10m"),String);
-income = read(dataset("income").path,String);
+us10m = dataset("us-10m")
+income = dataset("income")
 
 @vlplot(
     width=500, 
     height=300,
     :geoshape,
-    data={
-        values=income,
-        format={
-            type=:json
-        }
-    },
+    data=income,
     transform=[{
         lookup=:id,
         from={
@@ -422,9 +348,9 @@ income = read(dataset("income").path,String);
 ```@example
 using VegaLite, VegaDatasets
 
-londonBoroughs = read(dataset("londonBoroughs").path,String);
-londonCentroids = read(dataset("londonCentroids").path,String);
-londonTubeLines = read(dataset("londonTubeLines").path,String);
+londonBoroughs = dataset("londonBoroughs")
+londonCentroids = dataset("londonCentroids")
+londonTubeLines = dataset("londonTubeLines")
 
 @vlplot(
     width=700, height=500,
@@ -450,12 +376,7 @@ londonTubeLines = read(dataset("londonTubeLines").path,String);
     color={value="#eee"}
 ) +
 @vlplot(
-    data={
-        values=londonCentroids,
-        format={
-            typ=:json
-        }
-    },
+    data=londonCentroids,
     transform=[{
         calculate="indexof (datum.name,' ') > 0  ? substring(datum.name,0,indexof(datum.name, ' ')) : datum.name",
         as=:bLabel
