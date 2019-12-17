@@ -34,7 +34,7 @@ unemployment = dataset("unemployment")
 ## One dot per zipcode in the U.S.
 
 ```@example
-using VegaLite, VegaDatasets
+using VegaLite, VegaDatasets, DisplayAs
 
 dataset("zipcodes") |> @vlplot(
     :circle,
@@ -45,8 +45,11 @@ dataset("zipcodes") |> @vlplot(
     latitude="latitude:q",
     size={value=1},
     color="digit:n"
-)
+) |>
+DisplayAs.PNG
 ```
+
+Note how we use [DisplayAs.jl](https://github.com/tkf/DisplayAs.jl) here to output the result as a PNG, which behaves better in this example with a large number of dots.
 
 ## One dot per airport in the US overlayed on geoshape
 
