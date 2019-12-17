@@ -74,10 +74,10 @@ using VegaLite, VegaDatasets
 dataset("barley") |>
 @vlplot(
     :line,
+    width={step=50},
     x={
         "year:o",
         scale={
-            rangeStep=50,
             padding=0.5
         }
     },

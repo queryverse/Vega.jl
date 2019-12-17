@@ -134,8 +134,8 @@ data |>
         clip=true,
         orient=:vertical
     },
-    x={:x, scale={zero=false, nice=false}},
-    y={:y, scale={domain=[0,50]}},
+    x={"x:q", scale={zero=false, nice=false}},
+    y={"y:q", scale={domain=[0,50]}},
     opacity={value=0.6}
 ) +
 @vlplot(
@@ -145,7 +145,7 @@ data |>
         clip=true,
         orient=:vertical
     },
-    x=:x,
+    x="x:q",
     y={
         "ny:q",
         scale={domain=[0,50]},

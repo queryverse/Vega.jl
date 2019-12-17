@@ -14,8 +14,9 @@ dataset("population") |>
     ],
     row="gender:n",
     y={"sum(people)", axis={title="population"}},
-    x={"age:o", scale={rangeStep=17}},
-    color={"gender:n", scale={range=["#EA98D2", "#659CCA"]}}
+    x="age:o",
+    color={"gender:n", scale={range=["#EA98D2", "#659CCA"]}},
+    width={step=17}
 )
 ```
 
@@ -78,15 +79,13 @@ dataset("barley") |>
 @vlplot(
     :point,
     columns=2,
+    height={step=12},
     wrap={"site:o", sort={op=:median, field=:yield}},
     x={"median(yield)", scale={zero=false}},
     y={
         "variety:o",
-        sort={
-            encoding=:x,
-            order=:descending
-        },
-        scale={rangeStep=12}},
+        sort="-x"
+    },
     color=:year
 )
 ```
