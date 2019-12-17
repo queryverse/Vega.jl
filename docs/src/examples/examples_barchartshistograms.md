@@ -31,7 +31,7 @@ dataset("population") |>
 @vlplot(
     :bar,
     transform=[{filter="datum.year == 2000"}],
-    y={"age:o", scale={rangeStep=17}},
+    y="age:o",
     x={"sum(people)", axis={title="population"}}
 )
 ```
@@ -50,7 +50,7 @@ dataset("population") |>
     ],
     column="age:o",
     y={"sum(people)", axis={title="population", grid=false}},
-    x={"gender:n", scale={rangeStep=12}, axis={title=""}},
+    x={"gender:n", axis={title=""}},
     color={"gender:n", scale={range=["#EA98D2", "#659CCA"]}},
     spacing=10,
     config={
@@ -109,14 +109,12 @@ dataset("population") |>
         axis={title="population"},
         stack=:normalize
     },
-    x={
-        "age:o",
-        scale={rangeStep=17}
-    },
+    x="age:o",
     color={
         "gender:n",
         scale={range=["#EA98D2", "#659CCA"]}
-    }
+    },
+    width={step=17}    
 )
 ```
 
@@ -172,10 +170,11 @@ dataset("population") |>
         {filter="datum.year==2000"},
         {calculate="datum.sex==2 ? 'Female' : 'Male'",as="gender"}
     ],
-    x={"age:o", scale={rangeStep=17}},
+    x="age:o",
     y={"sum(people)", axis={title="population"}, stack=nothing},
     color={"gender:n", scale={range=["#e377c2", "#1f77b4"]}},
-    opacity={value=0.7}
+    opacity={value=0.7},
+    width={step=17}
 )
 ```
 
