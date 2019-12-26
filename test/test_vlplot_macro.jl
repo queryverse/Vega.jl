@@ -28,12 +28,12 @@ using Test
 
 @test (DataFrame(a=[1]) |> @vlplot(:point)) == @vlplot(:point, data=DataFrame(a=[1]))
 
-@test @vlplot("point", transform=[{lookup="foo", from={data=p"/foo/bar", key="bar"}}]).params["transform"][1]["from"]["data"]["url"] == (Sys.iswindows() ? "file://foo/bar" : "file:///foo/bar")
-@test @vlplot("point", transform=[{lookup="foo", from={data={url=p"/foo/bar"}, key="bar"}}]).params["transform"][1]["from"]["data"]["url"] == (Sys.iswindows() ? "file://foo/bar" : "file:///foo/bar")
-@test @vlplot("point", transform=[{lookup="foo", from={data=URI("http://foo.com/bar.json"), key="bar"}}]).params["transform"][1]["from"]["data"]["url"] == "http://foo.com/bar.json"
-@test @vlplot("point", transform=[{lookup="foo", from={data={url=URI("http://foo.com/bar.json")}, key="bar"}}]).params["transform"][1]["from"]["data"]["url"] == "http://foo.com/bar.json"
+@test getparams(@vlplot("point", transform=[{lookup="foo", from={data=p"/foo/bar", key="bar"}}]))["transform"][1]["from"]["data"]["url"] == (Sys.iswindows() ? "file://foo/bar" : "file:///foo/bar")
+@test getparams(@vlplot("point", transform=[{lookup="foo", from={data={url=p"/foo/bar"}, key="bar"}}]))["transform"][1]["from"]["data"]["url"] == (Sys.iswindows() ? "file://foo/bar" : "file:///foo/bar")
+@test getparams(@vlplot("point", transform=[{lookup="foo", from={data=URI("http://foo.com/bar.json"), key="bar"}}]))["transform"][1]["from"]["data"]["url"] == "http://foo.com/bar.json"
+@test getparams(@vlplot("point", transform=[{lookup="foo", from={data={url=URI("http://foo.com/bar.json")}, key="bar"}}]))["transform"][1]["from"]["data"]["url"] == "http://foo.com/bar.json"
 
-@test @vlplot("point", transform=[{lookup="foo", from={data=DataFrame(a=[1]), key="bar"}}]).params["transform"][1]["from"]["data"]["values"][1]["a"] == 1
+@test getparams(@vlplot("point", transform=[{lookup="foo", from={data=DataFrame(a=[1]), key="bar"}}]))["transform"][1]["from"]["data"]["values"][1]["a"] == 1
 
 @test [@vlplot("point") @vlplot("circle")] == (vl"""
 {

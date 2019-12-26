@@ -86,6 +86,6 @@ p4 = vl"""
 
 p5 = dataset("cars").path |> @vlplot(:point, x=:Miles_per_Gallon, y=:Acceleration)
 
-@test haskey(p5.params["data"],"url")
+@test haskey(getparams(p5)["data"],"url")
 
 end
