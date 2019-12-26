@@ -84,6 +84,4 @@ include("rendering/io.jl")
 include("rendering/show.jl")
 include("rendering/fileio.jl")
 
-include("mime_wrapper.jl")
-
 end
