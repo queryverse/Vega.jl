@@ -43,11 +43,11 @@ df = DataFrame(a=[1.,2.], b=["A", "B"], c=[Date(2000), Date(2001)])
 p1 = getvgplot()
 
 p2 = deletedata(p1)
-@test !haskey(p2.params["data"][1], "values")
+@test !haskey(getparams(p2)["data"][1], "values")
 
 p3 = p2(df, "table")
 
-@test p3.params["data"][1]["values"][1]["b"] == "A"
+@test getparams(p3)["data"][1]["values"][1]["b"] == "A"
 
 deletedata!(p1)
 

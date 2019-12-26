@@ -19,17 +19,17 @@ vlp = getvlplot()
 
     let json = sprint(io -> save(Stream(fmt, io), plt, indent=indent)),
         code = "vg\"\"\"$json\"\"\""
-        @test include_string(@__MODULE__, code).params == getparams(plt)
+        @test getparams(include_string(@__MODULE__, code)) == getparams(plt)
     end
 
     let io = IOBuffer()
         save(Stream(fmt, io), plt, indent=indent)
         seek(io, 0)
-        @test load(Stream(fmt, io)).params == getparams(plt)
+        @test getparams(load(Stream(fmt, io))) == getparams(plt)
     end
 
     let code = repr("text/plain", plt, context=:compact=>false)
-        @test include_string(@__MODULE__, code).params == getparams(plt)
+        @test getparams(include_string(@__MODULE__, code)) == getparams(plt)
     end
 end
 
