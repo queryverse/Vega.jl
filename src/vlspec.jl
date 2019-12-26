@@ -89,3 +89,39 @@ end
 Create a copy of `spec` without data.  See also [`deletedata!`](@ref).
 """
 deletedata(spec::VLSpec) = deletedata!(copy(spec))
+
+function Base.:+(a::VLSpec, b::VLSpec)
+    new_spec = deepcopy(getparams(a))
+    if haskey(new_spec, "facet") || haskey(new_spec, "repeat")
+        new_spec["spec"] = deepcopy(getparams(b))
+    elseif haskey(getparams(b), "vconcat")
+        new_spec["vconcat"] = deepcopy(getparams(b)["vconcat"])
+    elseif haskey(getparams(b), "hconcat")
+        new_spec["hconcat"] = deepcopy(getparams(b)["hconcat"])
+    else
+        if !haskey(new_spec,"layer")
+            new_spec["layer"] = []
+        end
+        push!(new_spec["layer"], deepcopy(getparams(b)))
+    end
+
+    return VLSpec(new_spec)
+end
+
+function Base.hcat(A::VLSpec...)
+    spec = VLSpec(Dict{String,Any}())
+    getparams(spec)["hconcat"] = []
+    for i in A
+        push!(getparams(spec)["hconcat"], deepcopy(getparams(i)))
+    end
+    return spec
+end
+
+function Base.vcat(A::VLSpec...)
+  spec = VLSpec(Dict{String,Any}())
+  getparams(spec)["vconcat"] = []
+  for i in A
+      push!(getparams(spec)["vconcat"], deepcopy(getparams(i)))
+  end
+  return spec
+end

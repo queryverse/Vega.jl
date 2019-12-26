@@ -84,4 +84,6 @@ include("rendering/io.jl")
 include("rendering/show.jl")
 include("rendering/fileio.jl")
 
+include("experimental.jl")
+
 end
