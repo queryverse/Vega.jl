@@ -1,5 +1,5 @@
 macro vl_str(content)
-    return VLSpec{:plot}(JSON.parse(content))
+    return VLSpec(JSON.parse(content))
 end
 
 macro vg_str(content)

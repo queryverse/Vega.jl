@@ -6,7 +6,7 @@ using VegaLite
 vl = @vlplot(:point)
 vg = VegaLite.VGSpec(Dict{String,Any}())
 
-@test sprint(show, "text/plain", vl) == "VegaLite.VLSpec{:plot}"
+@test sprint(show, "text/plain", vl) == "VegaLite.VLSpec"
 
 @test sprint(show, "text/plain", vg) == "VegaLite.VGSpec"
 
