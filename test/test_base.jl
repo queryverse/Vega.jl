@@ -5,7 +5,7 @@ using VegaLite: getparams
 @testset "base" begin
 
 equiv(a::VegaLite.VLSpec, b::VegaLite.VLSpec) = false
-equiv(a::VegaLite.VLSpec{T}, b::VegaLite.VLSpec{T}) where {T} =
+equiv(a::VegaLite.VLSpec, b::VegaLite.VLSpec) =
   ==(getparams(a),getparams(b))
 
 ###

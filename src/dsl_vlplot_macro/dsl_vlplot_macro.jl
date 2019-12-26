@@ -181,10 +181,10 @@ macro vlplot(ex...)
 
     new_ex = convert_curly_style(ex, positional_key)
 
-    return :( VegaLite.VLSpec{:plot}(fix_shortcuts(Dict{String,Any}($(new_ex...)), $(string(positional_key)))) )
+    return :( VegaLite.VLSpec(fix_shortcuts(Dict{String,Any}($(new_ex...)), $(string(positional_key)))) )
 end
 
-function Base.:+(a::VLSpec{:plot}, b::VLSpec{:plot})
+function Base.:+(a::VLSpec, b::VLSpec)
     new_spec = deepcopy(getparams(a))
     if haskey(new_spec, "facet") || haskey(new_spec, "repeat")
         new_spec["spec"] = deepcopy(getparams(b))
@@ -199,11 +199,11 @@ function Base.:+(a::VLSpec{:plot}, b::VLSpec{:plot})
         push!(new_spec["layer"], deepcopy(getparams(b)))
     end
 
-    return VLSpec{:plot}(new_spec)
+    return VLSpec(new_spec)
 end
 
-function Base.hcat(A::VLSpec{:plot}...)
-    spec = VLSpec{:plot}(Dict{String,Any}())
+function Base.hcat(A::VLSpec...)
+    spec = VLSpec(Dict{String,Any}())
     getparams(spec)["hconcat"] = []
     for i in A
         push!(getparams(spec)["hconcat"], deepcopy(getparams(i)))
@@ -211,8 +211,8 @@ function Base.hcat(A::VLSpec{:plot}...)
     return spec
 end
 
-function Base.vcat(A::VLSpec{:plot}...)
-  spec = VLSpec{:plot}(Dict{String,Any}())
+function Base.vcat(A::VLSpec...)
+  spec = VLSpec(Dict{String,Any}())
   getparams(spec)["vconcat"] = []
   for i in A
       push!(getparams(spec)["vconcat"], deepcopy(getparams(i)))
