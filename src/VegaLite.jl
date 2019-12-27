@@ -71,6 +71,7 @@ include("spec_utils.jl")
 include("vgspec.jl")
 include("vlspec.jl")
 
+include("dsl_vlplot_function/shorthandparser.jl")
 include("dsl_vlplot_function/dsl_vlplot_function.jl")
 include("dsl_vlplot_macro/dsl_vlplot_macro.jl")
 include("dsl_str_macro/dsl_str_macro.jl")

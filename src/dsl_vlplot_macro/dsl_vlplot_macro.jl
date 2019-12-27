@@ -1,6 +1,3 @@
-include("shorthandparser.jl")
-
-
 function convert_curly_style_array(exprs)
     res = Expr(:vect)
 
