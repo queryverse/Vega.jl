@@ -21,7 +21,7 @@ using Pkg.Artifacts
 import IterableTables
 
 export renderer, actionlinks
-export @vl_str, @vlplot, vlplot
+export @vl_str, @vlplot, vlplot, @vlfrag, vlfrag
 export @vg_str
 export load, save
 export deletedata, deletedata!
