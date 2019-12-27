@@ -16,7 +16,7 @@ using Test
 
 @test @vlplot(:point, x=:foo) == @vlplot(:point, enc={x=:foo})
 
-@test @vlplot(mark={typ=:point}) == @vlplot(mark={:point})
+@test @vlplot(mark={type=:point}) == @vlplot(mark={:point})
 
 @test (p"/foo/bar" |> @vlplot(:point)) == @vlplot(:point, data=p"/foo/bar")
 
@@ -75,7 +75,7 @@ using Test
 
 @test (@vlplot(description="foo") + @vlplot(:point) + @vlplot(:circle)) == @vlplot(description="foo", layer=[{mark=:point},{mark=:circle}])
 
-@test (@vlplot(facet={row={field=:foo, typ=:bar}}) + @vlplot(:point)) == @vlplot(facet={row={field=:foo, typ=:bar}}, spec={mark=:point})
+@test (@vlplot(facet={row={field=:foo, type=:bar}}) + @vlplot(:point)) == @vlplot(facet={row={field=:foo, type=:bar}}, spec={mark=:point})
 
 @test (@vlplot(repeat={column=[:foo, :bar]}) + @vlplot(:point)) == @vlplot(repeat={column=[:foo, :bar]}, spec={mark=:point})
 
@@ -83,7 +83,7 @@ using Test
 
 @test (@vlplot(description="foo") + [@vlplot(:point); @vlplot(:circle)]) == @vlplot(description="foo", vconcat=[{mark=:point},{mark=:circle}])
 
-@test (@vlplot(:point, x=:a)(DataFrame(a=[1])) == @vlplot(:point, data=DataFrame(a=[1]), x=:a))
+@test_broken (@vlplot(:point, x=:a)(DataFrame(a=[1])) == @vlplot(:point, data=DataFrame(a=[1]), x=:a))
 
 @test @vlplot("point",  wrap=:x) == vl"""
 {
