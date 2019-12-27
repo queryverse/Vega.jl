@@ -14,40 +14,56 @@ function vl_set_spec_data!(specdict, datait)
     specdict["data"] = Dict{String,Any}("values" => recs)
 end
 
-function detect_encoding_type!(specdict, datait)
-    col_names = fieldnames(eltype(datait))
-    col_types = [fieldtype(eltype(datait),i) for i in col_names]
-    col_type_mapping = Dict{Symbol,Type}(i[1]=>i[2] for i in zip(col_names,col_types))
+augment_encoding_type(x) = x
 
-    if haskey(specdict, "encoding")
-        for (k,v) in specdict["encoding"]
-            if v isa Dict && !haskey(v, "type")
-                if !haskey(v, "aggregate") && haskey(v, "field") && haskey(col_type_mapping,Symbol(v["field"]))
-                    jl_type = col_type_mapping[Symbol(v["field"])]
-                    if jl_type <: DataValues.DataValue
-                        jl_type = eltype(jl_type)
-                    end
-                    if jl_type <: Number
-                        v["type"] = "quantitative"
-                    elseif jl_type <: AbstractString
-                        v["type"] = "nominal"
-                    elseif jl_type <: Dates.AbstractTime
-                        v["type"] = "temporal"
-                    end
-                end
-            end
+function augment_encoding_type(x::Dict, data::InlineData)
+    if !haskey(x, "type") && !haskey(x, "aggregate") && haskey(x, "field") && haskey(data.columns, Symbol(x["field"]))
+        new_x = copy(x)
+
+        jl_type = id.columns[Symbol(x["field"])]
+
+        if jl_type <: DataValues.DataValue
+            jl_type = eltype(jl_type)
         end
+
+        if jl_type <: Number
+            new_x["type"] = "quantitative"
+        elseif jl_type <: AbstractString
+            new_x["type"] = "nominal"
+        elseif jl_type <: Dates.AbstractTime
+            new_x["type"] = "temporal"
+        end
+        
+        return new_x
+    else
+        return x
     end
 end
 
+function add_encoding_types(specdict)
+    if haskey(specdict, "data") && specdict["data"] isa InlineData
+        data = specdict["data"]
+        newspec = Dict{String,Any}((k=="encoding" && v isa Dict) ? k=>Dict{String,Any}(kk=>augment_encoding_type(vv, data) for (kk,vv) in v) : k=>v for (k,v) in specdict)
+        return newspec
+    else
+        return specdict
+    end
+end
+
+function our_json_print(io, spec::VLSpec)
+    JSON.print(io, add_encoding_types(getparams(spec)))
+end
+
 function (p::VLSpec)(data)
-    TableTraits.isiterabletable(data) || throw(ArgumentError("'data' is not a table."))
+    TableTraits.isiterabletable(data) || throw(ArgumentError("'data' is not a table."))  
+
+    it = IteratorInterfaceExtensions.getiterator(data)
+
+    inline_data = InlineData(it)
 
     new_dict = copy(getparams(p))
 
-    it = IteratorInterfaceExtensions.getiterator(data)
-    vl_set_spec_data!(new_dict, it)
-    detect_encoding_type!(new_dict, it)
+    new_dict["data"] = inline_data
 
     return VLSpec(new_dict)
 end

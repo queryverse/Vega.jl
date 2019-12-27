@@ -1,3 +1,36 @@
+
+
+JSON.lower(d::InlineData) = JSON.JSONText(d.data)
+
+function InlineData(it)
+    col_names = fieldnames(eltype(it))
+    col_types = [fieldtype(eltype(it),i) for i in col_names]
+
+    buffer = IOBuffer()
+
+    print(buffer, "{")
+    JSON.print(buffer, "values")
+    print(buffer, ":[")
+
+    for (row_index, row) in enumerate(it)
+        row_index==1 || print(buffer, ",")
+        print(buffer, "{")
+
+        for (col_index, col_value) in enumerate(row)
+            col_index==1 || print(buffer, ",")
+            JSON.print(buffer, col_names[col_index])
+            print(buffer, ":")
+            JSON.print(buffer, col_value isa DataValue ? get(col_value, nothing) : col_value)
+        end
+
+        print(buffer, "}")
+    end
+
+    print(buffer, "]}")        
+
+    return InlineData(OrderedDict{Symbol,Type}(i[1]=>i[2] for i in zip(col_names,col_types)), String(take!(buffer)))
+end
+
 struct VLFrag
     positional::Vector{Any}
     named::Dict{String,Any}
@@ -115,11 +148,8 @@ end
 
 function fix_shortcut_level_data(spec_frag)
     if TableTraits.isiterabletable(spec_frag)
-        it = IteratorInterfaceExtensions.getiterator(spec_frag)    
-
-        recs = [VLFrag([], Dict{String,Any}(string(c[1])=>isa(c[2], DataValues.DataValue) ? (isna(c[2]) ? nothing : get(c[2])) : c[2] for c in zip(keys(r), values(r)))) for r in it]
-
-        return VLFrag([], Dict{String,Any}("values" => recs))
+        it = IteratorInterfaceExtensions.getiterator(spec_frag)
+        return InlineData(it)
     else
         return spec_frag
     end

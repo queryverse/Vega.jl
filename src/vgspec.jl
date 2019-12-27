@@ -2,6 +2,10 @@ struct VGSpec <: AbstractVegaSpec
     params::Dict
 end
 
+function our_json_print(io, spec::VGSpec)
+    JSON.print(io, getparams(spec))
+end
+
 # data is an array in vega
 function vg_set_spec_data!(specdict, datait, name)
     updated = false
@@ -25,7 +29,6 @@ function (p::VGSpec)(data, name::String)
 
     it = IteratorInterfaceExtensions.getiterator(data)
     vg_set_spec_data!(new_dict, it, name)
-    detect_encoding_type!(new_dict, it)
 
     return VGSpec(new_dict)
 end

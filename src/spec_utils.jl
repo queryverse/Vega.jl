@@ -44,3 +44,11 @@ end
 
 _maybeparams(value) = value
 _maybeparams(value::ObjectLike) = getparams(value)
+
+struct InlineData
+    columns::OrderedDict{Symbol,Type}
+    data::String
+end
+  
+Base.:(==)(a::InlineData, b::InlineData) = a.columns==b.columns && a.data==b.data
+  

@@ -33,7 +33,7 @@ using Test
 @test getparams(@vlplot("point", transform=[{lookup="foo", from={data=URI("http://foo.com/bar.json"), key="bar"}}]))["transform"][1]["from"]["data"]["url"] == "http://foo.com/bar.json"
 @test getparams(@vlplot("point", transform=[{lookup="foo", from={data={url=URI("http://foo.com/bar.json")}, key="bar"}}]))["transform"][1]["from"]["data"]["url"] == "http://foo.com/bar.json"
 
-@test getparams(@vlplot("point", transform=[{lookup="foo", from={data=DataFrame(a=[1]), key="bar"}}]))["transform"][1]["from"]["data"]["values"][1]["a"] == 1
+@test JSON.parse(sprint(VegaLite.our_json_print, @vlplot("point", transform=[{lookup="foo", from={data=DataFrame(a=[1]), key="bar"}}])))["transform"][1]["from"]["data"]["values"][1]["a"] == 1
 
 @test [@vlplot("point") @vlplot("circle")] == (vl"""
 {
@@ -83,7 +83,7 @@ using Test
 
 @test (@vlplot(description="foo") + [@vlplot(:point); @vlplot(:circle)]) == @vlplot(description="foo", vconcat=[{mark=:point},{mark=:circle}])
 
-@test_broken (@vlplot(:point, x=:a)(DataFrame(a=[1])) == @vlplot(:point, data=DataFrame(a=[1]), x=:a))
+@test (@vlplot(:point, x=:a)(DataFrame(a=[1])) == @vlplot(:point, data=DataFrame(a=[1]), x=:a))
 
 @test @vlplot("point",  wrap=:x) == vl"""
 {
