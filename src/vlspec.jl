@@ -40,10 +40,16 @@ function augment_encoding_type(x::Dict, data::InlineData)
     end
 end
 
-function add_encoding_types(specdict)
-    if haskey(specdict, "data") && specdict["data"] isa InlineData
-        data = specdict["data"]
-        newspec = Dict{String,Any}((k=="encoding" && v isa Dict) ? k=>Dict{String,Any}(kk=>augment_encoding_type(vv, data) for (kk,vv) in v) : k=>v for (k,v) in specdict)
+function add_encoding_types(specdict, parentdata=nothing)
+    if (haskey(specdict, "data") && specdict["data"] isa InlineData) || parentdata!==nothing
+        data = (haskey(specdict, "data") && specdict["data"] isa InlineData) ? specdict["data"] : parentdata
+
+        newspec = Dict{String,Any}(
+            (k=="encoding" && v isa Dict) ? k=>Dict{String,Any}(kk=>augment_encoding_type(vv, data) for (kk,vv) in v) : 
+                k=="spec" ? k=>add_encoding_types(v, data) :
+                k in ("layer", "concat", "vconcat", "hconcat") ? k=>[add_encoding_types(i, data) for i in v] : k=>v for (k,v) in specdict
+        )
+
         return newspec
     else
         return specdict
