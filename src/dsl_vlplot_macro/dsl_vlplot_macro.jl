@@ -43,3 +43,9 @@ macro vlplot(ex...)
 
     return :( VegaLite.VLSpec(fix_shortcut_level_spec($new_ex)) )
 end
+
+macro vlfrag(ex...)
+    new_ex = convert_curly_style(ex)
+
+    return new_ex
+end
