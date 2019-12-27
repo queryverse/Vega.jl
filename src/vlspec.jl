@@ -4,10 +4,9 @@
 #
 ###############################################################################
 
-struct VLSpec{T} <: AbstractVegaSpec
+struct VLSpec <: AbstractVegaSpec
     params::Dict
 end
-vltype(::VLSpec{T}) where T = T
 
 # data is an object in vega lite
 function vl_set_spec_data!(specdict, datait)
@@ -41,7 +40,7 @@ function detect_encoding_type!(specdict, datait)
     end
 end
 
-function (p::VLSpec{:plot})(data)
+function (p::VLSpec)(data)
     TableTraits.isiterabletable(data) || throw(ArgumentError("'data' is not a table."))
 
     new_dict = copy(getparams(p))
@@ -50,17 +49,17 @@ function (p::VLSpec{:plot})(data)
     vl_set_spec_data!(new_dict, it)
     detect_encoding_type!(new_dict, it)
 
-    return VLSpec{:plot}(new_dict)
+    return VLSpec(new_dict)
 end
 
-function (p::VLSpec{:plot})(uri::URI)
+function (p::VLSpec)(uri::URI)
     new_dict = copy(getparams(p))
     new_dict["data"] = Dict{String,Any}("url" => string(uri))
 
-    return VLSpec{:plot}(new_dict)
+    return VLSpec(new_dict)
 end
 
-function (p::VLSpec{:plot})(path::AbstractPath)
+function (p::VLSpec)(path::AbstractPath)
     new_dict = copy(getparams(p))
 
     as_uri = string(URI(path))
@@ -69,10 +68,10 @@ function (p::VLSpec{:plot})(path::AbstractPath)
     # Vega seems to not understand properly formed file URIs
     new_dict["data"] = Dict{String,Any}("url" => Sys.iswindows() ? as_uri[1:5] * as_uri[7:end] : as_uri)
 
-    return VLSpec{:plot}(new_dict)
+    return VLSpec(new_dict)
 end
 
-Base.:(==)(x::VLSpec, y::VLSpec) = vltype(x) == vltype(y) && getparams(x) == getparams(y)
+Base.:(==)(x::VLSpec, y::VLSpec) = getparams(x) == getparams(y)
 
 """
     deletedata!(spec::VLSpec)
@@ -90,3 +89,39 @@ end
 Create a copy of `spec` without data.  See also [`deletedata!`](@ref).
 """
 deletedata(spec::VLSpec) = deletedata!(copy(spec))
+
+function Base.:+(a::VLSpec, b::VLSpec)
+    new_spec = deepcopy(getparams(a))
+    if haskey(new_spec, "facet") || haskey(new_spec, "repeat")
+        new_spec["spec"] = deepcopy(getparams(b))
+    elseif haskey(getparams(b), "vconcat")
+        new_spec["vconcat"] = deepcopy(getparams(b)["vconcat"])
+    elseif haskey(getparams(b), "hconcat")
+        new_spec["hconcat"] = deepcopy(getparams(b)["hconcat"])
+    else
+        if !haskey(new_spec,"layer")
+            new_spec["layer"] = []
+        end
+        push!(new_spec["layer"], deepcopy(getparams(b)))
+    end
+
+    return VLSpec(new_spec)
+end
+
+function Base.hcat(A::VLSpec...)
+    spec = VLSpec(Dict{String,Any}())
+    getparams(spec)["hconcat"] = []
+    for i in A
+        push!(getparams(spec)["hconcat"], deepcopy(getparams(i)))
+    end
+    return spec
+end
+
+function Base.vcat(A::VLSpec...)
+  spec = VLSpec(Dict{String,Any}())
+  getparams(spec)["vconcat"] = []
+  for i in A
+      push!(getparams(spec)["vconcat"], deepcopy(getparams(i)))
+  end
+  return spec
+end

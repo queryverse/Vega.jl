@@ -16,7 +16,7 @@ import Cairo, Rsvg
 using Pkg.Artifacts
 
 export renderer, actionlinks
-export @vl_str, @vlplot
+export @vl_str, @vlplot, vlplot
 export @vg_str
 export load, save
 export deletedata, deletedata!
@@ -71,6 +71,7 @@ include("spec_utils.jl")
 include("vgspec.jl")
 include("vlspec.jl")
 
+include("dsl_vlplot_function/dsl_vlplot_function.jl")
 include("dsl_vlplot_macro/dsl_vlplot_macro.jl")
 include("dsl_str_macro/dsl_str_macro.jl")
 
@@ -79,6 +80,6 @@ include("rendering/io.jl")
 include("rendering/show.jl")
 include("rendering/fileio.jl")
 
-include("mime_wrapper.jl")
+include("experimental.jl")
 
 end
