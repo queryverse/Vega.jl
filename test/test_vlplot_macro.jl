@@ -83,7 +83,7 @@ using Test
 
 @test (@vlplot(description="foo") + [@vlplot(:point); @vlplot(:circle)]) == @vlplot(description="foo", vconcat=[{mark=:point},{mark=:circle}])
 
-@test (@vlplot(:point, x=:a)(DataFrame(a=[1])) == @vlplot(:point, data=DataFrame(a=[1]), x=:a))
+@test_broken (@vlplot(:point, x=:a)(DataFrame(a=[1])) == @vlplot(:point, data=DataFrame(a=[1]), x=:a))
 
 @test @vlplot("point",  wrap=:x) == vl"""
 {
