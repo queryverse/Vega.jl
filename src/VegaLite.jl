@@ -15,11 +15,6 @@ using Setfield: Setfield, PropertyLens, @lens, @set
 import Cairo, Rsvg
 using Pkg.Artifacts
 
-# This import can eventually be removed, it currently just makes sure
-# that the iterable tables integration for DataFrames and friends
-# is loaded
-import IterableTables
-
 export renderer, actionlinks
 export @vl_str, @vlplot, vlplot, @vlfrag, vlfrag
 export @vg_str
