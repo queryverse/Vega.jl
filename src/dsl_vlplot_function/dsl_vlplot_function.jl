@@ -3,8 +3,12 @@ struct VLFrag
     named::Dict{String,Any}
 end
 
-function vlfrag(args...; kwargs...)
-    return VLFrag(Any[i for i in args], Dict{String,Any}(string(k)=>convert_nt_to_dict(v) for (k,v) in kwargs))
+function vlfrag(; kwargs...)
+    return VLFrag(Any[], Dict{String,Any}(string(k)=>convert_nt_to_dict(v) for (k,v) in kwargs))
+end
+
+function vlfrag(arg; kwargs...)
+    return VLFrag(Any[arg], Dict{String,Any}(string(k)=>convert_nt_to_dict(v) for (k,v) in kwargs))
 end
 
 convert_nt_to_dict(item) = item
