@@ -20,6 +20,7 @@ Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Rsvg = "c4c386cf-5103-5370-be45-f3a111cca3b8"
 Setfield = "efcf1570-3423-57d1-acb7-fd33fddbac46"
 TableTraits = "3783bdb8-4a98-5b6b-af9a-565f29a5fe9c"
+TableTraitsUtils = "382cd787-c1b6-5bf2-a167-d5b971a19bda"
 URIParser = "30578b45-9adc-5946-b283-645ec420af67"
 
 [compat]
@@ -36,6 +37,7 @@ NodeJS = "0.5.1, 0.6, 1"
 Rsvg = "0.3"
 Setfield = "0.4, 0.5"
 TableTraits = "0.3.1, 0.4, 1"
+TableTraitsUtils = "1"
 URIParser = "0.4"
 julia = "1.3"
 

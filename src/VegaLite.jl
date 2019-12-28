@@ -15,6 +15,7 @@ using Setfield: Setfield, PropertyLens, @lens, @set
 import Cairo, Rsvg
 using Pkg.Artifacts
 using DataStructures
+import TableTraitsUtils
 
 export renderer, actionlinks
 export @vl_str, @vlplot, vlplot, @vlfrag, vlfrag

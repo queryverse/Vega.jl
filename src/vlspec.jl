@@ -14,7 +14,7 @@ function vl_set_spec_data!(specdict, datait)
     specdict["data"] = Dict{String,Any}("values" => recs)
 end
 
-function augment_encoding_type(x::Dict, data::InlineData)
+function augment_encoding_type(x::Dict, data::DataValuesNode)
     if !haskey(x, "type") && !haskey(x, "aggregate") && haskey(x, "field") && haskey(data.columns, Symbol(x["field"]))
         new_x = copy(x)
 
@@ -39,8 +39,8 @@ function augment_encoding_type(x::Dict, data::InlineData)
 end
 
 function add_encoding_types(specdict, parentdata=nothing)
-    if (haskey(specdict, "data") && specdict["data"] isa InlineData) || parentdata!==nothing
-        data = (haskey(specdict, "data") && specdict["data"] isa InlineData) ? specdict["data"] : parentdata
+    if (haskey(specdict, "data") && specdict["data"] isa DataValuesNode) || parentdata!==nothing
+        data = (haskey(specdict, "data") && specdict["data"] isa DataValuesNode) ? specdict["data"] : parentdata
 
         newspec = Dict{String,Any}(
             (k=="encoding" && v isa Dict) ? k=>Dict{String,Any}(kk=>augment_encoding_type(vv, data) for (kk,vv) in v) : 
@@ -63,11 +63,11 @@ function (p::VLSpec)(data)
 
     it = IteratorInterfaceExtensions.getiterator(data)
 
-    inline_data = InlineData(it)
+    datavaluesnode = DataValuesNode(it)
 
     new_dict = copy(getparams(p))
 
-    new_dict["data"] = inline_data
+    new_dict["data"] = datavaluesnode
 
     return VLSpec(new_dict)
 end
