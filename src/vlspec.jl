@@ -20,7 +20,7 @@ function augment_encoding_type(x::Dict, data::InlineData)
     if !haskey(x, "type") && !haskey(x, "aggregate") && haskey(x, "field") && haskey(data.columns, Symbol(x["field"]))
         new_x = copy(x)
 
-        jl_type = id.columns[Symbol(x["field"])]
+        jl_type = data.columns[Symbol(x["field"])]
 
         if jl_type <: DataValues.DataValue
             jl_type = eltype(jl_type)
