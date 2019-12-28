@@ -24,7 +24,7 @@ dataset("barley") |>
         :errorbar,
         extent=:ci
      },
-     x={"yield:q", title="Barley Yield"}
+     x={:yield, title="Barley Yield"}
 )
 ```
 
@@ -43,7 +43,7 @@ dataset("barley") |>
         filled=true
     },
     x={
-        "mean(yield):q",
+        "mean(yield)",
         scale={zero=false},
         title="Barley Yield"
     },
@@ -51,7 +51,7 @@ dataset("barley") |>
 ) +
 @vlplot(
     mark={:rule, extend=:stdev},
-    x={"yield:q", title="Barley Yield"}
+    x={:yield, title="Barley Yield"}
 )
 ```
 
@@ -65,7 +65,7 @@ dataset("cars") |>
 @vlplot(
     mark={:errorband, extent=:ci},
     y={
-        "Miles_per_Gallon:q",
+        :Miles_per_Gallon,
         title="Mean of Miles per Gallon (95% CIs)"
     }
 ) +
@@ -84,12 +84,12 @@ dataset("cars") |>
 @vlplot() +
 @vlplot(
     :point,
-    x="Horsepower:q",
-    y="Miles_per_Gallon:q"
+    x=:Horsepower,
+    y=:Miles_per_Gallon
 ) +
-@vlplot(:rule,y="mean(Miles_per_Gallon):q") +
+@vlplot(:rule,y="mean(Miles_per_Gallon)") +
 @vlplot(
     mark={:errorband, extent=:stdev, opacity=0.2},
-    y={"Miles_per_Gallon:q", title="Miles per Gallon"}
+    y={:Miles_per_Gallon, title="Miles per Gallon"}
 )
 ```

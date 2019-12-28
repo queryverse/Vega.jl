@@ -21,10 +21,9 @@ end
 
 function convert_vl_to_vg(v::VLSpec)
     vl2vg_script_path = joinpath(vegaliate_app_path, "vl2vg.js")
-    data = JSON.json(getparams(v))
     p = open(Cmd(`$(nodejs_cmd()) $vl2vg_script_path`, dir=vegaliate_app_path), "r+")
     writer = @async begin
-        write(p, data)
+        our_json_print(p, v)
         close(p.in)
     end
     reader = @async read(p, String)
@@ -39,10 +38,9 @@ end
 function convert_vl_to_x(v::VLSpec, second_script)
     vl2vg_script_path = joinpath(vegaliate_app_path, "vl2vg.js")
     full_second_script_path = joinpath(vegaliate_app_path, "node_modules", "vega-cli", "bin", second_script)
-    data = JSON.json(getparams(v))
     p = open(pipeline(Cmd(`$(nodejs_cmd()) $vl2vg_script_path`, dir=vegaliate_app_path), Cmd(`$(nodejs_cmd()) $full_second_script_path`, dir=vegaliate_app_path)), "r+")
     writer = @async begin
-        write(p, data)
+        our_json_print(p, v)
         close(p.in)
     end
     reader = @async read(p, String)
@@ -56,10 +54,9 @@ end
 
 function convert_vg_to_x(v::VGSpec, script)
     full_script_path = joinpath(vegaliate_app_path, "node_modules", "vega-cli", "bin", script)
-    data = JSON.json(getparams(v))
     p = open(Cmd(`$(nodejs_cmd()) $full_script_path`, dir=vegaliate_app_path), "r+")
     writer = @async begin
-        write(p, data)
+        our_json_print(p, v)
         close(p.in)
     end
     reader = @async read(p, String)
@@ -74,10 +71,9 @@ end
 function convert_vl_to_svg(v::VLSpec)
     vl2vg_script_path = joinpath(vegaliate_app_path, "vl2vg.js")
     vg2svg_script_path = joinpath(vegaliate_app_path, "vg2svg.js")
-    data = JSON.json(getparams(v))
     p = open(pipeline(Cmd(`$(nodejs_cmd()) $vl2vg_script_path`, dir=vegaliate_app_path), Cmd(`$(nodejs_cmd()) $vg2svg_script_path`, dir=vegaliate_app_path)), "r+")
     writer = @async begin
-        write(p, data)
+        our_json_print(p, v)
         close(p.in)
     end
     reader = @async read(p, String)
@@ -91,10 +87,9 @@ end
 
 function convert_vg_to_svg(v::VGSpec)
     vg2svg_script_path = joinpath(vegaliate_app_path, "vg2svg.js")
-    data = JSON.json(getparams(v))
     p = open(Cmd(`$(nodejs_cmd()) $vg2svg_script_path`, dir=vegaliate_app_path), "r+")
     writer = @async begin
-        write(p, data)
+        our_json_print(p, v)
         close(p.in)
     end
     reader = @async read(p, String)
@@ -110,11 +105,11 @@ Base.Multimedia.istextmime(::MIME{Symbol("application/vnd.vegalite.v4+json")}) =
 Base.Multimedia.istextmime(::MIME{Symbol("application/vnd.vega.v5+json")}) = true
 
 function Base.show(io::IO, m::MIME"application/vnd.vegalite.v4+json", v::VLSpec)
-     print(io, JSON.json(getparams(v)))
+    our_json_print(io, v)
 end
 
 function Base.show(io::IO, m::MIME"application/vnd.vega.v5+json", v::VGSpec)
-    print(io, JSON.json(getparams(v)))
+    our_json_print(io, v)
 end
 
 function Base.show(io::IO, m::MIME"application/vnd.vega.v5+json", v::VLSpec)

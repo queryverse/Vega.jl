@@ -115,11 +115,8 @@ end
 
 function fix_shortcut_level_data(spec_frag)
     if TableTraits.isiterabletable(spec_frag)
-        it = IteratorInterfaceExtensions.getiterator(spec_frag)    
-
-        recs = [VLFrag([], Dict{String,Any}(string(c[1])=>isa(c[2], DataValues.DataValue) ? (isna(c[2]) ? nothing : get(c[2])) : c[2] for c in zip(keys(r), values(r)))) for r in it]
-
-        return VLFrag([], Dict{String,Any}("values" => recs))
+        it = IteratorInterfaceExtensions.getiterator(spec_frag)
+        return InlineData(it)
     else
         return spec_frag
     end

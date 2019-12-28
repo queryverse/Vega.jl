@@ -24,16 +24,13 @@ p2 = vl"""
 {
   "encoding": {
     "x": {
-      "field": "c",
-      "type": "temporal"
+      "field": "c"
     },
     "color": {
-      "field": "b",
-      "type": "nominal"
+      "field": "b"
     },
     "y": {
-      "field": "a",
-      "type": "quantitative"
+      "field": "a"
     }
   },
   "mark": "line"
