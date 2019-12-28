@@ -14,8 +14,6 @@ function vl_set_spec_data!(specdict, datait)
     specdict["data"] = Dict{String,Any}("values" => recs)
 end
 
-augment_encoding_type(x) = x
-
 function augment_encoding_type(x::Dict, data::InlineData)
     if !haskey(x, "type") && !haskey(x, "aggregate") && haskey(x, "field") && haskey(data.columns, Symbol(x["field"]))
         new_x = copy(x)
