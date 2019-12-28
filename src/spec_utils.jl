@@ -45,16 +45,16 @@ end
 _maybeparams(value) = value
 _maybeparams(value::ObjectLike) = getparams(value)
 
-struct InlineData
+struct DataValuesNode
     columns::OrderedDict{Symbol,Type}
     data::String
 end
   
-Base.:(==)(a::InlineData, b::InlineData) = a.columns==b.columns && a.data==b.data
+Base.:(==)(a::DataValuesNode, b::DataValuesNode) = a.columns==b.columns && a.data==b.data
   
-JSON.lower(d::InlineData) = JSON.JSONText(d.data)
+JSON.lower(d::DataValuesNode) = JSON.JSONText(d.data)
 
-function InlineData(it)
+function DataValuesNode(it)
     col_names = fieldnames(eltype(it))
     col_types = [fieldtype(eltype(it),i) for i in col_names]
 
@@ -80,5 +80,5 @@ function InlineData(it)
 
     print(buffer, "]}")        
 
-    return InlineData(OrderedDict{Symbol,Type}(i[1]=>i[2] for i in zip(col_names,col_types)), String(take!(buffer)))
+    return DataValuesNode(OrderedDict{Symbol,Type}(i[1]=>i[2] for i in zip(col_names,col_types)), String(take!(buffer)))
 end

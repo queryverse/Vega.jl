@@ -120,7 +120,7 @@ end
 function fix_shortcut_level_data(spec_frag)
     if TableTraits.isiterabletable(spec_frag)
         it = IteratorInterfaceExtensions.getiterator(spec_frag)
-        return InlineData(it)
+        return DataValuesNode(it)
     else
         return spec_frag
     end
