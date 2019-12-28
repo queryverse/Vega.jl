@@ -146,3 +146,7 @@ data |>
     y=:b
 )
 ```
+
+## `x` and `y` encoding channel as positional arguments
+
+For the `x` and `y` encoding channel only, you can specify their values as the second and third positional element a the root level of the `@vlplot` call instead of using named arguments. In particular, you can write `@vlplot(:point, :colA, :colB)` instead of `@vlplot(:point, x=:colA, y=:colB)` or `@vlplot(:point, :colA)` instead of `@vlplot(:point, x=:colA)`.
