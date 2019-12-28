@@ -1,6 +1,6 @@
 # Data
 
-[VegaLite.jl](https://github.com/queryverse/VegaLite.jl) accepts data to be plotted in a variety of different formats and provides a number of different ways to reference that data. The most typical way to plot data is that you have your data in some julia data structure, and then add this data to the Vega-Lite specification itself for plotting. As an alternative, Vega-Lite also accepts URLs that point to data sources either on disc or on the web for plotting. Data that you want to plot will typically be in a tabular form.
+[VegaLite.jl](https://github.com/queryverse/VegaLite.jl) accepts data to be plotted in a variety of different formats and provides a number of different ways to reference that data. The most typical way to plot data is that you have your data in some julia data structure, and then add this data to the Vega-Lite specification itself for plotting. As an alternative, Vega-Lite also accepts URLs that point to data sources either on disc or on the web for plotting. Data that you want to plot will typically be in a tabular form. You can also directly pass vectors with data.
 
 ## Inline data
 
@@ -31,6 +31,22 @@ You can also specify the inline data for a plot by using the standard `data` key
 ```
 
 This method also accepts any iterable table.
+
+## Directly passing vectors of data
+
+You can also pass vectors of data directly to encoding channels. For example, to create a line plot with ten random values, you can write:
+
+```julia
+@vlplot(:line, x=1:10, y=randn(10))
+```
+
+Both `1:10` and `randn(10)` are `AbstractVector`s and can therefor be passed in this way. You can also pass vectors directly in cases where you want to specify more detail about an encoding channel:
+
+```julia
+@vlplot(:point, x=randn(10), y={randn(10), title="Some custom title"})
+```
+
+There are two requirements to keep in mind when you use this form of data passing: 1) all vectors you pass in this way need to have the same length, and 2) you cannot pass a `data` keyword if you use this way of constructing a plot.
 
 ## Referencing external data
 
