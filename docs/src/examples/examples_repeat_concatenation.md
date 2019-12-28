@@ -11,9 +11,9 @@ dataset("weather.csv") |>
     @vlplot() +
     @vlplot(
         :line,
-        y={field={repeat=:column},aggregate=:mean,typ=:quantitative},
+        y={field={repeat=:column},aggregate=:mean,type=:quantitative},
         x="month(date):o",
-        detail="year(date):t",
+        detail="year(date)",
         color=:location,
         opacity={value=0.2}
     ) +

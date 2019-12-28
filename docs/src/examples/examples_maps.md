@@ -36,13 +36,14 @@ unemployment = dataset("unemployment")
 ```@example
 using VegaLite, VegaDatasets, DisplayAs
 
-dataset("zipcodes") |> @vlplot(
+dataset("zipcodes") |>
+@vlplot(
     :circle,
     width=500, height=300,
     transform=[{calculate="substring(datum.zip_code, 0, 1)", as=:digit}],
     projection={type=:albersUsa},
-    longitude="longitude:q",
-    latitude="latitude:q",
+    longitude=:longitude,
+    latitude=:latitude,
     size={value=1},
     color="digit:n"
 ) |>
