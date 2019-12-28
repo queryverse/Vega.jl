@@ -5,7 +5,7 @@ function convert_curly_style_array(exprs)
         if ex isa Expr && ex.head==:braces
             push!(res.args, :( $(convert_curly_style(ex.args)) ))
         else
-            push!(res.args, ex)
+            push!(res.args, esc(ex))
         end
     end
 
