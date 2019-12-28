@@ -15,5 +15,6 @@ include("test_vg.jl")
 include("test_vlplot_macro.jl")
 include("test_properties.jl")
 include("test_inlinedata.jl")
+include("test_positional.jl")
 
 end

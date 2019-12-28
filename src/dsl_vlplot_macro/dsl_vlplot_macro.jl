@@ -27,6 +27,8 @@ function convert_curly_style(exprs)
             else
                 push!(named_args, :( $(string(ex.args[1])) => $(esc(ex.args[2])) ))
             end
+        elseif ex isa Expr && ex.head==:braces
+            push!(pos_args, convert_curly_style(ex.args))
         else
             push!(pos_args, esc(ex))
         end

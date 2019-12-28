@@ -3,12 +3,8 @@ struct VLFrag
     named::Dict{String,Any}
 end
 
-function vlfrag(; kwargs...)
-    return VLFrag(Any[], Dict{String,Any}(string(k)=>convert_nt_to_dict(v) for (k,v) in kwargs))
-end
-
-function vlfrag(arg; kwargs...)
-    return VLFrag(Any[arg], Dict{String,Any}(string(k)=>convert_nt_to_dict(v) for (k,v) in kwargs))
+function vlfrag(args...; kwargs...)
+    return VLFrag(Any[args...], Dict{String,Any}(string(k)=>convert_nt_to_dict(v) for (k,v) in kwargs))
 end
 
 convert_nt_to_dict(item) = item
@@ -165,10 +161,10 @@ end
 function fix_shortcut_level_spec(spec_frag::VLFrag)
     spec = copy(spec_frag.named)
 
-    if length(spec_frag.positional)==1
+    if length(spec_frag.positional)>0
         spec["mark"] = spec_frag.positional[1]
-    elseif length(spec_frag.positional)>1
-        error("More than one positional element specified at the spec level.")
+    elseif length(spec_frag.positional)>3
+        error("More than three positional element specified at the spec level.")
     end
 
     if haskey(spec, "enc")
@@ -192,6 +188,26 @@ function fix_shortcut_level_spec(spec_frag::VLFrag)
             spec["encoding"].named["facet"] = spec[k]
             delete!(spec,k)
         end
+    end
+
+    if length(spec_frag.positional) in (2,3)
+        if !haskey(spec,"encoding")
+            spec["encoding"] = VLFrag([], Dict{String,Any}())
+        end
+
+        if haskey(spec["encoding"].named, "x")
+            error("One cannot specify both a named and a positional argument for the `x` encoding channel.")
+        end
+
+        spec["encoding"].named["x"] = spec_frag.positional[2]
+    end
+
+    if length(spec_frag.positional)==3
+        if haskey(spec["encoding"].named, "y")
+            error("One cannot specify both a named and a positional argument for the `y` encoding channel.")
+        end
+
+        spec["encoding"].named["y"] = spec_frag.positional[3]
     end
 
     if haskey(spec, "mark")
