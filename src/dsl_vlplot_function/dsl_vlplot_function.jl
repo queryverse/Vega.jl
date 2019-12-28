@@ -202,11 +202,30 @@ function fix_shortcut_level_spec(spec_frag::VLFrag)
         spec["data"] = fix_shortcut_level_data(spec["data"])
     end
 
+    # Now fix child specs
+    if haskey(spec, "spec")
+        spec["spec"] = fix_shortcut_level_spec(spec["spec"])
+    elseif haskey(spec, "layer")
+        spec["layer"] = [fix_shortcut_level_spec(i) for i in spec["layer"]]
+    elseif haskey(spec, "concat")
+        spec["concat"] = [fix_shortcut_level_spec(i) for i in spec["concat"]]
+    elseif haskey(spec, "vconcat")
+        spec["vconcat"] = [fix_shortcut_level_spec(i) for i in spec["vconcat"]]
+    elseif haskey(spec, "hconcat")
+        spec["hconcat"] = [fix_shortcut_level_spec(i) for i in spec["hconcat"]]
+    end
+
+    return VLFrag([], spec)
+end
+
+function convert_vlfrag_tree_to_dict(spec)
     # At this point all positional arguments should have been replaced
     # and we can convert everything into a plain Dict structure
-    spec = Dict{String,Any}(k=>replace_remaining_frag(v) for (k,v) in spec)
+    isempty(spec.positional) || error("There shouldn't be any positional argument left.")
 
-    spec = walk_dict(spec, "root") do p, parent
+    spec_as_dict = Dict{String,Any}(k=>replace_remaining_frag(v) for (k,v) in spec.named)
+
+    spec_as_dict2 = walk_dict(spec_as_dict, "root") do p, parent
         if p[1]=="typ"
             Base.depwarn("`typ` in VegaLite.jl specs is deprecated, use `type` instead.", :vlplot)
 	
@@ -216,9 +235,9 @@ function fix_shortcut_level_spec(spec_frag::VLFrag)
         end
     end
 
-    return spec
+    return spec_as_dict2
 end
 
 function vlplot(args...;kwargs...)
-    return VLSpec(fix_shortcut_level_spec(vlfrag(args...;kwargs...)))
+    return VLSpec(convert_vlfrag_tree_to_dict(fix_shortcut_level_spec(vlfrag(args...;kwargs...))))
 end
