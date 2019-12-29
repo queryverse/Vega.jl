@@ -78,7 +78,7 @@ fix_shortcut_level_encoding(name, spec_frag::Symbol, unnamed_inline_data) = VLFr
 fix_shortcut_level_encoding(name, spec_frag::String, unnamed_inline_data) = VLFrag(Any[], Dict{String,Any}(parse_shortcut(spec_frag)...))
 
 function fix_shortcut_level_encoding(name, spec_frag::AbstractVector, unnamed_inline_data)
-    if name!="tooltip"
+    if !(name in ("tooltip", "detail", "order"))
         push!(unnamed_inline_data, Symbol(name)=>spec_frag)
         return VLFrag(Any[], Dict{String,Any}("field"=>string(name), "title"=>nothing))
     else
@@ -95,7 +95,7 @@ function fix_shortcut_level_encoding(name, spec_frag::VLFrag, unnamed_inline_dat
             for (k,v) in new_frags
                 spec[k] = v
             end
-        elseif spec_frag.positional[1] isa AbstractVector && string(name)!="tooltip"
+        elseif spec_frag.positional[1] isa AbstractVector && !(string(name) in ("tooltip", "detail", "order"))
             if haskey(spec, "field")
                 error("The $name encoding channel cannot have inline data and a `field` element.")
             end
