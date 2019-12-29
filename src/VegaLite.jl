@@ -19,7 +19,7 @@ import TableTraitsUtils
 
 export renderer, actionlinks
 export @vl_str, @vlplot, vlplot, @vlfrag, vlfrag
-export @vg_str
+export @vg_str, @vgplot, vgplot, @vgfrag, vgfrag
 export load, save
 export deletedata, deletedata!
 
