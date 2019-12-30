@@ -157,7 +157,7 @@ replace_remaining_frag(frag) = frag
 
 replace_remaining_frag(frag::Dict) = error("THIS SHOULDN'T HAPPEN $frag")
 
-function replace_remaining_frag(frag::Vector{T}) where {T<:AbstractVegaFragment}
+function replace_remaining_frag(frag::AbstractVector)
     return [replace_remaining_frag(i) for i in frag]
 end
 
