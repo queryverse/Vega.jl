@@ -46,7 +46,13 @@ function print_vspec_as_julia(io::IO, vect::AbstractVector, indent, indent_level
             print(io, " "^(indent*indent_level), "]")
         elseif v isa DataValuesNode
             print_vspec_as_julia(io, v, indent, indent_level, newlines, include_data)
+        elseif v isa AbstractString || v isa Symbol
+            print(io, " "^(indent*indent_level))
+            print(io, "\"")
+            print(io, string(v))
+            print(io, "\"")
         else
+            print(io, " "^(indent*indent_level))
             print(io, v)
         end
     end
