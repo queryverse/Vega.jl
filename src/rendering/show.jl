@@ -1,15 +1,13 @@
 function Base.show(io::IO, m::MIME"text/plain", v::AbstractVegaSpec)
-    printrepr(io, v, indent=4, newlines=true)
+    printrepr(io, v, indent=4, include_data=true)
     return
 end
 
 function Base.show(io::IO, v::AbstractVegaSpec)
-    # This is a hack to detect when we are showing as part of a vector
-    # or matrix
-    if get(io, :typeinfo, Nothing) <: AbstractVegaSpec
-        print(io, summary(v))
+    if !get(io, :compact, true)
+        printrepr(io, v, include_data=true)
     else
-        printrepr(io, v, indent=0, newlines=false)
+        print(io, summary(v))
     end
     return
 end

@@ -79,16 +79,20 @@ function print_vspec_as_julia(io::IO, dict::AbstractDict, indent, indent_level, 
 end
 
 """
-    printrepr(io, v::AbstractVegaSpec; indent=4, newlines=true, include_data=true)
+    printrepr(io, v::AbstractVegaSpec; indent=nothing, include_data=false)
 
 Print representation of a Vega or VegaLite spec `v` parsable by Julia.
 The `include_data` keyword controls whether the `data` element is included
-in the output. `indent` and `newlines` control whether the output is printed
-with indentation and newlines or not.
+in the output. `indent` controls whether the code is printed in one line
+(indent=nothing), or as multiple lines with indentation (by passing an
+`Int` to `indent`).
 """
 function printrep end
 
-function printrepr(io::IO, v::VGSpec; indent=4, newlines=true, include_data=true)
+function printrepr(io::IO, v::VGSpec; indent=nothing, include_data=false)
+    newlines = indent===nothing ? false : true
+    indent = indent===nothing ? 0 : indent
+
     print(io, "@vgplot(")
     newlines && println(io)
     print_vspec_as_julia(io, getparams(v), indent, 1, newlines, include_data)
@@ -96,7 +100,10 @@ function printrepr(io::IO, v::VGSpec; indent=4, newlines=true, include_data=true
     print(io, ")")
 end
 
-function printrepr(io::IO, v::VLSpec; indent=4, newlines=true, include_data=true)
+function printrepr(io::IO, v::VLSpec; indent=nothing, include_data=false)
+    newlines = indent===nothing ? false : true
+    indent = indent===nothing ? 0 : indent
+
     print(io, "@vlplot(")
     newlines && println(io)
     print_vspec_as_julia(io, getparams(v), indent, 1, newlines, include_data)
