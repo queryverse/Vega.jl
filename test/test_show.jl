@@ -6,9 +6,13 @@ using VegaLite
 vl = @vlplot(:point)
 vg = VegaLite.VGSpec(Dict{String,Any}())
 
-@test sprint(show, "text/plain", vl) == "VegaLite.VLSpec"
+@test sprint(show, vl) == "VegaLite.VLSpec"
 
-@test sprint(show, "text/plain", vg) == "VegaLite.VGSpec"
+@test sprint(show, "text/plain", vl) == "@vlplot(\n    mark=\"point\"\n)"
+
+@test sprint(show, vg) == "VegaLite.VGSpec"
+
+@test sprint(show, "text/plain", vg) == "@vgplot(\n\n)"
 
 @test_throws ArgumentError sprint(show, "image/svg+xml", @vlplot())
 

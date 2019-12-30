@@ -1,18 +1,11 @@
-"""
-    printrepr(io, v::AbstractVegaSpec)
-
-Print representation of a Vega spec `v` parsable by Julia.  It accepts
-the same keyword arguments as [`savespec`](@ref).
-"""
-function printrepr(io::IO, v::Union{VLSpec, VGSpec}; kwargs...)
-    println(io, v isa VGSpec ? "vg" : "vl", "\"\"\"")
-    savespec(io, v; include_data=true, indent=4, kwargs...)
-    print(io, "\"\"\"")
+function Base.show(io::IO, m::MIME"text/plain", v::AbstractVegaSpec)
+    printrepr(io, v, indent=4, include_data=:short)
+    return
 end
 
-function Base.show(io::IO, m::MIME"text/plain", v::AbstractVegaSpec)
-    if !get(io, :compact, true) && v isa Union{VLSpec, VGSpec}
-        printrepr(io, v)
+function Base.show(io::IO, v::AbstractVegaSpec)
+    if !get(io, :compact, true)
+        printrepr(io, v, include_data=:short)
     else
         print(io, summary(v))
     end

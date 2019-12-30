@@ -1,20 +1,31 @@
-struct VLFrag
+abstract type AbstractVegaFragment end
+
+struct VLFrag <: AbstractVegaFragment
+    positional::Vector{Any}
+    named::Dict{String,Any}
+end
+
+struct VGFrag <: AbstractVegaFragment
     positional::Vector{Any}
     named::Dict{String,Any}
 end
 
 function vlfrag(args...; kwargs...)
-    return VLFrag(Any[args...], Dict{String,Any}(string(k)=>convert_nt_to_dict(v) for (k,v) in kwargs))
+    return VLFrag(Any[args...], Dict{String,Any}(string(k)=>convert_nt_to_dict(v, VLFrag) for (k,v) in kwargs))
 end
 
-convert_nt_to_dict(item) = item
-
-function convert_nt_to_dict(item::NamedTuple)
-    return VLFrag(Any[], Dict{String,Any}(string(k)=>convert_nt_to_dict(v) for (k,v) in pairs(item)))
+function vgfrag(args...; kwargs...)
+    return VGFrag(Any[args...], Dict{String,Any}(string(k)=>convert_nt_to_dict(v, VGFrag) for (k,v) in kwargs))
 end
 
-function convert_nt_to_dict(item::VLFrag)
-    return VLFrag(item.positional, Dict{String,Any}(string(k)=>convert_nt_to_dict(v) for (k,v) in pairs(item.named)) )
+convert_nt_to_dict(item, fragtype) = item
+
+function convert_nt_to_dict(item::NamedTuple, fragtype)
+    return fragtype(Any[], Dict{String,Any}(string(k)=>convert_nt_to_dict(v, fragtype) for (k,v) in pairs(item)))
+end
+
+function convert_nt_to_dict(item::AbstractVegaFragment, fragtype)
+    return fragtype(item.positional, Dict{String,Any}(string(k)=>convert_nt_to_dict(v, fragtype) for (k,v) in pairs(item.named)) )
 end
 
 function walk_dict(f, d, parent)
@@ -67,7 +78,7 @@ fix_shortcut_level_encoding(name, spec_frag::Symbol, unnamed_inline_data) = VLFr
 fix_shortcut_level_encoding(name, spec_frag::String, unnamed_inline_data) = VLFrag(Any[], Dict{String,Any}(parse_shortcut(spec_frag)...))
 
 function fix_shortcut_level_encoding(name, spec_frag::AbstractVector, unnamed_inline_data)
-    if name!="tooltip"
+    if !(name in ("tooltip", "detail", "order"))
         push!(unnamed_inline_data, Symbol(name)=>spec_frag)
         return VLFrag(Any[], Dict{String,Any}("field"=>string(name), "title"=>nothing))
     else
@@ -84,7 +95,7 @@ function fix_shortcut_level_encoding(name, spec_frag::VLFrag, unnamed_inline_dat
             for (k,v) in new_frags
                 spec[k] = v
             end
-        elseif spec_frag.positional[1] isa AbstractVector && string(name)!="tooltip"
+        elseif spec_frag.positional[1] isa AbstractVector && !(string(name) in ("tooltip", "detail", "order"))
             if haskey(spec, "field")
                 error("The $name encoding channel cannot have inline data and a `field` element.")
             end
@@ -146,16 +157,20 @@ replace_remaining_frag(frag) = frag
 
 replace_remaining_frag(frag::Dict) = error("THIS SHOULDN'T HAPPEN $frag")
 
-function replace_remaining_frag(frag::Vector{VLFrag})
+function replace_remaining_frag(frag::Vector{T}) where {T<:AbstractVegaFragment}
     return [replace_remaining_frag(i) for i in frag]
 end
 
-function replace_remaining_frag(frag::VLFrag)
+function replace_remaining_frag(frag::AbstractVegaFragment)
     if !isempty(frag.positional)
         error("There is an unknown positional argument in this spec.")
     else
         return Dict{String,Any}(k=>replace_remaining_frag(v) for (k,v) in frag.named)
     end
+end
+
+function fix_shortcut_level_spec(spec_frag::VGFrag)
+    return spec_frag
 end
 
 function fix_shortcut_level_spec(spec_frag::VLFrag)
@@ -266,7 +281,7 @@ function fix_shortcut_level_spec(spec_frag::VLFrag)
     return VLFrag([], spec)
 end
 
-function convert_vlfrag_tree_to_dict(spec)
+function convert_frag_tree_to_dict(spec::VLFrag)
     # At this point all positional arguments should have been replaced
     # and we can convert everything into a plain Dict structure
     isempty(spec.positional) || error("There shouldn't be any positional argument left.")
@@ -286,6 +301,18 @@ function convert_vlfrag_tree_to_dict(spec)
     return spec_as_dict2
 end
 
+function convert_frag_tree_to_dict(spec::VGFrag)
+    # At this point all positional arguments should have been replaced
+    # and we can convert everything into a plain Dict structure
+    isempty(spec.positional) || error("There shouldn't be any positional argument left.")
+
+    return Dict{String,Any}(k=>replace_remaining_frag(v) for (k,v) in spec.named)
+end
+
 function vlplot(args...;kwargs...)
-    return VLSpec(convert_vlfrag_tree_to_dict(fix_shortcut_level_spec(vlfrag(args...;kwargs...))))
+    return VLSpec(convert_frag_tree_to_dict(fix_shortcut_level_spec(vlfrag(args...;kwargs...))))
+end
+
+function vgplot(args...;kwargs...)
+    return VGSpec(convert_frag_tree_to_dict(fix_shortcut_level_spec(vgfrag(args...;kwargs...))))
 end

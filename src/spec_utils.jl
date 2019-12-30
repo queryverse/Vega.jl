@@ -46,39 +46,42 @@ _maybeparams(value) = value
 _maybeparams(value::ObjectLike) = getparams(value)
 
 struct DataValuesNode
-    columns::OrderedDict{Symbol,Type}
-    data::String
+    columns::OrderedDict{Symbol,AbstractVector}
+
+    function DataValuesNode(it)
+
+        col_values, col_names = TableTraitsUtils.create_columns_from_iterabletable(it)
+    
+        return new(OrderedDict{Symbol,AbstractVector}(i[1]=>i[2] for i in zip(col_names,col_values)))
+    end
 end
   
-Base.:(==)(a::DataValuesNode, b::DataValuesNode) = a.columns==b.columns && a.data==b.data
-  
-JSON.lower(d::DataValuesNode) = JSON.JSONText(d.data)
+Base.:(==)(a::DataValuesNode, b::DataValuesNode) = a.columns==b.columns
 
-function DataValuesNode(it)
-    col_names = fieldnames(eltype(it))
-    col_types = [fieldtype(eltype(it),i) for i in col_names]
-
-    buffer = IOBuffer()
-
-    print(buffer, "{")
-    JSON.print(buffer, "values")
-    print(buffer, ":[")
+function our_show_json(io, it, col_names)
+    print(io, "{")
+    JSON.print(io, "values")
+    print(io, ":[")
 
     for (row_index, row) in enumerate(it)
-        row_index==1 || print(buffer, ",")
-        print(buffer, "{")
+        row_index==1 || print(io, ",")
+        print(io, "{")
 
         for (col_index, col_value) in enumerate(row)
-            col_index==1 || print(buffer, ",")
-            JSON.print(buffer, col_names[col_index])
-            print(buffer, ":")
-            JSON.print(buffer, col_value isa DataValue ? get(col_value, nothing) : col_value)
+            col_index==1 || print(io, ",")
+            JSON.print(io, col_names[col_index])
+            print(io, ":")
+            JSON.print(io, col_value isa DataValue ? get(col_value, nothing) : col_value)
         end
 
-        print(buffer, "}")
+        print(io, "}")
     end
 
-    print(buffer, "]}")        
+    print(io, "]}")
+end
 
-    return DataValuesNode(OrderedDict{Symbol,Type}(i[1]=>i[2] for i in zip(col_names,col_types)), String(take!(buffer)))
+function JSON.Writer.show_json(io::JSON.Writer.SC, ::JSON.Writer.CS, d::DataValuesNode)
+    col_names = collect(keys(d.columns))
+    it = TableTraitsUtils.create_tableiterator(collect(values(d.columns)), col_names)
+    our_show_json(io, it, col_names)
 end
