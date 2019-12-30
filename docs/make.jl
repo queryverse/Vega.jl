@@ -50,6 +50,11 @@ makedocs(
         ],
         "Maps (Geographic Displays)" => "examples/examples_maps.md",
         "Vega" => [
+            "Bar Charts" => "examples/examples_vega_bar_charts.md",
+            "Line & Area Charts" => "examples/examples_vega_line_area_charts.md",
+            "Circular Charts" => "examples/examples_vega_circular_charts.md",
+            "Scatter Plots" => "examples/examples_vega_scatter_plots.md",
+            "Tree Diagrams" => "examples/examples_vega_tree_diagrams.md",
             "Single Data Source" => "examples/examples_vega_single_data_source.md",
             "Multiple Data Source" => "examples/examples_vega_multi_data_source.md"
         ]
