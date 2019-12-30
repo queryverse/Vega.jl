@@ -40,7 +40,7 @@ end
 
 function add_encoding_types(specdict, parentdata=nothing)
     if (haskey(specdict, "data") && haskey(specdict, "values") && specdict["data"]["values"] isa DataValuesNode) || parentdata!==nothing
-        data = (haskey(specdict, "data") && haskey(specdict, "values") && specdict["data"]["values"] isa DataValuesNode) ? specdict["data"] : parentdata
+        data = (haskey(specdict, "data") && haskey(specdict, "values") && specdict["data"]["values"] isa DataValuesNode) ? specdict["data"]["values"] : parentdata
 
         newspec = Dict{String,Any}(
             (k=="encoding" && v isa Dict) ? k=>Dict{String,Any}(kk=>augment_encoding_type(vv, data) for (kk,vv) in v) : 
