@@ -913,7 +913,6 @@ using VegaLite
 using VegaLite, VegaDatasets
 
 @vgplot(
-    $schema="https://vega.github.io/schema/vega/v5.json",
     height=400,
     padding=5,
     marks=[
@@ -1100,10 +1099,7 @@ using VegaLite, VegaDatasets
         }
     ],
     data=[
-        {
-            name="population",
-            url="data/population.json"
-        },
+        :population => dataset("population"),
         {
             name="popYear",
             source="population",
@@ -1200,5 +1196,5 @@ using VegaLite, VegaDatasets
             value=2000
         }
     ]
-)(dataset("population"), "population")
+)
 ```

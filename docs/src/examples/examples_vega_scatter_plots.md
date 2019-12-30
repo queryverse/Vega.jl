@@ -5,8 +5,7 @@
 ```@example
 using VegaLite, VegaDatasets
 
-@vgplot(
-    $schema="https://vega.github.io/schema/vega/v5.json",
+@vgplot(    
     height=200,
     padding=5,
     marks=[
@@ -70,7 +69,7 @@ using VegaLite, VegaDatasets
     data=[
         {
             name="source",
-            url="data/cars.json",
+            values=dataset("cars"),
             transform=[
                 {
                     expr="datum['Horsepower'] != null && datum['Miles_per_Gallon'] != null && datum['Acceleration'] != null",
@@ -132,7 +131,7 @@ using VegaLite, VegaDatasets
             symbolType="circle"
         }
     ]
-)(dataset("cars"), "source")
+)
 ```
 
 ## Scatter Plot Null Values
@@ -340,7 +339,7 @@ using VegaLite, VegaDatasets
     data=[
         {
             name="movies",
-            url="data/movies.json",
+            values=dataset("movies"),
             transform=[
                 {
                     as="tooltip",
@@ -472,7 +471,7 @@ using VegaLite, VegaDatasets
             update="nullSize + 10"
         }
     ]
-)(dataset("movies"), "movies")
+)
 ```
 
 ## Connected Scatter Plot
@@ -619,12 +618,7 @@ using VegaLite, VegaDatasets
             ticks=false
         }
     ],
-    data=[
-        {
-            name="drive",
-            url="data/driving.json"
-        }
-    ],
+    data=[:drive=>dataset("driving")],
     scales=[
         {
             name="x",
@@ -716,7 +710,7 @@ using VegaLite, VegaDatasets
         }
     ],
     width=800
-)(dataset("driving"), "drive")
+)
 ```
 
 ## Error Bars
@@ -809,10 +803,7 @@ using VegaLite, VegaDatasets
         }
     ],
     data=[
-        {
-            name="barley",
-            url="data/barley.json"
-        },
+        :barley=>dataset("barley"),
         {
             name="summary",
             source="barley",
@@ -933,7 +924,7 @@ using VegaLite, VegaDatasets
             update="lookup[errorMeasure]"
         }
     ]
-)(dataset("barley"), "barley")
+)
 ```
 
 ## Barley Trellis Plot
@@ -1098,12 +1089,7 @@ using VegaLite, VegaDatasets
             orient="bottom"
         }
     ],
-    data=[
-        {
-            name="barley",
-            url="data/barley.json"
-        }
-    ],
+    data=[:barley=>dataset("barley")],
     scales=[
         {
             name="gscale",
@@ -1180,7 +1166,7 @@ using VegaLite, VegaDatasets
             title="Year"
         }
     ]
-)(dataset("barley"), "barley")
+)
 ```
 
 ## Regression
@@ -1253,7 +1239,7 @@ using VegaLite, VegaDatasets
     data=[
         {
             name="movies",
-            url="data/movies.json",
+            values=dataset("movies"),
             transform=[
                 {
                     expr="datum.Rotten_Tomatoes_Rating != null && datum.IMDB_Rating != null",
@@ -1351,7 +1337,7 @@ using VegaLite, VegaDatasets
             value="none"
         }
     ]
-)(dataset("movies"), "movies")
+)
 ```
 
 ## Loess Regression
@@ -1424,7 +1410,7 @@ using VegaLite, VegaDatasets
     data=[
         {
             name="movies",
-            url="data/movies.json",
+            values=dataset("movies"),
             transform=[
                 {
                     expr="datum.Rotten_Tomatoes_Rating != null && datum.IMDB_Rating != null",
@@ -1500,5 +1486,5 @@ using VegaLite, VegaDatasets
             value="none"
         }
     ]
-)(dataset("movies"), "movies")
+)
 ```

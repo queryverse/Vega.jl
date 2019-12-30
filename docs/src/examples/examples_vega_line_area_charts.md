@@ -1053,7 +1053,7 @@ using VegaLite, VegaDatasets
     data=[
         {
             name="jobs",
-            url="data/jobs.json",
+            values=dataset("jobs"),
             transform=[
                 {
                     expr="(sex === 'all' || datum.sex === sex) && (!query || test(regexp(query,'i'), datum.job))",
@@ -1249,6 +1249,6 @@ using VegaLite, VegaDatasets
             value=""
         }
     ]
-)(dataset("jobs"), "jobs")
+)
 ```
 

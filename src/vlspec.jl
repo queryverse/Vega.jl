@@ -39,8 +39,8 @@ function augment_encoding_type(x::Dict, data::DataValuesNode)
 end
 
 function add_encoding_types(specdict, parentdata=nothing)
-    if (haskey(specdict, "data") && specdict["data"] isa DataValuesNode) || parentdata!==nothing
-        data = (haskey(specdict, "data") && specdict["data"] isa DataValuesNode) ? specdict["data"] : parentdata
+    if (haskey(specdict, "data") && haskey(specdict, "values") && specdict["data"]["values"] isa DataValuesNode) || parentdata!==nothing
+        data = (haskey(specdict, "data") && haskey(specdict, "values") && specdict["data"]["values"] isa DataValuesNode) ? specdict["data"] : parentdata
 
         newspec = Dict{String,Any}(
             (k=="encoding" && v isa Dict) ? k=>Dict{String,Any}(kk=>augment_encoding_type(vv, data) for (kk,vv) in v) : 
@@ -67,7 +67,7 @@ function (p::VLSpec)(data)
 
     new_dict = copy(getparams(p))
 
-    new_dict["data"] = datavaluesnode
+    new_dict["data"] = Dict{String,Any}("values" => datavaluesnode)
 
     return VLSpec(new_dict)
 end

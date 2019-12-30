@@ -93,7 +93,7 @@ using VegaLite, VegaDatasets
     data=[
         {
             name="tree",
-            url="data/flare.json",
+            values=dataset("flare"),
             transform=[
                 {
                     key="id",
@@ -197,7 +197,7 @@ using VegaLite, VegaDatasets
             value=false
         }
     ]
-)(dataset("flare"), "tree")
+)
 ```
 
 ## Radial Tree Layout
@@ -302,7 +302,7 @@ using VegaLite, VegaDatasets
     data=[
         {
             name="tree",
-            url="data/flare.json",
+            values=dataset("flare"),
             transform=[
                 {
                     key="id",
@@ -461,7 +461,7 @@ using VegaLite, VegaDatasets
             update="height / 2"
         }
     ]
-)(dataset("flare"), "tree")
+)
 ```
 
 ## Treemap
@@ -583,7 +583,7 @@ using VegaLite, VegaDatasets
     data=[
         {
             name="tree",
-            url="data/flare.json",
+            values=dataset("flare"),
             transform=[
                 {
                     key="id",
@@ -725,7 +725,7 @@ using VegaLite, VegaDatasets
             value=1.6
         }
     ]
-)(dataset("flare"), "tree")
+)
 ```
 
 ## Circle Packing
@@ -786,7 +786,7 @@ using VegaLite, VegaDatasets
     data=[
         {
             name="tree",
-            url="data/flare.json",
+            values=dataset("flare"),
             transform=[
                 {
                     key="id",
@@ -826,7 +826,7 @@ using VegaLite, VegaDatasets
     ],
     width=600,
     autosize="none"
-)(dataset("flare"), "tree")
+)
 ```
 
 ## Sunburst
@@ -899,7 +899,7 @@ using VegaLite, VegaDatasets
     data=[
         {
             name="tree",
-            url="data/flare.json",
+            values=dataset("flare"),
             transform=[
                 {
                     key="id",
@@ -947,5 +947,5 @@ using VegaLite, VegaDatasets
     ],
     width=600,
     autosize="none"
-)(dataset("flare"), "tree")
+)
 ```
