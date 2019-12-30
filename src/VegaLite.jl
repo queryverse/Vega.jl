@@ -78,6 +78,7 @@ include("dsl_vlplot_function/dsl_vlplot_function.jl")
 include("dsl_vlplot_macro/dsl_vlplot_macro.jl")
 include("dsl_str_macro/dsl_str_macro.jl")
 
+include("rendering/to_julia.jl")
 include("rendering/render.jl")
 include("rendering/io.jl")
 include("rendering/show.jl")

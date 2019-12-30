@@ -1,102 +1,15 @@
-"""
-    printrepr(io, v::AbstractVegaSpec)
-
-Print representation of a Vega spec `v` parsable by Julia.  It accepts
-the same keyword arguments as [`savespec`](@ref).
-"""
-function printrepr(io::IO, v::Union{VLSpec, VGSpec}; kwargs...)
-    println(io, v isa VGSpec ? "vg" : "vl", "\"\"\"")
-    savespec(io, v; include_data=true, indent=4, kwargs...)
-    print(io, "\"\"\"")
-end
-
-function print_datavaluesnode_as_julia(io, it, col_names)
-    print(io, "{values=[")
-
-    for (row_index, row) in enumerate(it)
-        row_index==1 || print(io, ",")
-        print(io, "{")
-
-        for (col_index, col_value) in enumerate(row)
-            col_index==1 || print(io, ",")
-            print(io, col_names[col_index])
-            print(io, "=")
-            print(io, col_value isa DataValue ? get(col_value, nothing) : col_value)
-        end
-
-        print(io, "}")
-    end
-
-    print(io, "]}")
-end
-
-function print_vspec_as_julia(io::IO, d::DataValuesNode, indent)
-    col_names = collect(keys(d.columns))
-    it = TableTraitsUtils.create_tableiterator(collect(values(d.columns)), col_names)
-
-    print_datavaluesnode_as_julia(io, it, col_names)
-end
-
-function print_vspec_as_julia(io::IO, vect::AbstractVector, indent)
-    for (i,v) in enumerate(vect)
-        i>1 && print(io, ",\n")
-        if v isa AbstractDict
-            print(io, " "^indent, "{\n")
-            print_vspec_as_julia(io, v, indent+4)
-            print(io, "\n", " "^indent, "}")
-        elseif v isa AbstractVector
-            print(io, "[\n")
-            print_vspec_as_julia(io, v, indent+4)
-            print(io, "\n", " "^indent, "]")
-        elseif v isa DataValuesNode
-            print_vspec_as_julia(io, v, indent)
-        else
-            print(io, v)
-        end
-    end
-end
-
-function print_vspec_as_julia(io::IO, dict::AbstractDict, indent)
-    for (i,(k,v)) in enumerate(dict)
-        i>1 && print(io, ",\n")
-        print(io, " "^indent, k)
-        print(io, "=")
-        if v isa AbstractDict
-            print(io, "{")
-            println(io)
-            print_vspec_as_julia(io, v, indent+4)
-            print(io, "\n", " "^indent, "}")
-        elseif v isa AbstractVector
-            print(io, "[\n")
-            print_vspec_as_julia(io, v, indent+4)
-            print(io, "\n", " "^indent, "]")
-        elseif v isa AbstractString || v isa Symbol
-            print(io, "\"")
-            print(io, string(v))
-            print(io, "\"")
-        elseif v isa DataValuesNode
-            print_vspec_as_julia(io, v, indent)
-        else
-            print(io, v)
-        end
-    end
-end
-
-function printrepr2(io::IO, v::AbstractVegaSpec)
-    println(io, v isa VGSpec ? "@vgplot(" : "@vlplot(")
-    print_vspec_as_julia(io, getparams(v), 4)    
-    println(io, "\n)")
-end
-
-function printrepr2(v::AbstractVegaSpec)
-    printrepr2(stdout, v)
-end
-
 function Base.show(io::IO, m::MIME"text/plain", v::AbstractVegaSpec)
-    if !get(io, :compact, true) && v isa Union{VLSpec, VGSpec}
-        printrepr2(io, v)
-    else
+    printrepr(io, v, indent=4, newlines=true)
+    return
+end
+
+function Base.show(io::IO, v::AbstractVegaSpec)
+    # This is a hack to detect when we are showing as part of a vector
+    # or matrix
+    if get(io, :typeinfo, Nothing) <: AbstractVegaSpec
         print(io, summary(v))
+    else
+        printrepr(io, v, indent=0, newlines=false)
     end
     return
 end
