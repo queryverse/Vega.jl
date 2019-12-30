@@ -147,7 +147,7 @@ end
 function fix_shortcut_level_data(spec_frag)
     if TableTraits.isiterabletable(spec_frag)
         it = IteratorInterfaceExtensions.getiterator(spec_frag)
-        return DataValuesNode(it)
+        return VLFrag([], Dict{String,Any}("values" => DataValuesNode(it)))
     else
         return spec_frag
     end
@@ -169,8 +169,38 @@ function replace_remaining_frag(frag::AbstractVegaFragment)
     end
 end
 
+function fix_shortcut_vg_data(v)
+    if v isa Pair
+        if v[2] isa AbstractPath
+            as_uri = string(URI(v[2]))
+            return VGFrag([], Dict{String,Any}("url" => Sys.iswindows() ? as_uri[1:5] * as_uri[7:end] : as_uri))
+        elseif v[2] isa URI
+            as_uri = string(v[2])
+            return VGFrag([], Dict{String,Any}("url" => Sys.iswindows() && v[2].scheme=="file" ? as_uri[1:5] * as_uri[7:end] : as_uri))
+        elseif TableTraits.isiterabletable(v[2])
+            it = IteratorInterfaceExtensions.getiterator(v[2])
+            return VGFrag([], Dict{String,Any}("name" => string(v[1]), "values" => DataValuesNode(it)))
+        end
+    elseif v isa VGFrag
+        new_dict = copy(v.named)
+        if haskey(new_dict, "values") && TableTraits.isiterabletable(new_dict["values"])
+            it = IteratorInterfaceExtensions.getiterator(new_dict["values"])
+            new_dict["values"] = DataValuesNode(it)
+        end
+        return VGFrag([], new_dict)
+    else
+        return v
+    end
+end
+
 function fix_shortcut_level_spec(spec_frag::VGFrag)
-    return spec_frag
+    spec = copy(spec_frag.named)
+
+    if haskey(spec, "data")
+        spec["data"] = [fix_shortcut_vg_data(i) for i in spec["data"]]
+    end
+
+    return VGFrag([], spec)
 end
 
 function fix_shortcut_level_spec(spec_frag::VLFrag)
@@ -262,7 +292,7 @@ function fix_shortcut_level_spec(spec_frag::VLFrag)
             println(inline_unnamed_data)
             error("All columns must have the same length.")
         end
-        spec["data"] = DataValuesNode(TableTraitsUtils.create_tableiterator(map(i->i[2], inline_unnamed_data), map(i->i[1], inline_unnamed_data)))
+        spec["data"] = VLFrag([], Dict{String,Any}("values" => DataValuesNode(TableTraitsUtils.create_tableiterator(map(i->i[2], inline_unnamed_data), map(i->i[1], inline_unnamed_data)))))
     end
 
     # Now fix child specs

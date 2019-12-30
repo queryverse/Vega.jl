@@ -59,9 +59,7 @@ end
 Base.:(==)(a::DataValuesNode, b::DataValuesNode) = a.columns==b.columns
 
 function our_show_json(io, it, col_names)
-    print(io, "{")
-    JSON.print(io, "values")
-    print(io, ":[")
+    print(io, "[")
 
     for (row_index, row) in enumerate(it)
         row_index==1 || print(io, ",")
@@ -77,7 +75,7 @@ function our_show_json(io, it, col_names)
         print(io, "}")
     end
 
-    print(io, "]}")
+    print(io, "]")
 end
 
 function JSON.Writer.show_json(io::JSON.Writer.SC, ::JSON.Writer.CS, d::DataValuesNode)

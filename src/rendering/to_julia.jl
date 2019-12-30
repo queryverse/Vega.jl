@@ -1,5 +1,5 @@
 function print_datavaluesnode_as_julia(io, it, col_names)
-    print(io, "{values=[")
+    print(io, "[")
 
     for (row_index, row) in enumerate(it)
         row_index==1 || print(io, ",")
@@ -15,7 +15,7 @@ function print_datavaluesnode_as_julia(io, it, col_names)
         print(io, "}")
     end
 
-    print(io, "]}")
+    print(io, "]")
 end
 
 function print_vspec_as_julia(io::IO, d::DataValuesNode, indent, indent_level, newlines, include_data)
