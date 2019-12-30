@@ -29,7 +29,7 @@ dataset("cars") |>
     height=400
 )
 ```
-![plot](examples/png/readme_plot1.svg)
+![plot](assets/readme_plot1.svg)
 
 ## Installation
 
