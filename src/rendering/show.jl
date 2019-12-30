@@ -1,11 +1,11 @@
 function Base.show(io::IO, m::MIME"text/plain", v::AbstractVegaSpec)
-    printrepr(io, v, indent=4, include_data=true)
+    printrepr(io, v, indent=4, include_data=:short)
     return
 end
 
 function Base.show(io::IO, v::AbstractVegaSpec)
     if !get(io, :compact, true)
-        printrepr(io, v, include_data=true)
+        printrepr(io, v, include_data=:short)
     else
         print(io, summary(v))
     end

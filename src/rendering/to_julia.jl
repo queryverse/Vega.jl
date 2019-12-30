@@ -22,7 +22,11 @@ function print_vspec_as_julia(io::IO, d::DataValuesNode, indent, indent_level, n
     col_names = collect(keys(d.columns))
     it = TableTraitsUtils.create_tableiterator(collect(values(d.columns)), col_names)
 
-    print_datavaluesnode_as_julia(io, it, col_names)
+    if include_data==:short
+        print(io, "...")
+    else
+        print_datavaluesnode_as_julia(io, it, col_names)
+    end
 end
 
 function print_vspec_as_julia(io::IO, vect::AbstractVector, indent, indent_level, newlines, include_data)    
@@ -49,7 +53,7 @@ function print_vspec_as_julia(io::IO, vect::AbstractVector, indent, indent_level
 end
 
 function print_vspec_as_julia(io::IO, dict::AbstractDict, indent, indent_level, newlines, include_data)
-    dict = include_data ? dict : Dict{String,Any}(i for i in dict if i[1]!="data")
+    dict = (include_data==:short || include_data) ? dict : Dict{String,Any}(i for i in dict if i[1]!="data")
     for (i,(k,v)) in enumerate(dict)
         i>1 && print(io, ",", newlines ? "\n" : "")
         print(io, " "^(indent*indent_level), k)
