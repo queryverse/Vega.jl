@@ -55,6 +55,7 @@ makedocs(
             "Circular Charts" => "examples/examples_vega_circular_charts.md",
             "Scatter Plots" => "examples/examples_vega_scatter_plots.md",
             "Tree Diagrams" => "examples/examples_vega_tree_diagrams.md",
+            "Network Diagrams" => "examples/examples_vega_network_diagrams.md",
             "Single Data Source" => "examples/examples_vega_single_data_source.md",
             "Multiple Data Source" => "examples/examples_vega_multi_data_source.md"
         ]
