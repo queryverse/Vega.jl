@@ -19,7 +19,7 @@ dataset("weather.csv") |>
     ) +
     @vlplot(
         :line,
-        y={field={repeat=:column},aggregate=:mean,typ=:quantitative},
+        y={field={repeat=:column},aggregate=:mean,type=:quantitative},
         x="month(date):o",
         color=:location
     )
@@ -48,7 +48,7 @@ dataset("cars") |>
 @vlplot(repeat={column=[:Horsepower, :Miles_per_Gallon, :Acceleration]}) +
 @vlplot(
     :bar,
-    x={field={repeat=:column},bin=true,typ=:quantitative},
+    x={field={repeat=:column},bin=true,type=:quantitative},
     y="count()",
     color=:Origin
 )
@@ -70,27 +70,27 @@ dataset("cars") |>
     :point,
     selection={
         brush={
-            typ=:interval,
+            type=:interval,
             resolve=:union,
             on="[mousedown[event.shiftKey], window:mouseup] > window:mousemove!",
             translate="[mousedown[event.shiftKey], window:mouseup] > window:mousemove!",
             zoom="wheel![event.shiftKey]"
         },
         grid={
-            typ=:interval,
+            type=:interval,
             resolve=:global,
             bind=:scales,
             translate="[mousedown[!event.shiftKey], window:mouseup] > window:mousemove!",
             zoom="wheel![!event.shiftKey]"
         }
     },
-    x={field={repeat=:column}, typ=:quantitative},
-    y={field={repeat=:row}, typ=:quantitative},
+    x={field={repeat=:column}, type=:quantitative},
+    y={field={repeat=:row}, type=:quantitative},
     color={
         condition={
             selection=:brush,
             field=:Origin,
-            typ=:nominal
+            type=:nominal
         },
         value=:grey
     }

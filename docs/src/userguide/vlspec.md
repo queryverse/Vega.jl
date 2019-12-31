@@ -1,8 +1,8 @@
 # Vega-lite specifications
 
-A [Vega-Lite](https://vega.github.io/vega-lite/) plot specification is represented as a `VLSpec` object in julia. There are multiple ways to create a `VLSpec` object:
+A [Vega-Lite](https://vega.github.io/vega-lite/) plot specification is represented as a `VLSpec` object in Julia. There are multiple ways to create a `VLSpec` object:
 1. The `@vlplot` macro is the main way to create `VLSpec` instances in code.
-2. Using the `vl` string macro, you can write [Vega-Lite](https://vega.github.io/vega-lite/) specifications as JSON in your julia code.
+2. Using the `vl` string macro, you can write [Vega-Lite](https://vega.github.io/vega-lite/) specifications as JSON in your Julia code.
 3. You can load [Vega-Lite](https://vega.github.io/vega-lite/) specifications from disc with the `load` function.
 4. The [DataVoyager.jl](https://github.com/queryverse/DataVoyager.jl) package provides a graphical user interface that you can use to create [Vega-Lite](https://vega.github.io/vega-lite/) specification.
 
@@ -14,7 +14,7 @@ This section will give a brief overview of these options. Other sections will de
 
 ## The `@vlplot` macro
 
-The `@vlplot` macro is the main way to specify plots in [VegaLite.jl](https://github.com/queryverse/VegaLite.jl). The macro uses a syntax that is closely aligned with the JSON format of the original [Vega-Lite](https://vega.github.io/vega-lite/) specification. It is very simple to take a vega-lite specification and "translate" it into a corresponding `@vlplot` macro call. In addition, the macro provides a number of convenient syntax features that allow for a concise expression of common vega-lite patterns. These shorthand give [VegaLite.jl](https://github.com/queryverse/VegaLite.jl) a syntax that can be used in a productive way for exploratory data analysis.
+The `@vlplot` macro is the main way to specify plots in [VegaLite.jl](https://github.com/queryverse/VegaLite.jl). The macro uses a syntax that is closely aligned with the JSON format of the original [Vega-Lite](https://vega.github.io/vega-lite/) specification. It is very simple to take a vega-lite specification and "translate" it into a corresponding `@vlplot` macro call. In addition, the macro provides a number of convenient syntax features that allow for a concise expression of common vega-lite patterns. These shorthands give [VegaLite.jl](https://github.com/queryverse/VegaLite.jl) a syntax that can be used in a productive way for exploratory data analysis.
 
 A very simple [Vega-Lite](https://vega.github.io/vega-lite/) JSON specification looks like this:
 
@@ -50,13 +50,13 @@ using VegaLite
     },
     mark="bar",
     encoding={
-        x={field="a", typ="ordinal"},
-        y={field="b", typ="quantitative"}
+        x={field="a", type="ordinal"},
+        y={field="b", type="quantitative"}
     }
 )
 ```
 
-The main difference between JSON and the `@vlplot` macro is that keys are not surrounded by quotation marks in the macro, and key-value pairs are separate by a `=` (instead of a `:`). The second important change is that whenever a key is named `type` in the JSON version, one has to translate that into `typ` in the macro (`type` is a reserved keyword in julia and therefore can't be used in this context).
+The main difference between JSON and the `@vlplot` macro is that keys are not surrounded by quotation marks in the macro, and key-value pairs are separate by a `=` (instead of a `:`).
 
 While these literal translations of JSON work, they are also quite verbose. The `@vlplot` macro provides a number of shorthands so that the same plot can be expressed in a much more concise manner. The following example creates the same plot, but uses a number of alternative syntaxes provided by the `@vlplot` macro:
 
@@ -68,14 +68,14 @@ data = DataFrame(
     b=[28,55,43,91,81,53,19,87,52]
 )
 
-data |> @vlplot(:bar, x=:a, y=:b)
+data |> @vlplot(:bar, :a, :b)
 ```
 
 Typically you should use these shorthands so that you can express your plots in a concise way. The various shorthands are described in more detail in a different chapter.
 
 ## The `vl` string macro
 
-One can embed a JSON vega-lite specification directly in julia code by using the `vl` string macro:
+One can embed a JSON vega-lite specification directly in Julia code by using the `vl` string macro:
 
 ```julia
 using VegaLite
@@ -109,14 +109,16 @@ The main benefit of this approach is that one can directly leverage JSON vega-li
 Vega-Lite properties can be directly accessed as properties of the `VLSpec` object.
 
 ```julia
-julia> spec = [(a=x, b=exp(x), c=sin(x)) for x in 0:10] |>
-           @vlplot(:point, x=:a, y=:b);
+julia> using VegaLite, VegaDatasets
+
+julia> spec = dataset("cars") |>
+              @vlplot(:point, x=:Acceleration, y=:Cylinders)
 
 julia> spec.mark
 :point
 
 julia> spec.encoding.x.field
-"a"
+"Acceleration"
 ```
 
 To modify properties, use [Setfield.jl](https://github.com/jw3126/Setfield.jl):
@@ -125,7 +127,7 @@ To modify properties, use [Setfield.jl](https://github.com/jw3126/Setfield.jl):
 julia> using Setfield  # imports `@set` etc.
 
 julia> spec2 = @set spec.mark = :line
-       spec3 = @set spec2.encoding.y.field = "c"
+       spec3 = @set spec2.encoding.y.field = "Miles_per_Gallon"
 ```
 
 ## Loading and saving vega-lite specifications
@@ -145,12 +147,8 @@ using VegaLite
 
 spec = ... # Aquire a spec from somewhere
 
-savespec("myfigure.vegalite", spec)
+spec |> save("myfigure.vegalite")
 ```
-
-!!! note
-
-    Using the `load` and `save` function will be enabled in a future release. For now you should use `loadspec` and `savespec` instead (both of these functions will be deprecated once `load` and `save` are enabled).
 
 ## [DataVoyager.jl](https://github.com/queryverse/DataVoyager.jl)
 
@@ -158,9 +156,9 @@ The [DataVoyager.jl](https://github.com/queryverse/DataVoyager.jl) package provi
 
 ## Displaying plots
 
-[VegaLite.jl](https://github.com/queryverse/VegaLite.jl) integrates into the default julia multimedia system for viewing plots. This means that in order to show a plot `p` you would simply call the `display(p)` function. Most interactive julia environments (REPL, IJulia, Jupyter Lab, nteract etc.) automatically call `display` on the value of the last interactive command for you.
+[VegaLite.jl](https://github.com/queryverse/VegaLite.jl) integrates into the default Julia multimedia system for viewing plots. This means that in order to show a plot `p` you would simply call the `display(p)` function. Most interactive Julia environments (REPL, IJulia, Jupyter Lab, nteract etc.) automatically call `display` on the value of the last interactive command for you.
 
-Simply viewing plots should work out of the box in all known julia environments. If you plan to use the interactive features of [VegaLite.jl](https://github.com/queryverse/VegaLite.jl) the story becomes slightly more nuanced: while many environments (REPL, [Jupyter Lab](https://github.com/jupyterlab/jupyterlab), [nteract](https://github.com/nteract/nteract), [ElectronDisplay.jl](https://github.com/queryverse/ElectronDisplay.jl)) support interactive [VegaLite.jl](https://github.com/queryverse/VegaLite.jl) plots by default, there are others that either need some extra configuration work ([Jupyter Notebook](http://jupyter.org/)), or don't support interactive plots.
+Simply viewing plots should work out of the box in all known Julia environments. If you plan to use the interactive features of [VegaLite.jl](https://github.com/queryverse/VegaLite.jl) the story becomes slightly more nuanced: while many environments (REPL, [Jupyter Lab](https://github.com/jupyterlab/jupyterlab), [nteract](https://github.com/nteract/nteract), [ElectronDisplay.jl](https://github.com/queryverse/ElectronDisplay.jl), [VS Code](https://www.julia-vscode.org/)) support interactive [VegaLite.jl](https://github.com/queryverse/VegaLite.jl) plots by default, there are others that either need some extra configuration work ([Jupyter Notebook](http://jupyter.org/)), or don't support interactive plots.
 
 ## Saving plots
 

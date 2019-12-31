@@ -8,7 +8,7 @@ Plots are a way to visualize data, and therefore every plot starts with some dat
 
 The definition of tabular data we are using here is very simple: think of a table that has a header and consists of a number of columns and rows. The header gives each column a name. The rows correspond to the actual data. Columns don't have to be of the same data type, i.e. you can have one column that contains `String`s, and another that contains `Float64` values.
 
-[VegaLite.jl](https://github.com/queryverse/VegaLite.jl) can digest many different julia types that store tabular data. You can, for example, plot data that is stored in a `DataFrame`, [JuliaDB.jl](https://github.com/JuliaComputing/JuliaDB.jl) or loaded from disc with [CSVFiles.jl](https://github.com/queryverse/CSVFiles.jl). In this tutorial we will plot data that ships in the package [VegaDatasets.jl](https://github.com/queryverse/VegaDatasets.jl).
+[VegaLite.jl](https://github.com/queryverse/VegaLite.jl) can digest many different Julia types that store tabular data. You can, for example, plot data that is stored in a `DataFrame`, [JuliaDB.jl](https://github.com/JuliaComputing/JuliaDB.jl) or loaded from disc with [CSVFiles.jl](https://github.com/queryverse/CSVFiles.jl). In this tutorial we will plot data that ships in the package [VegaDatasets.jl](https://github.com/queryverse/VegaDatasets.jl).
 
 The dataset we will use for this tutorial is the `cars` dataset from the [VegaDatasets.jl](https://github.com/queryverse/VegaDatasets.jl). The dataset contains information about a couple hundred cars. We can load the dataset with the `dataset` function:
 
@@ -106,7 +106,7 @@ data |>
 @vlplot(:point, x=:Miles_per_Gallon, y=:Horsepower, color="Cylinders")
 ```
 
-We are still encoding the `color` channel, but note that we are now passing the name of the column as a `String`, not as a `Symbol` (i.e. we are writing `color="Cylinders"` instead of `color=:Cylinders`). This is a general pattern in [VegaLite.jl](https://github.com/queryverse/VegaLite.jl): you can generally use `Symbol`s and `String`s interchangeably. Using a `Symbol` saves you one extra character (the closing `"`), so we tend to use those when possible, but sometimes you need to use characters that can't be used in Julia's literal Symbolsyntax, and then we use `String`s.
+We are still encoding the `color` channel, but note that we are now passing the name of the column as a `String`, not as a `Symbol` (i.e. we are writing `color="Cylinders"` instead of `color=:Cylinders`). This is a general pattern in [VegaLite.jl](https://github.com/queryverse/VegaLite.jl): you can generally use `Symbol`s and `String`s interchangeably. Using a `Symbol` saves you one extra character (the closing `"`), so we tend to use those when possible, but sometimes you need to use characters that can't be used in Julia's literal Symbol syntax, and then we use `String`s.
 
 The legend that was automatically generated for the color channel in the previous plot uses a continuous scale, i.e. it shows a smooth range of colors. [VegaLite.jl](https://github.com/queryverse/VegaLite.jl) automatically encodes any numeric column in the source data as such a "quantitative" channel. Sometimes that is not a good automatic default, though. For example, in our example case there are only a handful of distinct integer values used in the Cylinders column, and in such a case we might prefer a more discrete legend.
 
@@ -287,7 +287,7 @@ The original [Vega-Lite documentation](https://vega.github.io/vega-lite/docs/con
 
 Plots that are created with [VegaLite.jl](https://github.com/queryverse/VegaLite.jl) can be saved to disc in a number of formats (PNG, SVG, PDF, ESP). To save a plot, simply call the `save` function:
 
-```@example
+```julia
 using VegaLite, VegaDatasets
 
 p = dataset("cars") |> @vlplot(:bar, x="count()", y=:Origin)
@@ -297,7 +297,7 @@ save("myplot.png", p)
 
 You can also pipe a plot into the `save` function:
 
-```@example
+```@julia
 using VegaLite, VegaDatasets
 
 dataset("cars") |>
@@ -307,4 +307,4 @@ save("myplot.pdf")
 
 ## Next steps
 
-There are two main sources of information if you want to learn more about plotting with [VegaLite.jl](https://github.com/queryverse/VegaLite.jl). The first is the excellent [Vega-Lite documentation](https://vega.github.io/vega-lite/). The documentation describes the JSON original Vega-Lite version, but it should be fairly easy to understand how those examples translate into the Julia equivalent. The second source are the remaining sections in this documentation of [VegaLite.jl](https://github.com/queryverse/VegaLite.jl). The section about the `@vlplot` macro should be especially useful for understanding how the JSON Vega-Lite syntax can be translated into the equivalent julia version.
+There are two main sources of information if you want to learn more about plotting with [VegaLite.jl](https://github.com/queryverse/VegaLite.jl). The first is the excellent [Vega-Lite documentation](https://vega.github.io/vega-lite/). The documentation describes the JSON original Vega-Lite version, but it should be fairly easy to understand how those examples translate into the Julia equivalent. The second source are the remaining sections in this documentation of [VegaLite.jl](https://github.com/queryverse/VegaLite.jl). The section about the `@vlplot` macro should be especially useful for understanding how the JSON Vega-Lite syntax can be translated into the equivalent Julia version.

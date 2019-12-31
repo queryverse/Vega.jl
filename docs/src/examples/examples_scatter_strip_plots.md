@@ -98,10 +98,10 @@ dataset("gapminder-health-income") |>
     :circle,
     width=500,height=300,
     selection={
-        view={typ=:interval, bind=:scales}
+        view={type=:interval, bind=:scales}
     },
     y={:health, scale={zero=false}, axis={minExtent=30}},
-    x={:income, scale={typ=:log}},
+    x={:income, scale={type=:log}},
     size=:population,
     color={value="#000"}
 )

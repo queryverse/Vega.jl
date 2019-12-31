@@ -185,7 +185,7 @@ using VegaLite, DataFrames
 
 data = DataFrame(
     question=["Question $(div(i,5)+1)" for i in 0:39],
-    typ=repeat(["Strongly disagree", "Disagree", "Neither agree nor disagree",
+    type=repeat(["Strongly disagree", "Disagree", "Neither agree nor disagree",
         "Agree", "Strongly agree"],outer=8),
     value=[24, 294, 594, 1927, 376, 2, 2, 0, 7, 11, 2, 0, 2, 4, 2, 0, 2, 1, 7,
         6, 0, 1, 3, 16, 4, 1, 1, 2, 9, 3, 0, 0, 1, 4, 0, 0, 0, 0, 0, 2],
@@ -226,7 +226,7 @@ data |> @vlplot(
                 "Strongly agree"
             ],
             range=["#c30d24", "#f3a583", "#cccccc", "#94c6da", "#1770ab"],
-            typ=:ordinal
+            type=:ordinal
         }
     }
 )

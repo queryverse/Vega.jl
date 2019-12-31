@@ -10,7 +10,7 @@ data = DataFrame(
     b=[28,55,43,91,81,53,19,87,52]
 )
 
-data |> @vlplot(:bar, x=:a, y=:b)
+data |> @vlplot(:bar, :a, :b)
 ```
 
 ## Simple Heatmap
@@ -23,7 +23,7 @@ y = [i for i in -5:4, j in -5:4]
 z = x.^2 .+ y.^2
 data = DataFrame(x=vec(x'),y=vec(y'),z=vec(z'))
 
-data |> @vlplot(:rect, x="x:o", y="y:o", color=:z)
+data |> @vlplot(:rect, "x:o", "y:o", color=:z)
 ```
 
 ## Simple Histogram
@@ -38,12 +38,12 @@ dataset("movies") |>
 ## Simple Line Chart
 
 ```@example
-using VegaLite, DataFrames
+using VegaLite
 
 x = 0:100
-data = DataFrame(x=x,sin=sin.(x./5))
+y = sin.(x./5)
 
-data |> @vlplot(:line, x=:x, y={:sin, title="sin(x)"})
+data |> @vlplot(:line, x=x, y={y, title="sin(x)"})
 ```
 
 ## Simple Scatter Plot

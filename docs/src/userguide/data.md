@@ -1,10 +1,10 @@
 # Data
 
-[VegaLite.jl](https://github.com/queryverse/VegaLite.jl) accepts data to be plotted in a variety of different formats and provides a number of different ways to reference that data. The most typical way to plot data is that you have your data in some julia data structure, and then add this data to the Vega-Lite specification itself for plotting. As an alternative, Vega-Lite also accepts URLs that point to data sources either on disc or on the web for plotting. Data that you want to plot will typically be in a tabular form. You can also directly pass vectors with data.
+[VegaLite.jl](https://github.com/queryverse/VegaLite.jl) accepts data to be plotted in a variety of different formats and provides a number of different ways to reference that data. The most typical way to plot data is that you have your data in some Julia data structure, and then add this data to the Vega-Lite specification itself for plotting. As an alternative, Vega-Lite also accepts URLs that point to data sources either on disc or on the web for plotting. Data that you want to plot will typically be in a tabular form. You can also directly pass vectors with data.
 
 ## Inline data
 
-Any julia data structure data supports the iterable tables interface from the [TableTraits.jl](https://github.com/queryverse/TableTraits.jl) package can be used as an inline data source with [VegaLite.jl](https://github.com/queryverse/VegaLite.jl). In practice that covers most tabular data structures in the julia ecosystem: [DataFrames.jl](https://github.com/JuliaData/DataFrames.jl), [JuliaDB.jl](https://github.com/JuliaComputing/JuliaDB.jl), [IndexedTables.jl](https://github.com/JuliaComputing/IndexedTables.jl), various file IO packages ([CSVFiles.jl](https://github.com/queryverse/CSVFiles.jl), [FeatherFiles.jl](https://github.com/queryverse/FeatherFiles.jl), [ExcelFiles.jl](https://github.com/queryverse/ExcelFiles.jl), [StatFiles.jl](https://github.com/queryverse/StatFiles.jl), [ParquetFiles.jl](https://github.com/queryverse/ParquetFiles.jl)) and any [Query.jl](https://github.com/queryverse/Query.jl) result that has a tabular form.
+Any Julia data structure data supports the iterable tables interface from the [TableTraits.jl](https://github.com/queryverse/TableTraits.jl) package can be used as an inline data source with [VegaLite.jl](https://github.com/queryverse/VegaLite.jl). In practice that covers most tabular data structures in the Julia ecosystem: [DataFrames.jl](https://github.com/JuliaData/DataFrames.jl), [JuliaDB.jl](https://github.com/JuliaComputing/JuliaDB.jl), [IndexedTables.jl](https://github.com/JuliaComputing/IndexedTables.jl), various file IO packages ([CSVFiles.jl](https://github.com/queryverse/CSVFiles.jl), [FeatherFiles.jl](https://github.com/queryverse/FeatherFiles.jl), [ExcelFiles.jl](https://github.com/queryverse/ExcelFiles.jl), [StatFiles.jl](https://github.com/queryverse/StatFiles.jl), [ParquetFiles.jl](https://github.com/queryverse/ParquetFiles.jl)) and any [Query.jl](https://github.com/queryverse/Query.jl) result that has a tabular form.
 
 There are two ways to add an inline data source to a Vega-Lite plot: 1) by piping the data source into a plot, or 2) by using the `data` keyword from within a `@vlplot` call.
 
@@ -49,9 +49,6 @@ Both `1:10` and `randn(10)` are `AbstractVector`s and can therefor be passed in 
 There are two requirements to keep in mind when you use this form of data passing: 1) all vectors you pass in this way need to have the same length, and 2) you cannot pass a `data` keyword if you use this way of constructing a plot.
 
 ## Referencing external data
-
-!!! note
-    Note that some of the techniques described in this section are not yet implemented.
 
 Sometimes it can be convenient to not embed the source data in the actual Vega-Lite specification, but instead just embed a link to some data in a file. Vega-Lite can read data in a variety of formats (CSV, TSV, JSON etc.), and you can again either pipe a reference into a plot or use the `data` keyword to specify an external link.
 
@@ -105,7 +102,7 @@ Sometimes you need to specify additional configuration parameters for an externa
     data={
         url=p"subfolder/foo.txt",
         format={
-            typ=:csv
+            type=:csv
         }
     },
     x=:a,

@@ -25,7 +25,7 @@ unemployment = dataset("unemployment")
         }
     }],
     projection={
-        typ=:albersUsa
+        type=:albersUsa
     },
     color="rate:q"
 )
@@ -365,7 +365,7 @@ londonTubeLines = dataset("londonTubeLines")
     data={
         values=londonBoroughs,
         format={
-            typ=:topojson,
+            type=:topojson,
             feature=:boroughs
         }
     },
@@ -393,7 +393,7 @@ londonTubeLines = dataset("londonTubeLines")
     data={
         values=londonTubeLines,
         format={
-            typ=:topojson,
+            type=:topojson,
             feature=:line
         }
     },

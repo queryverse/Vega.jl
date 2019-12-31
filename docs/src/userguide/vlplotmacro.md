@@ -1,6 +1,6 @@
 # The @vlplot command
 
-The `@vlplot` macro is the main method to create Vega-Lite plots from julia. The macro accepts arguments that look almost identical to the original Vega-Lite JSON syntax. It should therefore be very easy to take any given Vega-Lite JSON example and translate it into a corresponding `@vlplot` macro call. The macro also provides a number of shorthands that make it easy to create very compact plot specifications. This section will first review the difference between the original JSON Vega-Lite syntax and the `@vlplot` macro, and then discuss the various shorthands that users will typically use.
+The `@vlplot` macro is the main method to create Vega-Lite plots from Julia. The macro accepts arguments that look almost identical to the original Vega-Lite JSON syntax. It should therefore be very easy to take any given Vega-Lite JSON example and translate it into a corresponding `@vlplot` macro call. The macro also provides a number of shorthands that make it easy to create very compact plot specifications. This section will first review the difference between the original JSON Vega-Lite syntax and the `@vlplot` macro, and then discuss the various shorthands that users will typically use.
 
 ## JSON syntax vs `@vlplot` macro
 
@@ -38,8 +38,8 @@ using VegaLite
     },
     mark="bar",
     encoding={
-        x={field="a", typ="ordinal"},
-        y={field="b", typ="quantitative"}
+        x={field="a", type="ordinal"},
+        y={field="b", type="quantitative"}
     }
 )
 ```
@@ -50,7 +50,7 @@ We had to make the following adjustments to the original JSON specification:
 3. The JSON key-value separator `:` was replaced with `=`.
 4. Any `null` value in the JSON specification should be replaced with `nothing` in the `@vlplot` call.
 
-These five rules should be sufficient to translate any valid JSON Vega-Lite specification into a corresponding `@vlplot` macro call.
+These four rules should be sufficient to translate any valid JSON Vega-Lite specification into a corresponding `@vlplot` macro call.
 
 ## Symbols instead of Strings
 
@@ -65,11 +65,11 @@ data |>
     encoding={
         x={
             field=:a, # Note how we use :a instead of "a" here
-            typ=:ordinal # Note how we use :ordinal instead of "ordinal" here
+            type=:ordinal # Note how we use :ordinal instead of "ordinal" here
         },
         y={
             field=:b, # Note how we use :b instead of "b" here
-            typ=:quantitative # Note how we use :quantitative instead of "quantitative" here
+            type=:quantitative # Note how we use :quantitative instead of "quantitative" here
         }
     }
 )
@@ -79,9 +79,9 @@ data |>
 
 [VegaLite.jl](https://github.com/queryverse/VegaLite.jl) provides a similar string shorthand syntax for encodings as [Altair](https://altair-viz.github.io/) (the Python wrapper around Vega-Lite).
 
-Almost any channel encoding in a specification will have the keys `field` and `typ`, as in `x={field=:a, typ=:ordinal}`. Because these patterns are so common, we provide a shorthand string syntax for this case. Using the shorthand one can write the channel encoding as `x={"a:o"}`. These string shorthands have to appear as the first positional argument inside the curly brackets `{}` for the encoding channel. The pattern inside the string is that one specifies the name of the field before the `:`, and then the first letter of the type of encoding (`o` for ordinal, `q` for quantitative etc.).
+Almost any channel encoding in a specification will have the keys `field` and `type`, as in `x={field=:a, type=:ordinal}`. Because these patterns are so common, we provide a shorthand string syntax for this case. Using the shorthand one can write the channel encoding as `x={"a:o"}`. These string shorthands have to appear as the first positional argument inside the curly brackets `{}` for the encoding channel. The pattern inside the string is that one specifies the name of the field before the `:`, and then the first letter of the type of encoding (`o` for ordinal, `q` for quantitative etc.).
 
-The string shorthand also extends to the `timeUnit` and `aggregate` key in encodings. Aggregation functions and time units can be specified using a function call syntax inside the string shorthand. For example, `x={"mean(foo)"}` is equivalent to `x={field=:foo, aggregate=:mean, typ=:quantitative}` (note that we don't have to specify the type explicitly when we use aggregations, the default assumption is that the result of an aggregation is quantitative). An example that uses the shorthand for a time unit is `x={"year(foo):t"}`, which is equivalent to `x={field=:foo, timeUnit=:year, typ=:quantitative}`. For aggregations that don't require a field name (e.g. the `count` aggregation), you can just write `x="count()"`.
+The string shorthand also extends to the `timeUnit` and `aggregate` key in encodings. Aggregation functions and time units can be specified using a function call syntax inside the string shorthand. For example, `x={"mean(foo)"}` is equivalent to `x={field=:foo, aggregate=:mean, type=:quantitative}` (note that we don't have to specify the type explicitly when we use aggregations, the default assumption is that the result of an aggregation is quantitative). An example that uses the shorthand for a time unit is `x={"year(foo):t"}`, which is equivalent to `x={field=:foo, timeUnit=:year, type=:quantitative}`. For aggregations that don't require a field name (e.g. the `count` aggregation), you can just write `x="count()"`.
 
 String shorthands can be combined with any other attributes. For example, the following example shows how one can specify an axis title and still use the string shorthand notation:
 
@@ -89,7 +89,7 @@ String shorthands can be combined with any other attributes. For example, the fo
 x={"foo:q", axis={title="some title"}}
 ```
 
-In cases where you don't want to specify any other attributes than what can be expressed in the string shorthand you don't have to use the surrounding curly brackets `{}` for the encoding: `x="foo:q"` is equivalent to `x={field=:foo, typ=:quantitative}`. If you only want to specify the field and not even the type, you can resort to using a `Symbol`: `x=:foo` is also a valid encoding.
+In cases where you don't want to specify any other attributes than what can be expressed in the string shorthand you don't have to use the surrounding curly brackets `{}` for the encoding: `x="foo:q"` is equivalent to `x={field=:foo, type=:quantitative}`. If you only want to specify the field and not even the type, you can resort to using a `Symbol`: `x=:foo` is also a valid encoding.
 
 The shorthand string syntax allows us to write the specification of the plot from the previous section in this much more concise format:
 
@@ -149,4 +149,4 @@ data |>
 
 ## `x` and `y` encoding channel as positional arguments
 
-For the `x` and `y` encoding channel only, you can specify their values as the second and third positional element a the root level of the `@vlplot` call instead of using named arguments. In particular, you can write `@vlplot(:point, :colA, :colB)` instead of `@vlplot(:point, x=:colA, y=:colB)` or `@vlplot(:point, :colA)` instead of `@vlplot(:point, x=:colA)`.
+For the `x` and `y` encoding channel only, you can specify their values as the second and third positional element at the root level of the `@vlplot` call instead of using named arguments. In particular, you can write `@vlplot(:point, :colA, :colB)` instead of `@vlplot(:point, x=:colA, y=:colB)` or `@vlplot(:point, :colA)` instead of `@vlplot(:point, x=:colA)`.
