@@ -217,3 +217,11 @@ function Base.show(io::IO, m::MIME"image/png", v::VGSpec)
         Cairo.write_to_png(cs,io)
     end
 end
+
+function Base.show(io::IO, m::MIME"application/vnd.julia.fileio.htmlfile", v::VegaLite.VLSpec)
+    writehtml_full(io, v)
+end
+
+function Base.show(io::IO, m::MIME"application/vnd.julia.fileio.htmlfile", v::VegaLite.VGSpec)
+    writehtml_full(io, v)
+end
