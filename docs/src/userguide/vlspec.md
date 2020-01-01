@@ -162,7 +162,7 @@ Simply viewing plots should work out of the box in all known Julia environments.
 
 ## Saving plots
 
-[VegaLite.jl](https://github.com/queryverse/VegaLite.jl) plots can be saved as [PNG](https://en.wikipedia.org/wiki/Portable_Network_Graphics), [SVG](https://en.wikipedia.org/wiki/Scalable_Vector_Graphics), [PDF](https://en.wikipedia.org/wiki/PDF) and [EPS](https://en.wikipedia.org/wiki/Encapsulated_PostScript) files. You can save a plot by calling the `save` function:
+[VegaLite.jl](https://github.com/queryverse/VegaLite.jl) plots can be saved as [PNG](https://en.wikipedia.org/wiki/Portable_Network_Graphics), [SVG](https://en.wikipedia.org/wiki/Scalable_Vector_Graphics), [PDF](https://en.wikipedia.org/wiki/PDF), [EPS](https://en.wikipedia.org/wiki/Encapsulated_PostScript) and HTML files. You can save a plot by calling the `save` function:
 
 ```julia
 using VegaLite, VegaDatasets
@@ -178,8 +178,11 @@ save("figure.svg", p)
 # Save as PDF file
 save("figure.pdf", p)
 
-# Save EPS PNG file
+# Save EPS file
 save("figure.eps", p)
+
+# Save HTML file
+save("figure.html", p)
 ```
 
 You can also use the `|>` operator with the `save` function:

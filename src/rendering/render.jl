@@ -12,10 +12,10 @@ asset(url...) = normpath(joinpath(vegaliate_app_path, "minified", url...))
 Creates standalone html file for showing the plot (typically in a browser tab).
 VegaLite js files are references to local copies.
 """
-function writehtml_full(io::IO, spec::String; title="VegaLite plot")
+function writehtml_full(io::IO, spec::VLSpec; title="VegaLite plot")
   divid = "vg" * randstring(3)
 
-  println(io,
+  print(io,
   """
   <html>
     <head>
@@ -46,8 +46,12 @@ function writehtml_full(io::IO, spec::String; title="VegaLite plot")
         actions: $ACTIONSLINKS
       }
 
-      var spec = $spec
+      var spec = """)
 
+  our_json_print(io, spec)
+  println(io)
+
+  println(io, """
       vegaEmbed('#$divid', spec, opt);
 
     </script>
@@ -56,7 +60,7 @@ function writehtml_full(io::IO, spec::String; title="VegaLite plot")
   """)
 end
 
-function writevghtml_full(io::IO, spec::String; title="Vega plot")
+function writehtml_full(io::IO, spec::VGSpec; title="Vega plot")
   divid = "vg" * randstring(3)
 
   println(io,
@@ -89,8 +93,12 @@ function writevghtml_full(io::IO, spec::String; title="Vega plot")
         actions: $ACTIONSLINKS
       }
 
-      var spec = $spec
+      var spec = """)
+      
+  our_json_print(io, spec)
+  println(io)
 
+  println(io, """
       vegaEmbed('#$divid', spec, opt);
 
     </script>
@@ -99,7 +107,7 @@ function writevghtml_full(io::IO, spec::String; title="Vega plot")
   """)
 end
 
-function writehtml_full(spec::String; title="VegaLite plot")
+function writehtml_full(spec::VLSpec; title="VegaLite plot")
   tmppath = string(tempname(), ".vegalite.html")
 
   open(tmppath, "w") do io
@@ -109,11 +117,11 @@ function writehtml_full(spec::String; title="VegaLite plot")
   tmppath
 end
 
-function write_vg_html_full(spec::String; title="Vega plot")
+function writehtml_full(spec::VGSpec; title="Vega plot")
   tmppath = string(tempname(), ".vega.html")
 
   open(tmppath, "w") do io
-    writevghtml_full(io, spec, title=title)
+    writehtml_full(io, spec, title=title)
   end
 
   tmppath
@@ -202,11 +210,11 @@ end
 
 function Base.display(d::REPL.REPLDisplay, plt::VLSpec)
   # checkplot(plt)
-  tmppath = writehtml_full(sprint(our_json_print, plt))
+  tmppath = writehtml_full(plt)
   launch_browser(tmppath) # Open the browser
 end
 
 function Base.display(d::REPL.REPLDisplay, plt::VGSpec)
-  tmppath = write_vg_html_full(sprint(our_json_print, plt))
+  tmppath = writehtml_full(plt)
   launch_browser(tmppath) # Open the browser
 end
