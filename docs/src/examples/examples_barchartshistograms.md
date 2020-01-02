@@ -185,7 +185,7 @@ using VegaLite, DataFrames
 
 data = DataFrame(
     question=["Question $(div(i,5)+1)" for i in 0:39],
-    typ=repeat(["Strongly disagree", "Disagree", "Neither agree nor disagree",
+    type=repeat(["Strongly disagree", "Disagree", "Neither agree nor disagree",
         "Agree", "Strongly agree"],outer=8),
     value=[24, 294, 594, 1927, 376, 2, 2, 0, 7, 11, 2, 0, 2, 4, 2, 0, 2, 1, 7,
         6, 0, 1, 3, 16, 4, 1, 1, 2, 9, 3, 0, 0, 1, 4, 0, 0, 0, 0, 0, 2],
@@ -226,7 +226,7 @@ data |> @vlplot(
                 "Strongly agree"
             ],
             range=["#c30d24", "#f3a583", "#cccccc", "#94c6da", "#1770ab"],
-            typ=:ordinal
+            type=:ordinal
         }
     }
 )
@@ -280,34 +280,32 @@ df |> @vlplot(
     height=200,
     width=800,
     mark={:point, filled=true},
-    enc={
-        x={"col:o", axis=nothing},
-        y={"animal:o", axis=nothing},
-        row={"country:n", header={title=nothing}},
-        shape={
-            "animal:n",
-            scale={
-                domain=[ "person", "cattle", "pigs", "sheep" ],
-                range=[ personSVGPath, cattleSVGPath, pigsSVGPath, sheepSVGPath ]
-            },
-            legend=nothing
+    x={"col:o", axis=nothing},
+    y={"animal:o", axis=nothing},
+    row={"country:n", header={title=nothing}},
+    shape={
+        "animal:n",
+        scale={
+            domain=[ "person", "cattle", "pigs", "sheep" ],
+            range=[ personSVGPath, cattleSVGPath, pigsSVGPath, sheepSVGPath ]
         },
-        color={
-            "animal:n",
-            legend=nothing,
-            scale={
-                domain=[ "person", "cattle", "pigs", "sheep" ],
-                range=[
-                    "rgb(162,160,152)",
-                    "rgb(194,81,64)",
-                    "rgb(93,93,93)",
-                    "rgb(91,131,149)"
-                ]
-            }
-        },
-        opacity={ value=1 },
-        size={ value=200 }
-    }
+        legend=nothing
+    },
+    color={
+        "animal:n",
+        legend=nothing,
+        scale={
+            domain=[ "person", "cattle", "pigs", "sheep" ],
+            range=[
+                "rgb(162,160,152)",
+                "rgb(194,81,64)",
+                "rgb(93,93,93)",
+                "rgb(91,131,149)"
+            ]
+        }
+    },
+    opacity={ value=1 },
+    size={ value=200 }
 )
 ```
 
@@ -338,13 +336,11 @@ df |> @vlplot(
         {window=[{op=:rank, as=:rank}], groupby=[:country, :animal]}
     ],
     mark={:text, baseline=:middle},
-    enc={
-        x={"rank:o", axis=nothing},
-        y={"animal:n", axis=nothing, sort=nothing},
-        row={"country:n", header={title=nothing}},
-        text="emoji:n",
-        size={ value=65 }
-    }
+    x={"rank:o", axis=nothing},
+    y={"animal:n", axis=nothing, sort=nothing},
+    row={"country:n", header={title=nothing}},
+    text="emoji:n",
+    size={ value=65 }
 )
 ```
 
