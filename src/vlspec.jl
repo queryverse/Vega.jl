@@ -5,16 +5,16 @@
 ###############################################################################
 
 struct VLSpec <: AbstractVegaSpec
-    params::Dict
+    params::OrderedDict
 end
 
 # data is an object in vega lite
 function vl_set_spec_data!(specdict, datait)
-    recs = [Dict{String,Any}(string(c[1])=>isa(c[2], DataValues.DataValue) ? (isna(c[2]) ? nothing : get(c[2])) : c[2] for c in zip(keys(r), values(r))) for r in datait]
-    specdict["data"] = Dict{String,Any}("values" => recs)
+    recs = [OrderedDict{String,Any}(string(c[1])=>isa(c[2], DataValues.DataValue) ? (isna(c[2]) ? nothing : get(c[2])) : c[2] for c in zip(keys(r), values(r))) for r in datait]
+    specdict["data"] = OrderedDict{String,Any}("values" => recs)
 end
 
-function augment_encoding_type(x::Dict, data::DataValuesNode)
+function augment_encoding_type(x::AbstractDict, data::DataValuesNode)
     if !haskey(x, "type") && !haskey(x, "aggregate") && haskey(x, "field") && haskey(data.columns, Symbol(x["field"]))
         new_x = copy(x)
 
@@ -42,8 +42,8 @@ function add_encoding_types(specdict, parentdata=nothing)
     if (haskey(specdict, "data") && haskey(specdict["data"], "values") && specdict["data"]["values"] isa DataValuesNode) || parentdata!==nothing       
         data = (haskey(specdict, "data") && haskey(specdict["data"], "values") && specdict["data"]["values"] isa DataValuesNode) ? specdict["data"]["values"] : parentdata
 
-        newspec = Dict{String,Any}(
-            (k=="encoding" && v isa Dict) ? k=>Dict{String,Any}(kk=>augment_encoding_type(vv, data) for (kk,vv) in v) : 
+        newspec = OrderedDict{String,Any}(
+            (k=="encoding" && v isa AbstractDict) ? k=>OrderedDict{String,Any}(kk=>augment_encoding_type(vv, data) for (kk,vv) in v) : 
                 k=="spec" ? k=>add_encoding_types(v, data) :
                 k in ("layer", "concat", "vconcat", "hconcat") ? k=>[add_encoding_types(i, data) for i in v] : k=>v for (k,v) in specdict
         )
@@ -67,14 +67,14 @@ function (p::VLSpec)(data)
 
     new_dict = copy(getparams(p))
 
-    new_dict["data"] = Dict{String,Any}("values" => datavaluesnode)
+    new_dict["data"] = OrderedDict{String,Any}("values" => datavaluesnode)
 
     return VLSpec(new_dict)
 end
 
 function (p::VLSpec)(uri::URI)
     new_dict = copy(getparams(p))
-    new_dict["data"] = Dict{String,Any}("url" => string(uri))
+    new_dict["data"] = OrderedDict{String,Any}("url" => string(uri))
 
     return VLSpec(new_dict)
 end
@@ -86,7 +86,7 @@ function (p::VLSpec)(path::AbstractPath)
 
     # TODO This is a hack that might only work on Windows
     # Vega seems to not understand properly formed file URIs
-    new_dict["data"] = Dict{String,Any}("url" => Sys.iswindows() ? as_uri[1:5] * as_uri[7:end] : as_uri)
+    new_dict["data"] = OrderedDict{String,Any}("url" => Sys.iswindows() ? as_uri[1:5] * as_uri[7:end] : as_uri)
 
     return VLSpec(new_dict)
 end
@@ -129,7 +129,7 @@ function Base.:+(a::VLSpec, b::VLSpec)
 end
 
 function Base.hcat(A::VLSpec...)
-    spec = VLSpec(Dict{String,Any}())
+    spec = VLSpec(OrderedDict{String,Any}())
     getparams(spec)["hconcat"] = []
     for i in A
         push!(getparams(spec)["hconcat"], deepcopy(getparams(i)))
@@ -138,7 +138,7 @@ function Base.hcat(A::VLSpec...)
 end
 
 function Base.vcat(A::VLSpec...)
-  spec = VLSpec(Dict{String,Any}())
+  spec = VLSpec(OrderedDict{String,Any}())
   getparams(spec)["vconcat"] = []
   for i in A
       push!(getparams(spec)["vconcat"], deepcopy(getparams(i)))

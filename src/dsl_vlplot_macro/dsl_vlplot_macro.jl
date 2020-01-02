@@ -13,7 +13,7 @@ function convert_curly_style_array(exprs, fragtype)
 end
 
 function convert_curly_style(exprs, fragtype)
-    new_expr = :($fragtype(Any[], Dict{String,Any}()))
+    new_expr = :($fragtype(Any[], OrderedDict{String,Any}()))
 
     pos_args = new_expr.args[2].args
     named_args = new_expr.args[3].args

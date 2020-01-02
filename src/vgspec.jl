@@ -1,5 +1,5 @@
 struct VGSpec <: AbstractVegaSpec
-    params::Dict
+    params::OrderedDict
 end
 
 function our_json_print(io, spec::VGSpec)
@@ -9,7 +9,7 @@ end
 # data is an array in vega
 function vg_set_spec_data!(specdict, datait, name)
     updated = false
-    recs = [Dict{String,Any}(string(c[1])=>isa(c[2], DataValues.DataValue) ? (isna(c[2]) ? nothing : get(c[2])) : c[2] for c in zip(keys(r), values(r))) for r in datait]
+    recs = [OrderedDict{String,Any}(string(c[1])=>isa(c[2], DataValues.DataValue) ? (isna(c[2]) ? nothing : get(c[2])) : c[2] for c in zip(keys(r), values(r))) for r in datait]
     for def in specdict["data"]
         if def["name"] == name
             def["values"] = recs
