@@ -43,7 +43,7 @@ using VegaLite
 x = 0:100
 y = sin.(x./5)
 
-data |> @vlplot(:line, x=x, y={y, title="sin(x)"})
+@vlplot(:line, x=x, y={y, title="sin(x)"})
 ```
 
 ## Simple Scatter Plot
