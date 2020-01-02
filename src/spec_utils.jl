@@ -1,5 +1,5 @@
 struct ObjectProxy
-    params::Dict
+    params::OrderedDict
 end
 
 abstract type AbstractVegaSpec end
@@ -26,7 +26,7 @@ function Base.getproperty(spec::ObjectLike, name::Symbol)
     end
     params = getparams(spec)
     value = params[keytype(params)(name)]
-    if value isa Dict
+    if value isa AbstractDict
         return ObjectProxy(value)
     else
         return value

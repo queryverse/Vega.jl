@@ -59,7 +59,7 @@ function print_vspec_as_julia(io::IO, vect::AbstractVector, indent, indent_level
 end
 
 function print_vspec_as_julia(io::IO, dict::AbstractDict, indent, indent_level, newlines, include_data)
-    dict = (include_data==:short || include_data) ? dict : Dict{String,Any}(i for i in dict if i[1]!="data")
+    dict = (include_data==:short || include_data) ? dict : OrderedDict{String,Any}(i for i in dict if i[1]!="data")
     for (i,(k,v)) in enumerate(dict)
         i>1 && print(io, ",", newlines ? "\n" : "")
         print(io, " "^(indent*indent_level), k)
