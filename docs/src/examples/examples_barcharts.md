@@ -15,7 +15,6 @@ data |> @vlplot(:bar, x="a:o", y=:b)
 
 ## Responsive Bar Chart
 
-ToDo
 ```@example
 using VegaLite, VegaDatasets
 
@@ -36,6 +35,7 @@ using VegaLite, VegaDatasets
 
 dataset("population") |>
 @vlplot(
+    height={stept=17},
     :bar,
     transform=[{filter="datum.year == 2000"}],
     y="age:o",
@@ -45,7 +45,17 @@ dataset("population") |>
 
 ## Aggregate Bar Chart (Sorted)
 
-ToDo
+```@example
+using VegaLite, VegaDatasets
+
+dataset("population") |>
+@vlplot(
+    :bar,
+    transform=[{filter="datum.year == 2000"}],
+    y="age:o",
+    x={"sum(people)", axis={title="population"}}
+)
+```
 
 ## Grouped Bar Chart
 
