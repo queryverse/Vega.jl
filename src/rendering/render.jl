@@ -26,7 +26,7 @@ function writehtml_full(io::IO, spec::VLSpec; title="VegaLite plot")
       <script>$(read(asset("vega-embed.min.js"), String))</script>
     </head>
     <body>
-      <div id="$divid"></div>
+      <div id="$divid" style="width:100%;height:100%;"></div>
     </body>
 
     <style media="screen">
@@ -73,7 +73,7 @@ function writehtml_full(io::IO, spec::VGSpec; title="Vega plot")
       <script>$(read(asset("vega-embed.min.js"), String))</script>
     </head>
     <body>
-      <div id="$divid"></div>
+      <div id="$divid" style="width:100%;height:100%;"></div>
     </body>
 
     <style media="screen">
@@ -141,7 +141,7 @@ function writehtml_partial(io::IO, spec::String; title="VegaLite plot")
   """
   <html>
     <body>
-      <div id="$divid"></div>
+      <div id="$divid" style="width:100%;height:100%;"></div>
     </body>
 
     <style media="screen">
