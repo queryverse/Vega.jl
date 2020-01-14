@@ -122,18 +122,19 @@ function Base.show(io::IO, m::MIME"application/pdf", v::VLSpec)
     if vegaliate_app_includes_canvas
         print(io, convert_vl_to_x(v, "vg2pdf"))
     else
-        svgstring = convert_vl_to_svg(v)
+        error("Not yet implemented.")
+        # svgstring = convert_vl_to_svg(v)
 
-        r = Rsvg.handle_new_from_data(svgstring)
-        d = Rsvg.handle_get_dimensions(r)
+        # r = Rsvg.handle_new_from_data(svgstring)
+        # d = Rsvg.handle_get_dimensions(r)
 
-        cs = Cairo.CairoPDFSurface(io, d.width,d.height)
-        try
-            c = Cairo.CairoContext(cs)
-            Rsvg.handle_render_cairo(c,r)
-        finally
-            Cairo.finish(cs)
-        end
+        # cs = Cairo.CairoPDFSurface(io, d.width,d.height)
+        # try
+        #     c = Cairo.CairoContext(cs)
+        #     Rsvg.handle_render_cairo(c,r)
+        # finally
+        #     Cairo.finish(cs)
+        # end
     end
 end
 
@@ -141,64 +142,66 @@ function Base.show(io::IO, m::MIME"application/pdf", v::VGSpec)
     if vegaliate_app_includes_canvas
         print(io, convert_vg_to_x(v, "vg2pdf"))
     else
-        svgstring = convert_vg_to_svg(v)
+        error("Not yet implemented.")
+        # svgstring = convert_vg_to_svg(v)
 
-        r = Rsvg.handle_new_from_data(svgstring)
-        d = Rsvg.handle_get_dimensions(r)
+        # r = Rsvg.handle_new_from_data(svgstring)
+        # d = Rsvg.handle_get_dimensions(r)
 
-        cs = Cairo.CairoPDFSurface(io, d.width,d.height)
-        try
-            c = Cairo.CairoContext(cs)
-            Rsvg.handle_render_cairo(c,r)
-        finally
-            Cairo.finish(cs)
-        end
+        # cs = Cairo.CairoPDFSurface(io, d.width,d.height)
+        # try
+        #     c = Cairo.CairoContext(cs)
+        #     Rsvg.handle_render_cairo(c,r)
+        # finally
+        #     Cairo.finish(cs)
+        # end
     end
 end
 
-function Base.show(io::IO, m::MIME"application/eps", v::VLSpec)
-    svgstring = convert_vl_to_svg(v)
+# function Base.show(io::IO, m::MIME"application/eps", v::VLSpec)
+#     svgstring = convert_vl_to_svg(v)
 
-    r = Rsvg.handle_new_from_data(svgstring)
-    d = Rsvg.handle_get_dimensions(r)
+#     r = Rsvg.handle_new_from_data(svgstring)
+#     d = Rsvg.handle_get_dimensions(r)
 
-    cs = Cairo.CairoEPSSurface(io, d.width,d.height)
-    try
-        c = Cairo.CairoContext(cs)
-        Rsvg.handle_render_cairo(c,r)
-    finally
-        Cairo.finish(cs)
-    end
-end
+#     cs = Cairo.CairoEPSSurface(io, d.width,d.height)
+#     try
+#         c = Cairo.CairoContext(cs)
+#         Rsvg.handle_render_cairo(c,r)
+#     finally
+#         Cairo.finish(cs)
+#     end
+# end
 
-function Base.show(io::IO, m::MIME"application/eps", v::VGSpec)
-    svgstring = convert_vg_to_svg(v)
+# function Base.show(io::IO, m::MIME"application/eps", v::VGSpec)
+#     svgstring = convert_vg_to_svg(v)
 
-    r = Rsvg.handle_new_from_data(svgstring)
-    d = Rsvg.handle_get_dimensions(r)
+#     r = Rsvg.handle_new_from_data(svgstring)
+#     d = Rsvg.handle_get_dimensions(r)
 
-    cs = Cairo.CairoEPSSurface(io, d.width,d.height)
-    try
-        c = Cairo.CairoContext(cs)
-        Rsvg.handle_render_cairo(c,r)
-    finally
-        Cairo.finish(cs)
-    end
-end
+#     cs = Cairo.CairoEPSSurface(io, d.width,d.height)
+#     try
+#         c = Cairo.CairoContext(cs)
+#         Rsvg.handle_render_cairo(c,r)
+#     finally
+#         Cairo.finish(cs)
+#     end
+# end
 
 function Base.show(io::IO, m::MIME"image/png", v::VLSpec)
     if vegaliate_app_includes_canvas
         print(io, convert_vl_to_x(v, "vg2png"))
     else
-        svgstring = convert_vl_to_svg(v)
+        error("Not yet implemented.")
+        # svgstring = convert_vl_to_svg(v)
 
-        r = Rsvg.handle_new_from_data(svgstring)
-        d = Rsvg.handle_get_dimensions(r)
+        # r = Rsvg.handle_new_from_data(svgstring)
+        # d = Rsvg.handle_get_dimensions(r)
 
-        cs = Cairo.CairoImageSurface(d.width,d.height,Cairo.FORMAT_ARGB32)
-        c = Cairo.CairoContext(cs)
-        Rsvg.handle_render_cairo(c,r)
-        Cairo.write_to_png(cs,io)
+        # cs = Cairo.CairoImageSurface(d.width,d.height,Cairo.FORMAT_ARGB32)
+        # c = Cairo.CairoContext(cs)
+        # Rsvg.handle_render_cairo(c,r)
+        # Cairo.write_to_png(cs,io)
     end
 end
 
@@ -206,15 +209,16 @@ function Base.show(io::IO, m::MIME"image/png", v::VGSpec)
     if vegaliate_app_includes_canvas
         print(io, convert_vg_to_x(v, "vg2png"))
     else
-        svgstring = convert_vg_to_svg(v)
+        error("Not yet implemented.")
+        # svgstring = convert_vg_to_svg(v)
 
-        r = Rsvg.handle_new_from_data(svgstring)
-        d = Rsvg.handle_get_dimensions(r)
+        # r = Rsvg.handle_new_from_data(svgstring)
+        # d = Rsvg.handle_get_dimensions(r)
 
-        cs = Cairo.CairoImageSurface(d.width,d.height,Cairo.FORMAT_ARGB32)
-        c = Cairo.CairoContext(cs)
-        Rsvg.handle_render_cairo(c,r)
-        Cairo.write_to_png(cs,io)
+        # cs = Cairo.CairoImageSurface(d.width,d.height,Cairo.FORMAT_ARGB32)
+        # c = Cairo.CairoContext(cs)
+        # Rsvg.handle_render_cairo(c,r)
+        # Cairo.write_to_png(cs,io)
     end
 end
 
