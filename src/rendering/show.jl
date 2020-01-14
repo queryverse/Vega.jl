@@ -225,3 +225,11 @@ end
 function Base.show(io::IO, m::MIME"application/vnd.julia.fileio.htmlfile", v::VegaLite.VGSpec)
     writehtml_full(io, v)
 end
+
+function Base.show(io::IO, m::MIME"application/prs.juno.plotpane+html", v::VLSpec)
+    writehtml_full(io, v)
+end
+
+function Base.show(io::IO, m::MIME"application/prs.juno.plotpane+html", v::VGSpec)
+    writehtml_full(io, v)
+end
