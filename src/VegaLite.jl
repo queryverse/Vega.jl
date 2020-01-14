@@ -12,7 +12,7 @@ using REPL, Dates
 using Random
 import JSONSchema
 using Setfield: Setfield, PropertyLens, @lens, @set
-import Cairo, Rsvg
+# import Cairo, Rsvg
 using Pkg.Artifacts
 using DataStructures
 import TableTraitsUtils
