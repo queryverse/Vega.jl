@@ -35,7 +35,7 @@ using VegaLite, VegaDatasets
 
 dataset("population") |>
 @vlplot(
-    height={stept=17},
+    height={step=17},
     :bar,
     transform=[{filter="datum.year == 2000"}],
     y="age:o",
@@ -52,7 +52,7 @@ dataset("population") |>
 @vlplot(
     :bar,
     transform=[{filter="datum.year == 2000"}],
-    y="age:o",
+    y={"age:o",sort="-x"},
     x={"sum(people)", axis={title="population"}}
 )
 ```
@@ -72,7 +72,7 @@ dataset("population") |>
     column="age:o",
     y={"sum(people)", axis={title="population", grid=false}},
     x={"gender:n", axis={title=""}},
-    color={"gender:n", scale={range=["#EA98D2", "#659CCA"]}},
+    color={"gender:n", scale={range=["#675193", "#ca8861"]}},
     spacing=10,
     config={
         view={stroke=:transparent},
@@ -106,7 +106,23 @@ dataset("seattle-weather") |>
 
 ## Stacked Bar Chart with Rounded Corners
 
-ToDo
+```@example
+using VegaLite, VegaDatasets
+
+dataset("seattle-weather") |>
+@vlplot(
+    mark={
+        :bar,
+        cornerRadiusTopLeft=3,
+        cornerRadiusTopRight=3
+    },
+    x={"month(date):o"},
+    y="count()",
+    color={
+        :weather
+    }
+)
+```
 
 ## Horizontal Stacked Bar Chart
 
@@ -117,7 +133,7 @@ dataset("barley") |>
 @vlplot(:bar, x="sum(yield)", y=:variety, color=:site)
 ```
 
-## Normalized Stacked Bar Chart
+## Normalized (Percentage) Stacked Bar Chart
 
 ```@example
 using VegaLite, VegaDatasets
@@ -137,15 +153,11 @@ dataset("population") |>
     x="age:o",
     color={
         "gender:n",
-        scale={range=["#EA98D2", "#659CCA"]}
+        scale={range=["#675193", "#ca8861"]}
     },
     width={step=17}    
 )
 ```
-
-## Normalized (Percentage) Stacked Bar Chart
-
-ToDo
 
 ## Gantt Chart (Ranged Bar Marks)
 
@@ -201,13 +213,17 @@ dataset("population") |>
     ],
     x="age:o",
     y={"sum(people)", axis={title="population"}, stack=nothing},
-    color={"gender:n", scale={range=["#e377c2", "#1f77b4"]}},
+    color={"gender:n", scale={range=["#675193", "#ca8861"]}},
     opacity={value=0.7},
     width={step=17}
 )
 ```
 
 ## Diverging Stacked Bar Chart (Population Pyramid)
+
+ToDo
+
+## Diverging Stacked Bar Chart (with Neutral Parts)
 
 ```@example
 using VegaLite, DataFrames
@@ -260,10 +276,6 @@ data |> @vlplot(
     }
 )
 ```
-
-## Diverging Stacked Bar Chart (with Neutral Parts)
-
-ToDo
 
 ## Bar Chart with Labels
 
