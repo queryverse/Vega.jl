@@ -221,7 +221,25 @@ dataset("population") |>
 
 ## Diverging Stacked Bar Chart (Population Pyramid)
 
-ToDo
+```@example
+using VegaLite, VegaDatasets
+
+dataset("population") |>
+@vlplot(
+    width=300,
+    height=200,
+    :bar,
+    transform=[
+        {filter="datum.year==2000"},
+        {calculate="datum.sex==2 ? 'Female' : 'Male'", as="gender"},
+        {calculate="datum.sex==2 ? -datum.people : datum.people", "as"="signed_people" }
+    ],
+    x={"sum(signed_people)", axis={title="population", format=:s} },
+    y={"age:o", axis=nothing, sort="descending" },
+    color={"gender:n", scale={range=["#675193", "#ca8861"]},legend={orient=:top,title=nothing}},
+    config={view={stroke=nothing},axis={grid=false}}
+)
+```
 
 ## Diverging Stacked Bar Chart (with Neutral Parts)
 
@@ -260,7 +278,7 @@ data |> @vlplot(
         }
     },
     color={
-        :typ,
+        :type,
         legend={title="Response"},
         scale={
             domain=[
@@ -307,7 +325,25 @@ using VegaLite
 
 ## Bar Chart with Label Overlays
 
-ToDo
+```@example
+using VegaLite, VegaDatasets
+
+dataset("movies") |>
+@vlplot(
+    width=200,
+    height={step=16},
+    y={:Major_Genre,axis=nothing}
+) +
+@vlplot(
+    mark={:bar,color="#ddd"},
+    x={"mean(IMDB_Rating)",axis={title="Mean IMDB Ratings"},scale={domain=[0,10]}},
+) +
+@vlplot(
+    mark={:text,align="left",x=5},
+    text="Major_Genre:n",
+    detail={aggregate="count", type=:quantitative}
+)
+```
 
 ## Bar Chart showing Initials of Month Names
 
