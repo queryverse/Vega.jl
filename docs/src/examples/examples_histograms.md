@@ -1,17 +1,4 @@
-# Bar Charts & Histograms
-
-## Simple Bar Chart
-
-```@example
-using VegaLite, DataFrames
-
-data = DataFrame(
-    a=["A","B","C","D","E","F","G","H","I"],
-    b=[28,55,43,91,81,53,19,87,52]
-)
-
-data |> @vlplot(:bar, x="a:o", y=:b)
-```
+# Histograms, Density Plots, and Dot Plots
 
 ## Histogram
 
@@ -22,241 +9,195 @@ dataset("movies") |>
 @vlplot(:bar, x={:IMDB_Rating, bin=true}, y="count()")
 ```
 
-## Aggregate Bar Chart
-
-```@example
-using VegaLite, VegaDatasets
-
-dataset("population") |>
-@vlplot(
-    :bar,
-    transform=[{filter="datum.year == 2000"}],
-    y="age:o",
-    x={"sum(people)", axis={title="population"}}
-)
-```
-
-## Grouped Bar Chart
-
-```@example
-using VegaLite, VegaDatasets
-
-dataset("population") |>
-@vlplot(
-    :bar,
-    transform=[
-        {filter="datum.year == 2000"},
-        {calculate="datum.sex == 2 ? 'Female' : 'Male'", as="gender"}
-    ],
-    column="age:o",
-    y={"sum(people)", axis={title="population", grid=false}},
-    x={"gender:n", axis={title=""}},
-    color={"gender:n", scale={range=["#EA98D2", "#659CCA"]}},
-    spacing=10,
-    config={
-        view={stroke=:transparent},
-        axis={domainWidth=1}
-    }
-)
-```
-
-## Stacked Bar Chart
-
-```@example
-using VegaLite, VegaDatasets
-
-dataset("seattle-weather") |>
-@vlplot(
-    :bar,
-    x={"month(date):o", axis={title="Month of the year"}},
-    y="count()",
-    color={
-        :weather,
-        scale={
-            domain=["sun","fog","drizzle","rain","snow"],
-            range=["#e7ba52","#c7c7c7","#aec7e8","#1f77b4","#9467bd"]
-        },
-        legend={
-            title="Weather type"
-        }
-    }
-)
-```
-
-## Horizontal Stacked Bar Chart
-
-```@example
-using VegaLite, VegaDatasets
-
-dataset("barley") |>
-@vlplot(:bar, x="sum(yield)", y=:variety, color=:site)
-```
-
-## Normalized Stacked Bar Chart
-
-```@example
-using VegaLite, VegaDatasets
-
-dataset("population") |>
-@vlplot(
-    :bar,
-    transform=[
-        {filter="datum.year == 2000"},
-        {calculate="datum.sex==2 ? 'Female' : 'Male'",as="gender"}
-    ],
-    y={
-        "sum(people)",
-        axis={title="population"},
-        stack=:normalize
-    },
-    x="age:o",
-    color={
-        "gender:n",
-        scale={range=["#EA98D2", "#659CCA"]}
-    },
-    width={step=17}    
-)
-```
-
-## Gantt Chart (Ranged Bar Marks)
-
-```@example
-using VegaLite
-
-@vlplot(
-    :bar,
-    data={
-        values=[
-            {task="A",start=1,stop=3},
-            {task="B",start=3,stop=8},
-            {task="C",start=8,stop=10}
-        ]
-    },
-    y="task:o",
-    x="start:q",
-    x2="stop:q"
-)
-```
-
-## A bar chart encoding color names in the data
-
-```@example
-using VegaLite
-
-@vlplot(
-    :bar,
-    data={
-        values=[
-            {color="red",b=28},
-            {color="green",b=55},
-            {color="blue",b=43}
-        ]
-    },
-    x="color:n",
-    y="b:q",
-    color={"color:n",scale=nothing}
-)
-```
-
-## Layered Bar Chart
-
-```@example
-using VegaLite, VegaDatasets
-
-dataset("population") |>
-@vlplot(
-    :bar,
-    transform=[
-        {filter="datum.year==2000"},
-        {calculate="datum.sex==2 ? 'Female' : 'Male'",as="gender"}
-    ],
-    x="age:o",
-    y={"sum(people)", axis={title="population"}, stack=nothing},
-    color={"gender:n", scale={range=["#e377c2", "#1f77b4"]}},
-    opacity={value=0.7},
-    width={step=17}
-)
-```
-
-## Diverging Stacked Bar Chart
+## Histogram (from Binned Data)
 
 ```@example
 using VegaLite, DataFrames
 
-data = DataFrame(
-    question=["Question $(div(i,5)+1)" for i in 0:39],
-    type=repeat(["Strongly disagree", "Disagree", "Neither agree nor disagree",
-        "Agree", "Strongly agree"],outer=8),
-    value=[24, 294, 594, 1927, 376, 2, 2, 0, 7, 11, 2, 0, 2, 4, 2, 0, 2, 1, 7,
-        6, 0, 1, 3, 16, 4, 1, 1, 2, 9, 3, 0, 0, 1, 4, 0, 0, 0, 0, 0, 2],
-    percentage=[0.7, 9.1, 18.5, 59.9, 11.7, 18.2, 18.2, 0, 63.6, 0, 20, 0, 20,
-        40, 20, 0, 12.5, 6.3, 43.8, 37.5, 0, 4.2, 12.5, 66.7, 16.7, 6.3, 6.3,
-        12.5, 56.3, 18.8, 0, 0, 20, 80, 0, 0, 0, 0, 0, 100],
-    percentage_start=[-19.1, -18.4, -9.2, 9.2, 69.2, -36.4, -18.2, 0, 0, 63.6,
-        -30, -10, -10, 10, 50, -15.6, -15.6, -3.1, 3.1, 46.9, -10.4, -10.4,
-        -6.3, 6.3, 72.9, -18.8, -12.5, -6.3, 6.3, 62.5, -10, -10, -10, 10, 90,
-        0, 0, 0, 0, 0],
-    percentage_end=[-18.4, -9.2, 9.2, 69.2, 80.9, -18.2, 0, 0, 63.6, 63.6, -10,
-        -10, 10, 50, 70, -15.6, -3.1, 3.1, 46.9, 84.4, -10.4, -6.3, 6.3, 72.9,
-        89.6, -12.5, -6.3, 6.3, 62.5, 81.3, -10, -10, 10, 90, 90, 0, 0, 0, 0, 100]
+data=DataFrame(
+    bin_start=[8,10,12,14,16,18,20,22],
+    bin_end=[10,12,14,16,18,20,22,24],
+    count=[7,29,71,127,94,54,17,5]
+)
+data |> @vlplot(
+    :bar, 
+    x={:bin_start, bin={binned=true,step=2}}, 
+    x2=:bin_end,
+    y=:count
+)
+```
+
+## Log-scaled Histogram
+
+```@example
+using VegaLite, DataFrames
+
+data=DataFrame(
+    x=[0.01,0.1,1,1,1,1,10,10,100,500,800]
 )
 
 data |> @vlplot(
-    :bar,
-    x={:percentage_start, axis={title="Percentage"}},
-    x2=:percentage_end,
-    y={
-        :question, axis={
-            title="Question",
-            offset=5,
-            ticks=false,
-            minExtent=60,
-            domain=false
-        }
-    },
-    color={
-        :typ,
-        legend={title="Response"},
-        scale={
-            domain=[
-                "Strongly disagree",
-                "Disagree",
-                "Neither agree nor disagree",
-                "Agree",
-                "Strongly agree"
-            ],
-            range=["#c30d24", "#f3a583", "#cccccc", "#94c6da", "#1770ab"],
-            type=:ordinal
+    :bar, 
+    transform=[
+        {calculate="log(datum.x)/log(10)", as="log_x"},
+        {field="log_x",bin=true,as="bin_log_x"},
+        {calculate="pow(10, datum.bin_log_x)", as="x1"},
+        {calculate="pow(10, datum.bin_log_x_end)", as="x2"}
+    ],
+    x={"x1:q", scale={type="log",base=10},axis={tickCount=5}},
+    x2=:x2,
+    y={aggregate="count",type="quantitative"}
+)
+```
+
+## Density Plot
+
+```@example
+using VegaLite, VegaDatasets
+
+dataset("movies") |>
+@vlplot(
+    width=400,
+    height=100,
+    :area,
+    transform=[
+        {density="IMDB_Rating",bandwidth=0.3}
+    ],
+    x={"value:q", title="IMDB Rating"},
+    y="density:q"
+)
+```
+
+## Stacked Density Estimates
+
+```@example
+using VegaLite, VegaDatasets
+
+dataset("movies") |>
+@vlplot(
+    width=400,
+    height=100,
+    :area,
+    transform=[
+        {density="IMDB_Rating",bandwidth=0.3,groupby=["Major_Genre"],extent=[0, 10],counts=true,steps=50}
+    ],
+    x={"value:q", title="IMDB Rating"},
+    y= {"density:q",stack=true},
+    color={"Major_Genre:n",scale={scheme=:category20}}
+)
+```
+
+## 2D Histogram Scatterplot
+
+```@example
+using VegaLite, VegaDatasets
+
+dataset("movies") |>
+@vlplot(
+    :circle,
+    x={:IMDB_Rating, bin={maxbins=10}},
+    y={:Rotten_Tomatoes_Rating, bin={maxbins=10}},
+    size="count()"
+)
+```
+
+## 2D Histogram Heatmap
+
+```@example
+using VegaLite, VegaDatasets
+
+dataset("movies") |>
+@vlplot(
+    :rect,
+    width=300, height=200,
+    x={:IMDB_Rating, bin={maxbins=60}},
+    y={:Rotten_Tomatoes_Rating, bin={maxbins=40}},
+    color="count()",
+    config={
+        range={
+            heatmap={
+                scheme="greenblue"
+            }
+        },
+        view={
+            stroke="transparent"
         }
     }
 )
 ```
 
-## Simple Bar Chart with Labels
+## Cumulative Frequency Distribution
 
 ```@example
-using VegaLite
+using VegaLite, VegaDatasets
 
+dataset("movies") |>
 @vlplot(
-    data={
-        values=[
-            {a="A",b=28},
-            {a="B",b=55},
-            {a="C",b=43}
-        ]
-    },
-    y="a:o",
-    x="b:q"
+    :area,
+    transform=[{
+        sort=[{field=:IMDB_Rating}],
+        window=[{field=:count,op="count",as="cumulative_count"}],
+        frame=[nothing,0]
+    }],
+    x="IMDB_Rating:q",
+    y="cumulative_count:q"
+)
+```
+
+## Layered Histogram and Cumulative Histogram
+
+```@example
+using VegaLite, VegaDatasets
+
+dataset("movies") |>
+@vlplot(
+    transform=[
+        {bin=true,field=:IMDB_Rating,as="bin_IMDB_Rating"},
+        {
+            aggregate=[{op=:count,as="count"}],
+            groupby=["bin_IMDB_Rating", "bin_IMDB_Rating_end"]
+        },
+        {filter="datum.bin_IMDB_Rating !== null"},
+        {
+            sort=[{field=:bin_IMDB_Rating}],
+            window=[{field=:count,op="sum",as="cumulative_count"}],
+            frame=[nothing,0]
+        }
+    ],
+    x={"bin_IMDB_Rating:q",scale={zero=false},title="IMDB Rating"},
+    x2=:bin_IMDB_Rating_end
 ) +
-@vlplot(:bar) +
 @vlplot(
-    mark={
-        :text,
-        align=:left,
-        baseline=:middle,
-        dx=3
-    },
-    text="b:q"
+    :bar,
+    y="cumulative_count:q"
+) +
+@vlplot(
+    mark={:bar,color=:yellow,opacity=0.5},
+    y="count:q"
+)
+```
+
+## Wilkinson Dot Plot
+
+```@example
+using VegaLite, DataFrames
+
+data=DataFrame(data=[
+    1,1,1,1,1,1,1,1,1,1,
+    2,2,2,
+    3,3,
+    4,4,4,4,4,4
+])
+
+data |> @vlplot(
+    height=100,
+    mark={:circle,opacity=1}, 
+    transform=[{
+        window=[{op=:rank,as="id"}],
+        groupby= [:data]
+    }],
+    x="data:o",
+    y={"id:o",axis=nothing,sort=:descending}
 )
 ```
 
