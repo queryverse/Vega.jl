@@ -341,10 +341,19 @@ dataset("movies") |>
 @vlplot(
     mark={:text,align="left",x=5},
     text="Major_Genre:n",
-    detail={aggregate="count", type=:quantitative}
+    detail={aggregate="count",type="quantitative"}
 )
 ```
 
 ## Bar Chart showing Initials of Month Names
 
-ToDo
+```@example
+using VegaLite, VegaDatasets
+
+dataset("seattle-weather") |>
+@vlplot(
+    :bar,
+    x={"date:t",timeUnit="month",axis={labelAlign="left",labelExpr="datum.label[0]"}},
+    y={"mean(precipitation)"}
+)
+```

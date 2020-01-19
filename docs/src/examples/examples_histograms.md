@@ -1,4 +1,4 @@
-# Bar Charts & Histograms
+# Histograms, Density Plots, and Dot Plots
 
 ## Histogram
 
@@ -11,39 +11,195 @@ dataset("movies") |>
 
 ## Histogram (from Binned Data)
 
-ToDo
+```@example
+using VegaLite, DataFrames
+
+data=DataFrame(
+    bin_start=[8,10,12,14,16,18,20,22],
+    bin_end=[10,12,14,16,18,20,22,24],
+    count=[7,29,71,127,94,54,17,5]
+)
+data |> @vlplot(
+    :bar, 
+    x={:bin_start, bin={binned=true,step=2}}, 
+    x2=:bin_end,
+    y=:count
+)
+```
 
 ## Log-scaled Histogram
 
-ToDo
+```@example
+using VegaLite, DataFrames
+
+data=DataFrame(
+    x=[0.01,0.1,1,1,1,1,10,10,100,500,800]
+)
+
+data |> @vlplot(
+    :bar, 
+    transform=[
+        {calculate="log(datum.x)/log(10)", as="log_x"},
+        {field="log_x",bin=true,as="bin_log_x"},
+        {calculate="pow(10, datum.bin_log_x)", as="x1"},
+        {calculate="pow(10, datum.bin_log_x_end)", as="x2"}
+    ],
+    x={"x1:q", scale={type="log",base=10},axis={tickCount=5}},
+    x2=:x2,
+    y={aggregate="count",type="quantitative"}
+)
+```
 
 ## Density Plot
 
-ToDo
+```@example
+using VegaLite, VegaDatasets
+
+dataset("movies") |>
+@vlplot(
+    width=400,
+    height=100,
+    :area,
+    transform=[
+        {density="IMDB_Rating",bandwidth=0.3}
+    ],
+    x={"value:q", title="IMDB Rating"},
+    y="density:q"
+)
+```
 
 ## Stacked Density Estimates
 
-ToDo
+```@example
+using VegaLite, VegaDatasets
+
+dataset("movies") |>
+@vlplot(
+    width=400,
+    height=100,
+    :area,
+    transform=[
+        {density="IMDB_Rating",bandwidth=0.3,groupby=["Major_Genre"],extent=[0, 10],counts=true,steps=50}
+    ],
+    x={"value:q", title="IMDB Rating"},
+    y= {"density:q",stack=true},
+    color={"Major_Genre:n",scale={scheme=:category20}}
+)
+```
 
 ## 2D Histogram Scatterplot
 
-ToDo
+```@example
+using VegaLite, VegaDatasets
+
+dataset("movies") |>
+@vlplot(
+    :circle,
+    x={:IMDB_Rating, bin={maxbins=10}},
+    y={:Rotten_Tomatoes_Rating, bin={maxbins=10}},
+    size="count()"
+)
+```
 
 ## 2D Histogram Heatmap
 
-ToDo
+```@example
+using VegaLite, VegaDatasets
+
+dataset("movies") |>
+@vlplot(
+    :rect,
+    width=300, height=200,
+    x={:IMDB_Rating, bin={maxbins=60}},
+    y={:Rotten_Tomatoes_Rating, bin={maxbins=40}},
+    color="count()",
+    config={
+        range={
+            heatmap={
+                scheme="greenblue"
+            }
+        },
+        view={
+            stroke="transparent"
+        }
+    }
+)
+```
 
 ## Cumulative Frequency Distribution
 
-ToDo
+```@example
+using VegaLite, VegaDatasets
+
+dataset("movies") |>
+@vlplot(
+    :area,
+    transform=[{
+        sort=[{field=:IMDB_Rating}],
+        window=[{field=:count,op="count",as="cumulative_count"}],
+        frame=[nothing,0]
+    }],
+    x="IMDB_Rating:q",
+    y="cumulative_count:q"
+)
+```
 
 ## Layered Histogram and Cumulative Histogram
 
-ToDo
+```@example
+using VegaLite, VegaDatasets
+
+dataset("movies") |>
+@vlplot(
+    transform=[
+        {bin=true,field=:IMDB_Rating,as="bin_IMDB_Rating"},
+        {
+            aggregate=[{op=:count,as="count"}],
+            groupby=["bin_IMDB_Rating", "bin_IMDB_Rating_end"]
+        },
+        {filter="datum.bin_IMDB_Rating !== null"},
+        {
+            sort=[{field=:bin_IMDB_Rating}],
+            window=[{field=:count,op="sum",as="cumulative_count"}],
+            frame=[nothing,0]
+        }
+    ],
+    x={"bin_IMDB_Rating:q",scale={zero=false},title="IMDB Rating"},
+    x2=:bin_IMDB_Rating_end
+) +
+@vlplot(
+    :bar,
+    y="cumulative_count:q"
+) +
+@vlplot(
+    mark={:bar,color=:yellow,opacity=0.5},
+    y="count:q"
+)
+```
 
 ## Wilkinson Dot Plot
 
-ToDo
+```@example
+using VegaLite, DataFrames
+
+data=DataFrame(data=[
+    1,1,1,1,1,1,1,1,1,1,
+    2,2,2,
+    3,3,
+    4,4,4,4,4,4
+])
+
+data |> @vlplot(
+    height=100,
+    mark={:circle,opacity=1}, 
+    transform=[{
+        window=[{op=:rank,as="id"}],
+        groupby= [:data]
+    }],
+    x="data:o",
+    y={"id:o",axis=nothing,sort=:descending}
+)
+```
 
 ## Isotype Dot Plot
 

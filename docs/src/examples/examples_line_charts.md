@@ -185,15 +185,11 @@ data |>
 ## Carbon Dioxide in the Atmosphere
 
 ```@example
-using VegaLite, VegaDatasets
+using VegaLite, VegaDatasets, DataFrames
 
-@vlplot(
-    data={
-        url=dataset("co2-concentration").path,
-        format={
-            parse={Date="utc:'%Y-%m-%d'"}
-        }
-    },
+data=readtable(string(dataset("co2-concentration").path))
+
+data |> @vlplot(
     width=800,
     height=500,
     transform=[
@@ -230,7 +226,7 @@ using VegaLite, VegaDatasets
         scale={zero=false}
     },
     detail="decade:o",
-    color={"decade:n", legend={offset=40}}
+    color={"decade:n", scale={scheme="magma"}, legend={offset=40}}
 ) +
 (
     @vlplot(
@@ -337,3 +333,25 @@ data |>
     }
 )
 ```
+
+## Drawing Sine and Cosine Curves with the Sequence Generator
+
+```@example
+using VegaLite
+
+@vlplot(
+    width=300,
+    height=150,
+    data={sequence={start=0,stop=12.7,step=0.1,as="x"}},
+    transform=[
+        {calculate="sin(datum.x)", as="sin(x)"},
+        {calculate="cos(datum.x)", as="cos(x)"},
+        {fold=["sin(x)", "cos(x)"]}
+    ],
+    mark=:line,
+    x="x:q",
+    y="value:q",
+    color={"key:n",title=nothing}
+)
+```
+
