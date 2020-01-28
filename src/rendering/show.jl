@@ -31,7 +31,7 @@ end
 function convert_vl_to_x(v::VLSpec, second_script)
     vl2vg_script_path = joinpath(vegaliate_app_path, "vl2vg.js")
     full_second_script_path = joinpath(vegaliate_app_path, "node_modules", "vega-cli", "bin", second_script)
-    p = open(pipeline(Cmd(`$(nodejs_cmd()) $vl2vg_script_path`, dir=vegaliate_app_path), Cmd(`$(nodejs_cmd()) $full_second_script_path`, dir=vegaliate_app_path)), "r+")
+    p = open(pipeline(Cmd(`$(nodejs_cmd()) $vl2vg_script_path`, dir=vegaliate_app_path), Cmd(`$(nodejs_cmd()) $full_second_script_path -l error`, dir=vegaliate_app_path)), "r+")
     writer = @async begin
         our_json_print(p, v)
         close(p.in)
@@ -47,7 +47,7 @@ end
 
 function convert_vg_to_x(v::VGSpec, script)
     full_script_path = joinpath(vegaliate_app_path, "node_modules", "vega-cli", "bin", script)
-    p = open(Cmd(`$(nodejs_cmd()) $full_script_path`, dir=vegaliate_app_path), "r+")
+    p = open(Cmd(`$(nodejs_cmd()) $full_script_path -l error`, dir=vegaliate_app_path), "r+")
     writer = @async begin
         our_json_print(p, v)
         close(p.in)
