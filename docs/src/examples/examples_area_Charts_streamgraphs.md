@@ -20,6 +20,34 @@ dataset("unemployment-across-industries") |>
 )
 ```
 
+## Area Chart with Gradient
+
+```@example
+using VegaLite, VegaDatasets
+
+dataset("stocks") |>
+@vlplot(
+    mark={
+        :area,
+        line={color="darkgreen"},
+        color={
+            x1=1,
+            y1=1,
+            x2=1,
+            y2=0,
+            gradient=:linear,
+            stops=[
+                {offset=0,color="white"},
+                {offset=1,color="darkgreen"}
+            ]
+        }
+    },
+    transform=[{filter="datum.symbol==='GOOG'"}],
+    x="date:t",
+    y="price:q"
+)
+```
+
 ## Area Chart with Overlaying Lines and Point Markers
 
 ```@example
