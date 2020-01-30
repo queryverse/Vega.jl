@@ -302,16 +302,21 @@ data |> @vlplot(
 using VegaLite, DataFrames
 
 data = DataFrame(
-    team=["Man Utd", "Chelsea", "Man City", "Spurs", "Man Utd", "Chelsea",
-        "Man City", "Spurs", "Man Utd", "Chelsea", "Man City", "Spurs"],
+    team=["Germany", "Mexico", "South Korea", "Sweden", "Germany", "Mexico",
+        "South Korea", "Sweden", "Germany", "Mexico", "South Korea", "Sweden"],
     matchday=[1,1,1,1,2,2,2,2,3,3,3,3],
-    point=[3,1,1,0,6,1,0,3,9,1,0,6]
+    point=[0,3,0,3,3,6,0,3,3,6,3,6],
+    diff=[-1,1,-1,1,0,2,-2,0,-2,-1,0,3]
 )
 
 data |>
 @vlplot(
+    title={text="World Cup 2018: Group F Rankings"},
     transform=[{
-        sort=[{field="point", order="descending"}],
+        sort=[
+            {field="point", order="descending"},
+            {field="diff", order="descending"}
+        ],
         window=[{
             op="rank",
             as="rank"
@@ -327,8 +332,8 @@ data |>
     color={
         :team,
         scale={
-            domain=["Man Utd", "Chelsea", "Man City", "Spurs"],
-            range=["#cc2613", "#125dc7", "#8bcdfc", "#d1d1d1"]
+            domain=["Germany", "Mexico", "South Korea", "Sweden"],
+            range=["black", "#127153", "#C91A3C", "#0C71AB"]
         }
     }
 )
