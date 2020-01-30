@@ -155,3 +155,28 @@ dataset("cars") |>
     text="OriginInitial:n"
 )
 ```
+
+## Image-based Scatter Plot
+
+```@example
+using VegaLite, VegaDatasets, DataFrames
+imgUrlBase="file:///"
+imgBasePath=joinpath(dirname(pathof(VegaDatasets)),"..","data")
+data=DataFrame(
+    x=[0.5,1.5,2.5],
+    y=[0.5,1.5,2.5],
+    #VegaLite uses path separator '/' on windows, so we construct the URL to the example images with absolute paths:
+    #      file:///C:/Users/username/.julia/packages/VegaDatasets/9E5lE/src/../data/data/ffox.png
+    img=[
+        imgUrlBase*replace(joinpath(imgBasePath,"data","ffox.png"),"\\" => "/"),
+        imgUrlBase*replace(joinpath(imgBasePath,"data","gimp.png"),"\\" => "/"),
+        imgUrlBase*replace(joinpath(imgBasePath,"data","7zip.png"),"\\" => "/")
+    ]
+)
+data |> @vlplot(
+    mark={:image,width=50,height=50},
+    x="x:q",
+    y="y:q",
+    url={field=:img}
+)
+```
