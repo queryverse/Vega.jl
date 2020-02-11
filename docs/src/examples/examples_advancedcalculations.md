@@ -2,8 +2,6 @@
 
 # Calculate Percentage of Total
 
-A bar graph showing what activites consume what percentage of the day.
-
 ```@example
 using VegaLite, DataFrames
 
@@ -30,6 +28,8 @@ data |>
     y={"Activity:n"}
 )
 ```
+
+A bar graph showing what activites consume what percentage of the day.
 
 # Calculate Difference from Average
 
@@ -99,5 +99,38 @@ dataset("movies") |>
     y="Title:o"
 )
 ```
+
+Bar graph showing the best films for the year they were produced, where best is defined by at least 2.5 points above average for that year. The red point shows the average rating for a film in that year, and the bar is the rating that the film recieved.
+
+# Calculate Residuals
+
+```@example
+using VegaLite, VegaDatasets
+
+dataset("movies") |>
+@vlplot(
+    transform=[
+        {filter="datum.IMDB_Rating != null"},
+        {filter={timeUnit="year",field="Release_Date",range=[1900,2019]}},
+        {
+            joinaggregate=[{
+                op="mean",
+                field="IMDB_Rating",
+                as="AverageRating"
+            }]
+        },
+        {
+            calculate="datum.IMDB_Rating - datum.AverageRating",
+            as="RatingDelta"
+        }
+    ],
+    :point,
+    x="Release_Date:t",
+    y={"RatingDelta:q", axis={title="Rating Delta"}},
+    color={"RatingDelta:q",scale={domainMid=0},title="Rating Delta"}
+)
+```
+
+A dot plot showing each movie in the database, and the difference from the average movie rating. The display is sorted by year to visualize everything in sequential order. The graph is for all Movies before 2019.
 
 
