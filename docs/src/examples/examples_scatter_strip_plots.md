@@ -160,17 +160,21 @@ dataset("cars") |>
 
 ```@example
 using VegaLite, VegaDatasets, DataFrames
-imgUrlBase="file:///"
-imgBasePath=joinpath(dirname(pathof(VegaDatasets)),"..","data")
 data=DataFrame(
     x=[0.5,1.5,2.5],
     y=[0.5,1.5,2.5],
-    #VegaLite uses path separator '/' on windows, so we construct the URL to the example images with absolute paths:
+    #use the following code to reproduce on a local REPL:
+    #   Construct the URL to the local example images with absolute paths:
     #      file:///C:/Users/username/.julia/packages/VegaDatasets/9E5lE/src/../data/data/ffox.png
+    #   img=[
+    #      "file:///"*replace(joinpath(joinpath(dirname(pathof(VegaDatasets)),"..","data"),"data","ffox.png"),"\\" => "/"),
+    #      "file:///"*replace(joinpath(joinpath(dirname(pathof(VegaDatasets)),"..","data"),"data","gimp.png"),"\\" => "/"),
+    #      "file:///"*replace(joinpath(joinpath(dirname(pathof(VegaDatasets)),"..","data"),"data","7zip.png"),"\\" => "/")
+    #   ]
     img=[
-        imgUrlBase*replace(joinpath(imgBasePath,"data","ffox.png"),"\\" => "/"),
-        imgUrlBase*replace(joinpath(imgBasePath,"data","gimp.png"),"\\" => "/"),
-        imgUrlBase*replace(joinpath(imgBasePath,"data","7zip.png"),"\\" => "/")
+        "/assets/images/ffox.png",
+        "/assets/images/gimp.png",
+        "/assets/images/7zip.png"
     ]
 )
 data |> @vlplot(
