@@ -172,9 +172,9 @@ data=DataFrame(
     #      "file:///"*replace(joinpath(joinpath(dirname(pathof(VegaDatasets)),"..","data"),"data","7zip.png"),"\\" => "/")
     #   ]
     img=[
-        "/assets/images/ffox.png",
-        "/assets/images/gimp.png",
-        "/assets/images/7zip.png"
+        "../../assets/images/ffox.png",
+        "../../assets/images/gimp.png",
+        "../../assets/images/7zip.png"
     ]
 )
 data |> @vlplot(
