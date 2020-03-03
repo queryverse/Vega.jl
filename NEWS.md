@@ -1,5 +1,23 @@
+# VegaLite.jl v2.0.0 Release Notes
+* Update to vega-lite 4.5.1 and vega 5.9.2
+* Many more examples in the documentation
+* Add vlplot function
+* Add @vlfrag macro and vlfrag function
+* Handle data more efficiently
+* Auto encode types in sub specs
+* Apply shorthands to child specs
+* Add support for inline data
+* Add positional x and y encoding channels option
+* Add @vgplot, vgplot and vgfrag for vega support
+* Add support to output a spec as Julia code
+* Add save to HTML support
+* Add support for Juno MIME type
+
 # VegaLite.jl v1.0.0 Release Notes
-[TODO]
+* Add ability to pass data to vega spec
+* Add property based access to schema details
+* Add functional setters for spec using Setfield
+* Use artifact system for deployment
 
 # VegaLite.jl v0.7.0 Release Notes
 * Drop dependency on Cairo.jl and Rsvg.jl
