@@ -3,7 +3,7 @@
 ## Tree Layout
 
 ```@example
-using VegaLite, VegaDatasets
+using Vega, VegaDatasets
 
 @vgplot(
     height=1600,
@@ -203,7 +203,7 @@ using VegaLite, VegaDatasets
 ## Radial Tree Layout
 
 ```@example
-using VegaLite, VegaDatasets
+using Vega, VegaDatasets
 
 @vgplot(
     height=720,
@@ -467,7 +467,7 @@ using VegaLite, VegaDatasets
 ## Treemap
 
 ```@example
-using VegaLite, VegaDatasets
+using Vega, VegaDatasets
 
 @vgplot(
     height=500,
@@ -731,7 +731,7 @@ using VegaLite, VegaDatasets
 ## Circle Packing
 
 ```@example
-using VegaLite, VegaDatasets
+using Vega, VegaDatasets
 
 @vgplot(
     height=600,
@@ -832,7 +832,7 @@ using VegaLite, VegaDatasets
 ## Sunburst
 
 ```@example
-using VegaLite, VegaDatasets
+using Vega, VegaDatasets
 
 @vgplot(
     height=600,

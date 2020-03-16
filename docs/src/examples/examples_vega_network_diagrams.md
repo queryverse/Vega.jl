@@ -3,7 +3,7 @@
 ## Edge Bundling
 
 ```@example
-using VegaLite, VegaDatasets
+using Vega, VegaDatasets
 
 @vgplot(
     height=720,

@@ -3,7 +3,7 @@
 ## Pie Chart
 
 ```@example
-using VegaLite
+using Vega
 
 @vgplot(
     height=200,
@@ -174,7 +174,7 @@ using VegaLite
 ## Donut Chart
 
 ```@example
-using VegaLite
+using Vega
 
 @vgplot(
     height=200,
@@ -345,7 +345,7 @@ using VegaLite
 ## Radial Plot
 
 ```@example
-using VegaLite
+using Vega
 
 @vgplot(
     height=200,
@@ -482,7 +482,7 @@ using VegaLite
 ## Radar Chart
 
 ```@example
-using VegaLite
+using Vega
 
 @vgplot(
     height=400,

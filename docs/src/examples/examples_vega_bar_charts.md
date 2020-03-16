@@ -3,7 +3,7 @@
 ## Bar Chart
 
 ```@example
-using VegaLite
+using Vega
 
 @vgplot(
     height=200,
@@ -182,7 +182,7 @@ using VegaLite
 ## Stacked Bar Chart
 
 ```@example
-using VegaLite
+using Vega
 
 @vgplot(    
     height=200,
@@ -399,7 +399,7 @@ using VegaLite
 ## Grouped Bar Chart
 
 ```@example
-using VegaLite
+using Vega
 
 @vgplot(
     height=240,
@@ -635,7 +635,7 @@ using VegaLite
 ## Nested Bar Chart
 
 ```@example
-using VegaLite
+using Vega
 
 @vgplot(
     padding=5,
@@ -910,7 +910,7 @@ using VegaLite
 ## Population Pyramid
 
 ```@example
-using VegaLite, VegaDatasets
+using Vega, VegaDatasets
 
 @vgplot(
     height=400,

@@ -3,7 +3,7 @@
 ## Line Chart
 
 ```@example
-using VegaLite
+using Vega
 
 @vgplot(
     height=200,
@@ -235,7 +235,7 @@ using VegaLite
 ## Area Chart
 
 ```@example
-using VegaLite
+using Vega
 
 @vgplot(
     height=200,
@@ -428,7 +428,7 @@ using VegaLite
 ## Stacked Area Chart
 
 ```@example
-using VegaLite
+using Vega
 
 @vgplot(
     height=200,
@@ -655,7 +655,7 @@ using VegaLite
 ## Horizon Graph
 
 ```@example
-using VegaLite
+using Vega
 
 @vgplot(
     height=100,
@@ -914,7 +914,7 @@ using VegaLite
 ## Job Voyager
 
 ```@example
-using VegaLite, VegaDatasets
+using Vega, VegaDatasets
 
 @vgplot(
     height=500,

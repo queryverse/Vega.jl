@@ -5,7 +5,7 @@
 From [Vega Dorling Cartogram Example](https://vega.github.io/vega/examples/dorling-cartogram/)
 
 ```@example
-using VegaLite, VegaDatasets, URIParser
+using Vega, VegaDatasets, URIParser
 
 uri = URI("https://raw.githubusercontent.com/vega/vega-datasets/master/data/us-10m.json")
 

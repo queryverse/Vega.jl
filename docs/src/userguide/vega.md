@@ -15,7 +15,7 @@ This section will give a brief overview of these options.
 
 ## The `@vgplot` macro
 
-The `@vgplot` macro is the main way to specify Vega plots in [VegaLite.jl](https://github.com/queryverse/VegaLite.jl). The macro uses a syntax that is closely aligned with the JSON format of the original [Vega](https://vega.github.io/vega/) specification. It is very simple to take a Vega specification and "translate" it into a corresponding `@vgplot` macro call.
+The `@vgplot` macro is the main way to specify Vega plots in [Vega.jl](https://github.com/queryverse/Vega.jl). The macro uses a syntax that is closely aligned with the JSON format of the original [Vega](https://vega.github.io/vega/) specification. It is very simple to take a Vega specification and "translate" it into a corresponding `@vgplot` macro call.
 
 A typical [Vega](https://vega.github.io/vega/) JSON specification looks like this:
 
@@ -119,7 +119,7 @@ A typical [Vega](https://vega.github.io/vega/) JSON specification looks like thi
 This can be directly translated into the following `@vgplot` macro call:
 
 ```julia
-using VegaLite
+using Vega
 
 @vgplot(
     height=200,
@@ -302,7 +302,7 @@ The main difference between JSON and the `@vgplot` macro is that keys are not su
 Similar to the `vl` string macro, the `vg` string macro takes the Vega spec as a JSON string and returns and renders a `VGSpec`.
 
 ```julia
-using VegaLite
+using Vega
 
 spec = vg"""
   {
@@ -432,7 +432,7 @@ data = [
 A full example of a Vega plot that uses the first option looks like this:
 
 ```julia
-using VegaLite, VegaDatasets
+using Vega, VegaDatasets
 
 @vgplot(
     height=200,
@@ -497,7 +497,7 @@ using VegaLite, VegaDatasets
 The `load` and `save` functions can be used to load and save vega specifications to and from disc. The following example loads a vega specification from a file named `myfigure.vega`:
 
 ```julia
-using VegaLite
+using Vega
 
 spec = load("myfigure.vega")
 ```
@@ -505,7 +505,7 @@ spec = load("myfigure.vega")
 To save a `VGSpec` to a file on disc, use the `save` function:
 
 ```julia
-using VegaLite
+using Vega
 
 spec = ... # Aquire a spec from somewhere
 

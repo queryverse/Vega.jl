@@ -3,7 +3,7 @@
 ## Scatter Plot
 
 ```@example
-using VegaLite, VegaDatasets
+using Vega, VegaDatasets
 
 @vgplot(    
     height=200,
@@ -137,7 +137,7 @@ using VegaLite, VegaDatasets
 ## Scatter Plot Null Values
 
 ```@example
-using VegaLite, VegaDatasets
+using Vega, VegaDatasets
 
 @vgplot(
     height=450,
@@ -477,7 +477,7 @@ using VegaLite, VegaDatasets
 ## Connected Scatter Plot
 
 ```@example
-using VegaLite, VegaDatasets
+using Vega, VegaDatasets
 
 @vgplot(
     height=500,
@@ -716,7 +716,7 @@ using VegaLite, VegaDatasets
 ## Error Bars
 
 ```@example
-using VegaLite, VegaDatasets
+using Vega, VegaDatasets
 
 @vgplot(
     height=160,
@@ -930,7 +930,7 @@ using VegaLite, VegaDatasets
 ## Barley Trellis Plot
 
 ```@example
-using VegaLite, VegaDatasets
+using Vega, VegaDatasets
 
 @vgplot(
     padding=5,
@@ -1172,7 +1172,7 @@ using VegaLite, VegaDatasets
 ## Regression
 
 ```@example
-using VegaLite, VegaDatasets
+using Vega, VegaDatasets
 
 @vgplot(
     height=500,
@@ -1343,7 +1343,7 @@ using VegaLite, VegaDatasets
 ## Loess Regression
 
 ```@example
-using VegaLite, VegaDatasets
+using Vega, VegaDatasets
 
 @vgplot(
     height=500,
