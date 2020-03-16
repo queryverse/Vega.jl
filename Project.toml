@@ -1,6 +1,6 @@
 name = "Vega"
 uuid = "239c3e63-733f-47ad-beb7-a12fde22c578"
-version = "1.0.0-DEV"
+version = "0.1.0"
 
 [deps]
 # Cairo = "159f3aea-2a34-519c-b102-8c37f9878175"
