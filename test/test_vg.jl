@@ -1,5 +1,5 @@
 using Test
-using VegaLite
+using Vega
 using URIParser
 using FilePaths
 using DataFrames

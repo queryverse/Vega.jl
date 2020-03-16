@@ -1,11 +1,11 @@
-using VegaLite
-using VegaLite: getparams
+using Vega
+using Vega: getparams
 using JSON
 using Test
 
 @testset "macro" begin
 
-spec = vl"""
+spec = vg"""
 {
   "data": {
     "values": [
@@ -20,7 +20,7 @@ spec = vl"""
 }
 """
 
-@test isa(spec, VegaLite.VLSpec)
+@test isa(spec, Vega.VGSpec)
 @test getparams(spec) == JSON.parse("""
 {
   "data": {

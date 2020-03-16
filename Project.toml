@@ -1,6 +1,6 @@
-name = "VegaLite"
-uuid = "112f6efa-9a02-5b7d-90c0-432ed331239a"
-version = "2.0.2-DEV"
+name = "Vega"
+uuid = "239c3e63-733f-47ad-beb7-a12fde22c578"
+version = "1.0.0-DEV"
 
 [deps]
 # Cairo = "159f3aea-2a34-519c-b102-8c37f9878175"

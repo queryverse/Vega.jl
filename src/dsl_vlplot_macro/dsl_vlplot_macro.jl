@@ -37,22 +37,10 @@ function convert_curly_style(exprs, fragtype)
     return new_expr
 end
 
-macro vlplot(ex...)
-    new_ex = convert_curly_style(ex, VLFrag)
-
-    return :( VegaLite.VLSpec(convert_frag_tree_to_dict(fix_shortcut_level_spec($new_ex))) )
-end
-
 macro vgplot(ex...)
     new_ex = convert_curly_style(ex, VGFrag)
 
-    return :( VegaLite.VGSpec(convert_frag_tree_to_dict(fix_shortcut_level_spec($new_ex))) )
-end
-
-macro vlfrag(ex...)
-    new_ex = convert_curly_style(ex, VLFrag)
-
-    return new_ex
+    return :( Vega.VGSpec(convert_frag_tree_to_dict(fix_shortcut_level_spec($new_ex))) )
 end
 
 macro vgfrag(ex...)

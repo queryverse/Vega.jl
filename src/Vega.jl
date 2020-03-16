@@ -1,4 +1,4 @@
-module VegaLite
+module Vega
 
 using JSON, NodeJS # 6s
 import IteratorInterfaceExtensions # 1s
@@ -18,15 +18,12 @@ using DataStructures
 import TableTraitsUtils
 
 export renderer, actionlinks
-export @vl_str, @vlplot, vlplot, @vlfrag, vlfrag
 export @vg_str, @vgplot, vgplot, @vgfrag, vgfrag
 export load, save
 export deletedata, deletedata!
 
 const vegaliate_app_path = artifact"vegalite_app"
 const vegaliate_app_includes_canvas = ispath(joinpath(vegaliate_app_path, "node_modules", "canvas"))
-
-global vlschema = JSONSchema.Schema(JSON.parsefile(joinpath(vegaliate_app_path, "schemas", "vega-lite-schema.json")))
 
 ########################  settings functions  ############################
 
@@ -71,9 +68,7 @@ actionlinks(b::Bool) = (global ACTIONSLINKS ; ACTIONSLINKS = b)
 ########################  includes  #####################################
 include("spec_utils.jl")
 include("vgspec.jl")
-include("vlspec.jl")
 
-include("dsl_vlplot_function/shorthandparser.jl")
 include("dsl_vlplot_function/dsl_vlplot_function.jl")
 include("dsl_vlplot_macro/dsl_vlplot_macro.jl")
 include("dsl_str_macro/dsl_str_macro.jl")
@@ -83,7 +78,5 @@ include("rendering/render.jl")
 include("rendering/io.jl")
 include("rendering/show.jl")
 include("rendering/fileio.jl")
-
-include("experimental.jl")
 
 end
