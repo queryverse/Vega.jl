@@ -20,7 +20,7 @@ An `IO` object can also be passed.
 - `indent::Union{Nothing,Integer}`: Pretty-print JSON output with given
   indentation if `indent` is an integer.
 """
-function savespec(io::IO, v::AbstractVegaSpec; include_data=false, indent=nothing)
+function savespec(io::IO, v::AbstractVegaSpec; include_data = false, indent = nothing)
     output_dict = copy(getparams(v))
     if !include_data
         delete!(output_dict, "data")
@@ -34,5 +34,5 @@ end
 
 savespec(filename::AbstractString, v::AbstractVegaSpec; kwargs...) =
     open(filename, "w") do io
-        savespec(io, v; kwargs...)
-    end
+    savespec(io, v; kwargs...)
+end

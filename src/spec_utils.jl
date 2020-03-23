@@ -6,7 +6,7 @@ abstract type AbstractVegaSpec end
 
 Base.copy(spec::T) where {T <: AbstractVegaSpec} = T(copy(getparams(spec)))
 
-const ObjectLike = Union{AbstractVegaSpec, ObjectProxy}
+const ObjectLike = Union{AbstractVegaSpec,ObjectProxy}
 
 getparams(spec) = getfield(spec, :params)
 
@@ -51,22 +51,22 @@ struct DataValuesNode
     function DataValuesNode(it)
 
         col_values, col_names = TableTraitsUtils.create_columns_from_iterabletable(it)
-    
-        return new(OrderedDict{Symbol,AbstractVector}(i[1]=>i[2] for i in zip(col_names,col_values)))
+
+        return new(OrderedDict{Symbol,AbstractVector}(i[1] => i[2] for i in zip(col_names, col_values)))
     end
 end
-  
-Base.:(==)(a::DataValuesNode, b::DataValuesNode) = a.columns==b.columns
+
+Base.:(==)(a::DataValuesNode, b::DataValuesNode) = a.columns == b.columns
 
 function our_show_json(io, it, col_names)
     print(io, "[")
 
     for (row_index, row) in enumerate(it)
-        row_index==1 || print(io, ",")
+        row_index == 1 || print(io, ",")
         print(io, "{")
 
         for (col_index, col_value) in enumerate(row)
-            col_index==1 || print(io, ",")
+            col_index == 1 || print(io, ",")
             JSON.print(io, col_names[col_index])
             print(io, ":")
             JSON.print(io, col_value isa DataValue ? get(col_value, nothing) : col_value)
