@@ -36,5 +36,5 @@ makedocs(
 )
 
 deploydocs(
-    repo = "github.com/queryverse/VegaLite.jl.git",
+    repo = "github.com/queryverse/Vega.jl.git",
 )
