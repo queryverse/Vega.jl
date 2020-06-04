@@ -1,11 +1,11 @@
 function Base.show(io::IO, m::MIME"text/plain", v::AbstractVegaSpec)
-    Vega.printrepr(io, v, indent=4, include_data=:short)
+    Vega.printrepr(io, v, indent = 4, include_data = :short)
     return
 end
 
 function Base.show(io::IO, v::AbstractVegaSpec)
     if !get(io, :compact, true)
-        Vega.printrepr(io, v, include_data=:short)
+        Vega.printrepr(io, v, include_data = :short)
     else
         print(io, summary(v))
     end
@@ -14,7 +14,7 @@ end
 
 function convert_vg_to_x(v::VGSpec, script)
     full_script_path = joinpath(vegaliate_app_path, "node_modules", "vega-cli", "bin", script)
-    p = open(Cmd(`$(nodejs_cmd()) $full_script_path -l error`, dir=vegaliate_app_path), "r+")
+    p = open(Cmd(`$(nodejs_cmd()) $full_script_path -l error`, dir = vegaliate_app_path), "r+")
     writer = @async begin
         our_json_print(p, v)
         close(p.in)
@@ -22,7 +22,7 @@ function convert_vg_to_x(v::VGSpec, script)
     reader = @async read(p, String)
     wait(p)
     res = fetch(reader)
-    if p.exitcode!=0
+    if p.exitcode != 0
         throw(ArgumentError("Invalid spec"))
     end
     return res
@@ -30,7 +30,7 @@ end
 
 function convert_vg_to_svg(v::VGSpec)
     vg2svg_script_path = joinpath(vegaliate_app_path, "vg2svg.js")
-    p = open(Cmd(`$(nodejs_cmd()) $vg2svg_script_path`, dir=vegaliate_app_path), "r+")
+    p = open(Cmd(`$(nodejs_cmd()) $vg2svg_script_path`, dir = vegaliate_app_path), "r+")
     writer = @async begin
         our_json_print(p, v)
         close(p.in)
@@ -38,7 +38,7 @@ function convert_vg_to_svg(v::VGSpec)
     reader = @async read(p, String)
     wait(p)
     res = fetch(reader)
-    if p.exitcode!=0
+    if p.exitcode != 0
         throw(ArgumentError("Invalid spec"))
     end
     return res
