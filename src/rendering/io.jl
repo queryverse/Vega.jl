@@ -20,10 +20,16 @@ An `IO` object can also be passed.
 - `indent::Union{Nothing,Integer}`: Pretty-print JSON output with given
   indentation if `indent` is an integer.
 """
-function savespec(io::IO, v::AbstractVegaSpec; include_data=false, indent=nothing)
+function savespec(io::IO, v::VGSpec; include_data=false, indent=nothing)
     output_dict = copy(getparams(v))
     if !include_data
-        delete!(output_dict, "data")
+        if haskey(output_dict, "data")
+            for def in output_dict["data"]
+                if haskey(def, "values")
+                    delete!(def, "values")
+                end
+            end
+        end
     end
     if indent === nothing
         JSON.print(io, output_dict)
