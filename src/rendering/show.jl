@@ -22,7 +22,7 @@ function convert_vg_to_x(v::VGSpec, script)
     reader = @async read(p, String)
     wait(p)
     res = fetch(reader)
-    if p.exitcode!=0
+    if p.exitcode != 0
         throw(ArgumentError("Invalid spec"))
     end
     return res
@@ -38,7 +38,7 @@ function convert_vg_to_svg(v::VGSpec)
     reader = @async read(p, String)
     wait(p)
     res = fetch(reader)
-    if p.exitcode!=0
+    if p.exitcode != 0
         throw(ArgumentError("Invalid spec"))
     end
     return res

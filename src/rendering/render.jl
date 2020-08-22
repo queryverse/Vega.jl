@@ -6,12 +6,12 @@
 
 asset(url...) = normpath(joinpath(vegaliate_app_path, "minified", url...))
 
-#Vega Scaffold: https://github.com/vega/vega/wiki/Runtime
+# Vega Scaffold: https://github.com/vega/vega/wiki/Runtime
 
 function writehtml_full(io::IO, spec::VGSpec; title="Vega plot")
-  divid = "vg" * randstring(3)
+    divid = "vg" * randstring(3)
 
-  println(io,
+    println(io,
   """
   <html>
     <head>
@@ -43,10 +43,10 @@ function writehtml_full(io::IO, spec::VGSpec; title="Vega plot")
 
       var spec = """)
       
-  our_json_print(io, spec)
-  println(io)
+    our_json_print(io, spec)
+    println(io)
 
-  println(io, """
+    println(io, """
       vegaEmbed('#$divid', spec, opt);
 
     </script>
@@ -56,29 +56,29 @@ function writehtml_full(io::IO, spec::VGSpec; title="Vega plot")
 end
 
 function writehtml_full(spec::VGSpec; title="Vega plot")
-  tmppath = string(tempname(), ".vega.html")
+    tmppath = string(tempname(), ".vega.html")
 
-  open(tmppath, "w") do io
-    writehtml_full(io, spec, title=title)
-  end
+    open(tmppath, "w") do io
+        writehtml_full(io, spec, title=title)
+    end
 
-  tmppath
+    tmppath
 end
 
 """
 opens a browser tab with the given html file
 """
 function launch_browser(tmppath::String)
-  if Sys.isapple()
-    run(`open $tmppath`)
-  elseif Sys.iswindows()
-    run(`cmd /c start $tmppath`)
-  elseif Sys.islinux()
-    run(`xdg-open $tmppath`)
-  end
+    if Sys.isapple()
+        run(`open $tmppath`)
+    elseif Sys.iswindows()
+        run(`cmd /c start $tmppath`)
+    elseif Sys.islinux()
+        run(`xdg-open $tmppath`)
+    end
 end
 
 function Base.display(d::REPL.REPLDisplay, plt::VGSpec)
-  tmppath = writehtml_full(plt)
-  launch_browser(tmppath) # Open the browser
+    tmppath = writehtml_full(plt)
+    launch_browser(tmppath) # Open the browser
 end
