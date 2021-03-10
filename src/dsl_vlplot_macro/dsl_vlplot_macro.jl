@@ -2,7 +2,7 @@ function convert_curly_style_array(exprs, fragtype)
     res = Expr(:vect)
 
     for ex in exprs
-        if ex isa Expr && ex.head==:braces
+        if ex isa Expr && ex.head == :braces
             push!(res.args, :( $(convert_curly_style(ex.args, fragtype)) ))
         else
             push!(res.args, esc(ex))
@@ -19,15 +19,15 @@ function convert_curly_style(exprs, fragtype)
     named_args = new_expr.args[3].args
 
     for ex in exprs
-        if ex isa Expr && ex.head==:(=)
-            if ex.args[2] isa Expr && ex.args[2].head==:braces
+        if ex isa Expr && ex.head == :(=)
+            if ex.args[2] isa Expr && ex.args[2].head == :braces
                 push!(named_args, :( $(string(ex.args[1])) => $(convert_curly_style(ex.args[2].args, fragtype)) ))
-            elseif ex.args[2] isa Expr && ex.args[2].head==:vect
+            elseif ex.args[2] isa Expr && ex.args[2].head == :vect
                 push!(named_args, :( $(string(ex.args[1])) => $(convert_curly_style_array(ex.args[2].args, fragtype)) ))
             else
                 push!(named_args, :( $(string(ex.args[1])) => $(esc(ex.args[2])) ))
             end
-        elseif ex isa Expr && ex.head==:braces
+        elseif ex isa Expr && ex.head == :braces
             push!(pos_args, convert_curly_style(ex.args, fragtype))
         else
             push!(pos_args, esc(ex))
