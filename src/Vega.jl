@@ -42,9 +42,9 @@ set rendering mode (svg or canvas)
 """
 renderer() = RENDERER
 function renderer(m::Symbol)
-  global RENDERER
-  m in [:svg, :canvas] || error("rendering mode should be either :svg or :canvas")
-  RENDERER = m
+    global RENDERER
+    m in [:svg, :canvas] || error("rendering mode should be either :svg or :canvas")
+    RENDERER = m
 end
 
 
