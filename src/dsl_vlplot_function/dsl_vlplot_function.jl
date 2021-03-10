@@ -6,24 +6,24 @@ struct VGFrag <: AbstractVegaFragment
 end
 
 function vgfrag(args...; kwargs...)
-    return VGFrag(Any[args...], OrderedDict{String,Any}(string(k)=>convert_nt_to_dict(v, VGFrag) for (k,v) in kwargs))
+    return VGFrag(Any[args...], OrderedDict{String,Any}(string(k) => convert_nt_to_dict(v, VGFrag) for (k, v) in kwargs))
 end
 
 convert_nt_to_dict(item, fragtype) = item
 
 function convert_nt_to_dict(item::NamedTuple, fragtype)
-    return fragtype(Any[], OrderedDict{String,Any}(string(k)=>convert_nt_to_dict(v, fragtype) for (k,v) in pairs(item)))
+    return fragtype(Any[], OrderedDict{String,Any}(string(k) => convert_nt_to_dict(v, fragtype) for (k, v) in pairs(item)))
 end
 
 function convert_nt_to_dict(item::AbstractVegaFragment, fragtype)
-    return fragtype(item.positional, OrderedDict{String,Any}(string(k)=>convert_nt_to_dict(v, fragtype) for (k,v) in pairs(item.named)) )
+    return fragtype(item.positional, OrderedDict{String,Any}(string(k) => convert_nt_to_dict(v, fragtype) for (k, v) in pairs(item.named)))
 end
 
-function walk_dict(f, d::T, parent) where {T<:AbstractDict}
+function walk_dict(f, d::T, parent) where {T <: AbstractDict}
     res = T()
     for p in d
         if p[2] isa Dict
-            new_p = f(p[1]=>walk_dict(f, p[2], p[1]), parent)
+            new_p = f(p[1] => walk_dict(f, p[2], p[1]), parent)
 
             if new_p isa Vector
                 for i in new_p
@@ -62,7 +62,7 @@ function replace_remaining_frag(frag::AbstractVegaFragment)
     if !isempty(frag.positional)
         error("There is an unknown positional argument in this spec.")
     else
-        return OrderedDict{String,Any}(k=>replace_remaining_frag(v) for (k,v) in frag.named)
+        return OrderedDict{String,Any}(k => replace_remaining_frag(v) for (k, v) in frag.named)
     end
 end
 
@@ -73,7 +73,7 @@ function fix_shortcut_vg_data(v)
             return VGFrag([], OrderedDict{String,Any}("url" => Sys.iswindows() ? as_uri[1:5] * as_uri[7:end] : as_uri))
         elseif v[2] isa URI
             as_uri = string(v[2])
-            return VGFrag([], OrderedDict{String,Any}("url" => Sys.iswindows() && v[2].scheme=="file" ? as_uri[1:5] * as_uri[7:end] : as_uri))
+            return VGFrag([], OrderedDict{String,Any}("url" => Sys.iswindows() && v[2].scheme == "file" ? as_uri[1:5] * as_uri[7:end] : as_uri))
         elseif TableTraits.isiterabletable(v[2])
             it = IteratorInterfaceExtensions.getiterator(v[2])
             return VGFrag([], OrderedDict{String,Any}("name" => string(v[1]), "values" => DataValuesNode(it)))
@@ -105,7 +105,7 @@ function convert_frag_tree_to_dict(spec::VGFrag)
     # and we can convert everything into a plain Dict structure
     isempty(spec.positional) || error("There shouldn't be any positional argument left.")
 
-    return OrderedDict{String,Any}(k=>replace_remaining_frag(v) for (k,v) in spec.named)
+    return OrderedDict{String,Any}(k => replace_remaining_frag(v) for (k, v) in spec.named)
 end
 
 function vgplot(args...;kwargs...)

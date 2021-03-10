@@ -1,5 +1,5 @@
 using Vega
-using Vega: getparams
+using Vega:getparams
 using JSON
 using Test
 
