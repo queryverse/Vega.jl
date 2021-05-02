@@ -4,7 +4,7 @@
 #
 ######################################################################
 
-asset(url...) = normpath(joinpath(vegaliate_app_path, "minified", url...))
+asset(url...) = normpath(joinpath(vegalite_app_path, "minified", url...))
 
 # Vega Scaffold: https://github.com/vega/vega/wiki/Runtime
 
