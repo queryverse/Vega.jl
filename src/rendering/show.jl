@@ -113,3 +113,8 @@ end
 function Base.show(io::IO, m::MIME"application/prs.juno.plotpane+html", v::VGSpec)
     writehtml_full(io, v)
 end
+
+Base.showable(m::MIME"text/html", v::VGSpec) = isdefined(Main, :PlutoRunner)
+function Base.show(io::IO, m::MIME"text/html", v::VGSpec)
+    writehtml_partial_script(io, v)
+end
