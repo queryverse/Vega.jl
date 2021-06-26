@@ -7,7 +7,7 @@ using FileIO
 
 @testset "io" begin
 
-vgp = getvgplot()
+    vgp = getvgplot()
 
 # @testset "$fmt (indent=$(repr(indent)))" for (fmt, plt) in [
 #     (format"vegalite", vlp)
@@ -31,26 +31,26 @@ vgp = getvgplot()
 #     end
 # end
 
-Base.Filesystem.mktempdir() do folder
-    save(joinpath(folder, "test4.svg"), vgp)
-    @test isfile(joinpath(folder, "test4.svg"))
+    Base.Filesystem.mktempdir() do folder
+        save(joinpath(folder, "test4.svg"), vgp)
+        @test isfile(joinpath(folder, "test4.svg"))
 
-    save(joinpath(folder, "test4.pdf"), vgp)
-    @test isfile(joinpath(folder, "test4.pdf"))
+        save(joinpath(folder, "test4.pdf"), vgp)
+        @test isfile(joinpath(folder, "test4.pdf"))
 
-    save(joinpath(folder, "test4.png"), vgp)
-    @test isfile(joinpath(folder, "test4.png"))
+        save(joinpath(folder, "test4.png"), vgp)
+        @test isfile(joinpath(folder, "test4.png"))
 
     # save(joinpath(folder,"test4.eps"), vgp)
     # @test isfile(joinpath(folder,"test4.eps"))
 
-    vgpl1 = getvgplot()
+        vgpl1 = getvgplot()
 
-    Vega.savespec(joinpath(folder, "test1.vega"), vgpl1, include_data=true)
+        Vega.savespec(joinpath(folder, "test1.vega"), vgpl1, include_data=true)
 
-    vgpl2 = Vega.loadvgspec(joinpath(folder, "test1.vega"))
+        vgpl2 = Vega.loadvgspec(joinpath(folder, "test1.vega"))
 
-    @test vgpl1 == vgpl1
+        @test vgpl1 == vgpl1
 
     # TODO Enable once FileIO stuff is merged
     # save(joinpath(folder,"test3.vega"), vgpl1)
@@ -62,6 +62,6 @@ Base.Filesystem.mktempdir() do folder
     # save(joinpath(folder,"test4.vega"), vgpl1, include_data=true)
     # @test isfile(joinpath(folder,"test4.vega"))
 
-end
+    end
 
 end

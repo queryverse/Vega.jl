@@ -5,7 +5,7 @@ using Test
 
 @testset "macro" begin
 
-spec = vg"""
+    spec = vg"""
 {
   "data": {
     "values": [
@@ -20,8 +20,8 @@ spec = vg"""
 }
 """
 
-@test isa(spec, Vega.VGSpec)
-@test getparams(spec) == JSON.parse("""
+    @test isa(spec, Vega.VGSpec)
+    @test getparams(spec) == JSON.parse("""
 {
   "data": {
     "values": [

@@ -44,7 +44,7 @@ function convert_vg_to_svg(v::VGSpec)
     return res
 end
 
-Base.Multimedia.istextmime(::MIME{Symbol("application/vnd.vega.v5+json")}) = true
+    Base.Multimedia.istextmime(::MIME{Symbol("application/vnd.vega.v5+json")}) = true
 
 function Base.show(io::IO, m::MIME"application/vnd.vega.v5+json", v::VGSpec)
     our_json_print(io, v)

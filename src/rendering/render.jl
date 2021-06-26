@@ -74,8 +74,8 @@ Creates a HTML script + div block for showing the plot (typically for Pluto).
 VegaLite js files are loaded from the web using script tags.
 """
 function writehtml_partial_script(io::IO, spec::VGSpec; title="VegaLite plot")
-  divid = "vg" * randstring(3)
-  print(io, """
+    divid = "vg" * randstring(3)
+    print(io, """
     <style media="screen">
       .vega-actions a {
         margin-right: 10px;
@@ -92,8 +92,8 @@ function writehtml_partial_script(io::IO, spec::VGSpec; title="VegaLite plot")
 
     <script>
       var spec = """)
-  our_json_print(io, spec)
-  print(io,"""
+    our_json_print(io, spec)
+    print(io,"""
       ;
       var opt = {
         mode: "vega-lite",
