@@ -5,10 +5,17 @@
 ######################################################################
 using JSON
 
-asset(url...) = normpath(joinpath(vegalite_app_path, "minified", url...))
+asset(url...) = normpath(vegalite_app_path("minified", url...))
 
-package_json = JSON.parsefile(joinpath(vegalite_app_path, "package.json"))
-version(package) = package_json["dependencies"][package]
+const package_json = Ref{Dict{String, Any}}()
+
+function version(package)
+  if !isassigned(package_json)
+    package_json[] = JSON.parsefile(vegalite_app_path("package.json"))
+  end
+
+  return package_json[]["dependencies"][package]
+end
 
 # Vega Scaffold: https://github.com/vega/vega/wiki/Runtime
 

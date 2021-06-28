@@ -22,8 +22,12 @@ export @vg_str, @vgplot, vgplot, @vgfrag, vgfrag
 export load, save
 export deletedata, deletedata!
 
-const vegalite_app_path = artifact"vegalite_app"
-const vegalite_app_includes_canvas = ispath(joinpath(vegalite_app_path, "node_modules", "canvas"))
+vegalite_app_path(args...) = joinpath(artifact"vegalite_app", args...)
+const vegalite_app_includes_canvas = Ref{Bool}()
+
+function __init__()
+    vegalite_app_includes_canvas[] = ispath(vegalite_app_path("node_modules", "canvas"))
+end
 
 ########################  settings functions  ############################
 
