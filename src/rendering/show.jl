@@ -14,7 +14,7 @@ end
 
 function convert_vg_to_x(v::VGSpec, script)
     full_script_path = vegalite_app_path("node_modules", "vega-cli", "bin", script)
-    p = open(Cmd(`$(nodejs_cmd()) $full_script_path -l error`, dir=vegalite_app_path()), "r+")
+    p = open(Cmd(`$(NodeJS_16_jll.node()) $full_script_path -l error`, dir=vegalite_app_path()), "r+")
     writer = @async begin
         our_json_print(p, v)
         close(p.in)
@@ -30,7 +30,7 @@ end
 
 function convert_vg_to_svg(v::VGSpec)
     vg2svg_script_path = vegalite_app_path("vg2svg.js")
-    p = open(Cmd(`$(nodejs_cmd()) $vg2svg_script_path`, dir=vegalite_app_path()), "r+")
+    p = open(Cmd(`$(NodeJS_16_jll.node()) $vg2svg_script_path`, dir=vegalite_app_path()), "r+")
     writer = @async begin
         our_json_print(p, v)
         close(p.in)
