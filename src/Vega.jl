@@ -1,6 +1,7 @@
 module Vega
 
-using JSON, NodeJS # 6s
+using JSON
+import NodeJS_16_jll
 import IteratorInterfaceExtensions # 1s
 import TableTraits # 0
 using FileIO # 17s !!!
