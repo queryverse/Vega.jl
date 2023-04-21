@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Using Vega · Vega.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">Vega.jl</span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Getting Started</span><ul><li><a class="tocitem" href="../../gettingstarted/installation/">Installation</a></li></ul></li><li><span class="tocitem">User Guide</span><ul><li class="is-active"><a class="tocitem" href>Using Vega</a><ul class="internal"><li><a class="tocitem" href="#The-@vgplot-macro-1"><span>The <code>@vgplot</code> macro</span></a></li><li><a class="tocitem" href="#The-vg-string-macro-1"><span>The <code>vg</code> string macro</span></a></li><li><a class="tocitem" href="#Data-1"><span>Data</span></a></li><li><a class="tocitem" href="#Loading-and-saving-Vega-specifications-1"><span>Loading and saving Vega specifications</span></a></li></ul></li></ul></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../../examples/examples_vega_line_area_charts/">Line &amp; Area Charts</a></li><li><a class="tocitem" href="../../examples/examples_vega_circular_charts/">Circular Charts</a></li><li><a class="tocitem" href="../../examples/examples_vega_scatter_plots/">Scatter Plots</a></li><li><a class="tocitem" href="../../examples/examples_vega_tree_diagrams/">Tree Diagrams</a></li><li><a class="tocitem" href="../../examples/examples_vega_network_diagrams/">Network Diagrams</a></li><li><a class="tocitem" href="../../examples/examples_vega_single_data_source/">Single Data Source</a></li><li><a class="tocitem" href="../../examples/examples_vega_multi_data_source/">Multiple Data Source</a></li></ul></li><li><span class="tocitem">Reference Manual</span><ul><li><a class="tocitem" href="../../referencemanual/global/">Global settings</a></li><li><a class="tocitem" href="../../referencemanual/output/">Outputs</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">User Guide</a></li><li class="is-active"><a href>Using Vega</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Using Vega</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/queryverse/Vega.jl/blob/master/docs/src/userguide/vega.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Using-Vega-1"><a class="docs-heading-anchor" href="#Using-Vega-1">Using Vega</a><a class="docs-heading-anchor-permalink" href="#Using-Vega-1" title="Permalink"></a></h1><p>A Vega plot specification is represented as a <code>VGSpec</code> object in Julia. There are multiple ways to create a <code>VGSpec</code> object:</p><ol><li>The <code>@vgplot</code> macro is the main way to create <code>VGSpec</code> instances in code.</li><li>Using the <code>vg</code> string macro, you can write Vega specifications as JSON in your Julia code.</li><li>You can load Vega specifications from disc with the <code>load</code> function.</li></ol><p>There are two main things one can do with a <code>VGSpec</code> object:</p><ol><li>One can display it in various front ends.</li><li>One can save the plot to disc in various formats using the save function.</li></ol><p>This section will give a brief overview of these options.</p><h2 id="The-@vgplot-macro-1"><a class="docs-heading-anchor" href="#The-@vgplot-macro-1">The <code>@vgplot</code> macro</a><a class="docs-heading-anchor-permalink" href="#The-@vgplot-macro-1" title="Permalink"></a></h2><p>The <code>@vgplot</code> macro is the main way to specify Vega plots in <a href="https://github.com/queryverse/Vega.jl">Vega.jl</a>. The macro uses a syntax that is closely aligned with the JSON format of the original <a href="https://vega.github.io/vega/">Vega</a> specification. It is very simple to take a Vega specification and &quot;translate&quot; it into a corresponding <code>@vgplot</code> macro call.</p><p>A typical <a href="https://vega.github.io/vega/">Vega</a> JSON specification looks like this:</p><pre><code class="language-json">{
+  &quot;width&quot;: 400,
+  &quot;height&quot;: 200,
+  &quot;padding&quot;: 5,
+
+  &quot;data&quot;: [
+    {
+      &quot;name&quot;: &quot;table&quot;,
+      &quot;values&quot;: [
+        {&quot;category&quot;: &quot;A&quot;, &quot;amount&quot;: 28},
+        {&quot;category&quot;: &quot;B&quot;, &quot;amount&quot;: 55},
+        {&quot;category&quot;: &quot;C&quot;, &quot;amount&quot;: 43},
+        {&quot;category&quot;: &quot;D&quot;, &quot;amount&quot;: 91},
+        {&quot;category&quot;: &quot;E&quot;, &quot;amount&quot;: 81},
+        {&quot;category&quot;: &quot;F&quot;, &quot;amount&quot;: 53},
+        {&quot;category&quot;: &quot;G&quot;, &quot;amount&quot;: 19},
+        {&quot;category&quot;: &quot;H&quot;, &quot;amount&quot;: 87}
+      ]
+    }
+  ],
+
+  &quot;signals&quot;: [
+    {
+      &quot;name&quot;: &quot;tooltip&quot;,
+      &quot;value&quot;: {},
+      &quot;on&quot;: [
+        {&quot;events&quot;: &quot;rect:mouseover&quot;, &quot;update&quot;: &quot;datum&quot;},
+        {&quot;events&quot;: &quot;rect:mouseout&quot;,  &quot;update&quot;: &quot;{}&quot;}
+      ]
+    }
+  ],
+
+  &quot;scales&quot;: [
+    {
+      &quot;name&quot;: &quot;xscale&quot;,
+      &quot;type&quot;: &quot;band&quot;,
+      &quot;domain&quot;: {&quot;data&quot;: &quot;table&quot;, &quot;field&quot;: &quot;category&quot;},
+      &quot;range&quot;: &quot;width&quot;,
+      &quot;padding&quot;: 0.05,
+      &quot;round&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;yscale&quot;,
+      &quot;domain&quot;: {&quot;data&quot;: &quot;table&quot;, &quot;field&quot;: &quot;amount&quot;},
+      &quot;nice&quot;: true,
+      &quot;range&quot;: &quot;height&quot;
+    }
+  ],
+
+  &quot;axes&quot;: [
+    { &quot;orient&quot;: &quot;bottom&quot;, &quot;scale&quot;: &quot;xscale&quot; },
+    { &quot;orient&quot;: &quot;left&quot;, &quot;scale&quot;: &quot;yscale&quot; }
+  ],
+
+  &quot;marks&quot;: [
+    {
+      &quot;type&quot;: &quot;rect&quot;,
+      &quot;from&quot;: {&quot;data&quot;:&quot;table&quot;},
+      &quot;encode&quot;: {
+        &quot;enter&quot;: {
+          &quot;x&quot;: {&quot;scale&quot;: &quot;xscale&quot;, &quot;field&quot;: &quot;category&quot;},
+          &quot;width&quot;: {&quot;scale&quot;: &quot;xscale&quot;, &quot;band&quot;: 1},
+          &quot;y&quot;: {&quot;scale&quot;: &quot;yscale&quot;, &quot;field&quot;: &quot;amount&quot;},
+          &quot;y2&quot;: {&quot;scale&quot;: &quot;yscale&quot;, &quot;value&quot;: 0}
+        },
+        &quot;update&quot;: {
+          &quot;fill&quot;: {&quot;value&quot;: &quot;steelblue&quot;}
+        },
+        &quot;hover&quot;: {
+          &quot;fill&quot;: {&quot;value&quot;: &quot;red&quot;}
+        }
+      }
+    },
+    {
+      &quot;type&quot;: &quot;text&quot;,
+      &quot;encode&quot;: {
+        &quot;enter&quot;: {
+          &quot;align&quot;: {&quot;value&quot;: &quot;center&quot;},
+          &quot;baseline&quot;: {&quot;value&quot;: &quot;bottom&quot;},
+          &quot;fill&quot;: {&quot;value&quot;: &quot;#333&quot;}
+        },
+        &quot;update&quot;: {
+          &quot;x&quot;: {&quot;scale&quot;: &quot;xscale&quot;, &quot;signal&quot;: &quot;tooltip.category&quot;, &quot;band&quot;: 0.5},
+          &quot;y&quot;: {&quot;scale&quot;: &quot;yscale&quot;, &quot;signal&quot;: &quot;tooltip.amount&quot;, &quot;offset&quot;: -2},
+          &quot;text&quot;: {&quot;signal&quot;: &quot;tooltip.amount&quot;},
+          &quot;fillOpacity&quot;: [
+            {&quot;test&quot;: &quot;datum === tooltip&quot;, &quot;value&quot;: 0},
+            {&quot;value&quot;: 1}
+          ]
+        }
+      }
+    }
+  ]
+}</code></pre><p>This can be directly translated into the following <code>@vgplot</code> macro call:</p><pre><code class="language-julia">using Vega
+
+@vgplot(
+    height=200,
+    padding=5,
+    marks=[
+        {
+            encode={
+                update={
+                    fill={
+                        value=&quot;steelblue&quot;
+                    }
+                },
+                hover={
+                    fill={
+                        value=&quot;red&quot;
+                    }
+                },
+                enter={
+                    x={
+                        field=&quot;category&quot;,
+                        scale=&quot;xscale&quot;
+                    },
+                    y2={
+                        value=0,
+                        scale=&quot;yscale&quot;
+                    },
+                    width={
+                        scale=&quot;xscale&quot;,
+                        band=1
+                    },
+                    y={
+                        field=&quot;amount&quot;,
+                        scale=&quot;yscale&quot;
+                    }
+                }
+            },
+            from={
+                data=&quot;table&quot;
+            },
+            type=&quot;rect&quot;
+        },
+        {
+            encode={
+                update={
+                    x={
+                        signal=&quot;tooltip.category&quot;,
+                        scale=&quot;xscale&quot;,
+                        band=0.5
+                    },
+                    fillOpacity=[
+                        {
+                            test=&quot;datum === tooltip&quot;,
+                            value=0
+                        },
+                        {
+                            value=1
+                        }
+                    ],
+                    text={
+                        signal=&quot;tooltip.amount&quot;
+                    },
+                    y={
+                        offset=-2,
+                        signal=&quot;tooltip.amount&quot;,
+                        scale=&quot;yscale&quot;
+                    }
+                },
+                enter={
+                    fill={
+                        value=&quot;#333&quot;
+                    },
+                    baseline={
+                        value=&quot;bottom&quot;
+                    },
+                    align={
+                        value=&quot;center&quot;
+                    }
+                }
+            },
+            type=&quot;text&quot;
+        }
+    ],
+    axes=[
+        {
+            scale=&quot;xscale&quot;,
+            orient=&quot;bottom&quot;
+        },
+        {
+            scale=&quot;yscale&quot;,
+            orient=&quot;left&quot;
+        }
+    ],
+    data=[
+        {
+            name=&quot;table&quot;,
+            values=[
+                {
+                    amount=28,
+                    category=&quot;A&quot;
+                },
+                {
+                    amount=55,
+                    category=&quot;B&quot;
+                },
+                {
+                    amount=43,
+                    category=&quot;C&quot;
+                },
+                {
+                    amount=91,
+                    category=&quot;D&quot;
+                },
+                {
+                    amount=81,
+                    category=&quot;E&quot;
+                },
+                {
+                    amount=53,
+                    category=&quot;F&quot;
+                },
+                {
+                    amount=19,
+                    category=&quot;G&quot;
+                },
+                {
+                    amount=87,
+                    category=&quot;H&quot;
+                }
+            ]
+        }
+    ],
+    scales=[
+        {
+            name=&quot;xscale&quot;,
+            padding=0.05,
+            range=&quot;width&quot;,
+            domain={
+                data=&quot;table&quot;,
+                field=&quot;category&quot;
+            },
+            type=&quot;band&quot;,
+            round=true
+        },
+        {
+            name=&quot;yscale&quot;,
+            nice=true,
+            range=&quot;height&quot;,
+            domain={
+                data=&quot;table&quot;,
+                field=&quot;amount&quot;
+            }
+        }
+    ],
+    width=400,
+    signals=[
+        {
+            name=&quot;tooltip&quot;,
+            on=[
+                {
+                    events=&quot;rect:mouseover&quot;,
+                    update=&quot;datum&quot;
+                },
+                {
+                    events=&quot;rect:mouseout&quot;,
+                    update=&quot;{}&quot;
+                }
+            ],
+            value={
+
+            }
+        }
+    ]
+)</code></pre><p>The main difference between JSON and the <code>@vgplot</code> macro is that keys are not surrounded by quotation marks in the macro, and key-value pairs are separate by a <code>=</code> (instead of a <code>:</code>).</p><h2 id="The-vg-string-macro-1"><a class="docs-heading-anchor" href="#The-vg-string-macro-1">The <code>vg</code> string macro</a><a class="docs-heading-anchor-permalink" href="#The-vg-string-macro-1" title="Permalink"></a></h2><p>Similar to the <code>vl</code> string macro, the <code>vg</code> string macro takes the Vega spec as a JSON string and returns and renders a <code>VGSpec</code>.</p><pre><code class="language-julia">using Vega
+
+spec = vg&quot;&quot;&quot;
+  {
+  &quot;width&quot;: 400,
+  &quot;height&quot;: 200,
+  &quot;padding&quot;: 5,
+
+  &quot;data&quot;: [
+    {
+      &quot;name&quot;: &quot;table&quot;,
+      &quot;values&quot;: [
+        {&quot;category&quot;: &quot;A&quot;, &quot;amount&quot;: 28},
+        {&quot;category&quot;: &quot;B&quot;, &quot;amount&quot;: 55},
+        {&quot;category&quot;: &quot;C&quot;, &quot;amount&quot;: 43},
+        {&quot;category&quot;: &quot;D&quot;, &quot;amount&quot;: 91},
+        {&quot;category&quot;: &quot;E&quot;, &quot;amount&quot;: 81},
+        {&quot;category&quot;: &quot;F&quot;, &quot;amount&quot;: 53},
+        {&quot;category&quot;: &quot;G&quot;, &quot;amount&quot;: 19},
+        {&quot;category&quot;: &quot;H&quot;, &quot;amount&quot;: 87}
+      ]
+    }
+  ],
+
+  &quot;signals&quot;: [
+    {
+      &quot;name&quot;: &quot;tooltip&quot;,
+      &quot;value&quot;: {},
+      &quot;on&quot;: [
+        {&quot;events&quot;: &quot;rect:mouseover&quot;, &quot;update&quot;: &quot;datum&quot;},
+        {&quot;events&quot;: &quot;rect:mouseout&quot;,  &quot;update&quot;: &quot;{}&quot;}
+      ]
+    }
+  ],
+
+  &quot;scales&quot;: [
+    {
+      &quot;name&quot;: &quot;xscale&quot;,
+      &quot;type&quot;: &quot;band&quot;,
+      &quot;domain&quot;: {&quot;data&quot;: &quot;table&quot;, &quot;field&quot;: &quot;category&quot;},
+      &quot;range&quot;: &quot;width&quot;,
+      &quot;padding&quot;: 0.05,
+      &quot;round&quot;: true
+    },
+    {
+      &quot;name&quot;: &quot;yscale&quot;,
+      &quot;domain&quot;: {&quot;data&quot;: &quot;table&quot;, &quot;field&quot;: &quot;amount&quot;},
+      &quot;nice&quot;: true,
+      &quot;range&quot;: &quot;height&quot;
+    }
+  ],
+
+  &quot;axes&quot;: [
+    { &quot;orient&quot;: &quot;bottom&quot;, &quot;scale&quot;: &quot;xscale&quot; },
+    { &quot;orient&quot;: &quot;left&quot;, &quot;scale&quot;: &quot;yscale&quot; }
+  ],
+
+  &quot;marks&quot;: [
+    {
+      &quot;type&quot;: &quot;rect&quot;,
+      &quot;from&quot;: {&quot;data&quot;:&quot;table&quot;},
+      &quot;encode&quot;: {
+        &quot;enter&quot;: {
+          &quot;x&quot;: {&quot;scale&quot;: &quot;xscale&quot;, &quot;field&quot;: &quot;category&quot;},
+          &quot;width&quot;: {&quot;scale&quot;: &quot;xscale&quot;, &quot;band&quot;: 1},
+          &quot;y&quot;: {&quot;scale&quot;: &quot;yscale&quot;, &quot;field&quot;: &quot;amount&quot;},
+          &quot;y2&quot;: {&quot;scale&quot;: &quot;yscale&quot;, &quot;value&quot;: 0}
+        },
+        &quot;update&quot;: {
+          &quot;fill&quot;: {&quot;value&quot;: &quot;steelblue&quot;}
+        },
+        &quot;hover&quot;: {
+          &quot;fill&quot;: {&quot;value&quot;: &quot;red&quot;}
+        }
+      }
+    },
+    {
+      &quot;type&quot;: &quot;text&quot;,
+      &quot;encode&quot;: {
+        &quot;enter&quot;: {
+          &quot;align&quot;: {&quot;value&quot;: &quot;center&quot;},
+          &quot;baseline&quot;: {&quot;value&quot;: &quot;bottom&quot;},
+          &quot;fill&quot;: {&quot;value&quot;: &quot;#333&quot;}
+        },
+        &quot;update&quot;: {
+          &quot;x&quot;: {&quot;scale&quot;: &quot;xscale&quot;, &quot;signal&quot;: &quot;tooltip.category&quot;, &quot;band&quot;: 0.5},
+          &quot;y&quot;: {&quot;scale&quot;: &quot;yscale&quot;, &quot;signal&quot;: &quot;tooltip.amount&quot;, &quot;offset&quot;: -2},
+          &quot;text&quot;: {&quot;signal&quot;: &quot;tooltip.amount&quot;},
+          &quot;fillOpacity&quot;: [
+            {&quot;test&quot;: &quot;datum === tooltip&quot;, &quot;value&quot;: 0},
+            {&quot;value&quot;: 1}
+          ]
+        }
+      }
+    }
+  ]
+  }
+&quot;&quot;&quot;</code></pre><h2 id="Data-1"><a class="docs-heading-anchor" href="#Data-1">Data</a><a class="docs-heading-anchor-permalink" href="#Data-1" title="Permalink"></a></h2><p>The easiest way to pass data into a Vega spec is to use the <code>@vgplot</code> macro, and assign the data to the <code>data</code> element. There are various options:</p><ol><li>You can pass a <code>Pair</code> as an element in the <code>data</code> vector, where the key is the name of the data source and the value any iterable table.</li><li>You can also assign any iterable table to the <code>value</code> field inside a composite object in the <code>data</code> vector.</li></ol><p>The first option looks like this:</p><pre><code class="language-julia">...,
+data = [:my_datasource_name=&gt;mydataframe],
+...</code></pre><p>The second option looks like this:</p><pre><code class="language-julia">...,
+data = [
+  {
+    name=:my_datasource,
+    values=mydataframe
+  }
+],
+...</code></pre><p>A full example of a Vega plot that uses the first option looks like this:</p><pre><code class="language-julia">using Vega, VegaDatasets
+
+@vgplot(
+    height=200,
+    width=200,
+    padding=5,    
+    data=[:source=&gt;dataset(&quot;cars&quot;)],    
+    marks=[{
+        name=&quot;marks&quot;,
+        encode={
+            update={
+                shape={value=&quot;circle&quot;},
+                x={field=&quot;Horsepower&quot;, scale=&quot;x&quot;},
+                y={field=&quot;Miles_per_Gallon&quot;, scale=&quot;y&quot;}
+            }
+        },
+        from={data=&quot;source&quot;},
+        type=&quot;symbol&quot;
+    }],
+    axes=[
+        {
+            domain=false,
+            tickCount=5,
+            grid=true,
+            title=&quot;Horsepower&quot;,
+            scale=&quot;x&quot;,
+            orient=&quot;bottom&quot;
+        },
+        {
+            domain=false,
+            grid=true,
+            titlePadding=5,
+            title=&quot;Miles_per_Gallon&quot;,
+            scale=&quot;y&quot;,
+            orient=&quot;left&quot;
+        }
+    ],    
+    scales=[
+        {
+            name=&quot;x&quot;,
+            nice=true,
+            zero=true,
+            range=&quot;width&quot;,
+            domain={data=&quot;source&quot;,field=&quot;Horsepower&quot;},
+            type=&quot;linear&quot;,
+            round=true
+        },
+        {
+            name=&quot;y&quot;,
+            nice=true,
+            zero=true,
+            range=&quot;height&quot;,
+            domain={data=&quot;source&quot;,field=&quot;Miles_per_Gallon&quot;},
+            type=&quot;linear&quot;,
+            round=true
+        }
+    ]
+)</code></pre><h2 id="Loading-and-saving-Vega-specifications-1"><a class="docs-heading-anchor" href="#Loading-and-saving-Vega-specifications-1">Loading and saving Vega specifications</a><a class="docs-heading-anchor-permalink" href="#Loading-and-saving-Vega-specifications-1" title="Permalink"></a></h2><p>The <code>load</code> and <code>save</code> functions can be used to load and save vega specifications to and from disc. The following example loads a vega specification from a file named <code>myfigure.vega</code>:</p><pre><code class="language-julia">using Vega
+
+spec = load(&quot;myfigure.vega&quot;)</code></pre><p>To save a <code>VGSpec</code> to a file on disc, use the <code>save</code> function:</p><pre><code class="language-julia">using Vega
+
+spec = ... # Aquire a spec from somewhere
+
+spec |&gt; save(&quot;myfigure.vega&quot;)</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../gettingstarted/installation/">« Installation</a><a class="docs-footer-nextpage" href="../../examples/examples_vega_line_area_charts/">Line &amp; Area Charts »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Friday 21 April 2023 00:50">Friday 21 April 2023</span>. Using Julia version 1.8.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
