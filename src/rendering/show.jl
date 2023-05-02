@@ -12,25 +12,9 @@ function Base.show(io::IO, v::AbstractVegaSpec)
     return
 end
 
-function convert_vg_to_x(v::VGSpec, script)
-    full_script_path = vegalite_app_path("node_modules", "vega-cli", "bin", script)
-    p = open(Cmd(`$(NodeJS_18_jll.node()) $full_script_path -l error`, dir=vegalite_app_path()), "r+")
-    writer = @async begin
-        our_json_print(p, v)
-        close(p.in)
-    end
-    reader = @async read(p, String)
-    wait(p)
-    res = fetch(reader)
-    if p.exitcode != 0
-        throw(ArgumentError("Invalid spec"))
-    end
-    return res
-end
-
-function convert_vg_to_svg(v::VGSpec)
-    vg2svg_script_path = vegalite_app_path("vg2svg.js")
-    p = open(Cmd(`$(NodeJS_18_jll.node()) $vg2svg_script_path`, dir=vegalite_app_path()), "r+")
+function convert_vg_to_x(v::VGSpec, fileformat)
+    script_path = vegalite_app_path("node_modules", "vega-cli", "bin", "vg2$fileformat")
+    p = open(Cmd(`$(NodeJS_18_jll.node()) $script_path`, dir=vegalite_app_path()), "r+")
     writer = @async begin
         our_json_print(p, v)
         close(p.in)
@@ -51,12 +35,12 @@ function Base.show(io::IO, m::MIME"application/vnd.vega.v5+json", v::VGSpec)
 end
 
 function Base.show(io::IO, m::MIME"image/svg+xml", v::VGSpec)
-    print(io, convert_vg_to_svg(v))
+    print(io, convert_vg_to_x(v, "svg"))
 end
 
 function Base.show(io::IO, m::MIME"application/pdf", v::VGSpec)
     if vegalite_app_includes_canvas[]
-        print(io, convert_vg_to_x(v, "vg2pdf"))
+        print(io, convert_vg_to_x(v, "pdf"))
     else
         error("Not yet implemented.")
         # svgstring = convert_vg_to_svg(v)
@@ -91,7 +75,7 @@ end
 
 function Base.show(io::IO, m::MIME"image/png", v::VGSpec)
     if vegalite_app_includes_canvas[]
-        print(io, convert_vg_to_x(v, "vg2png"))
+        print(io, convert_vg_to_x(v, "png"))
     else
         error("Not yet implemented.")
         # svgstring = convert_vg_to_svg(v)
