@@ -14,14 +14,23 @@ end
 
 function convert_vg_to_x(v::VGSpec, fileformat; cmd_args="")
     script_path = vegalite_app_path("node_modules", "vega-cli", "bin", "vg2$fileformat")
+
     p = open(Cmd(`$(NodeJS_18_jll.node()) $script_path $cmd_args`, dir=vegalite_app_path()), "r+")
+
+    buffered_output_stream = BufferedStreams.BufferedOutputStream(p.in)
+
     writer = @async begin
         our_json_print(p, v)
+        close(buffered_output_stream)
         close(p.in)
     end
+
     reader = @async read(p, String)
-    wait(p)
+
+    wait(writer)
+    wait(p)    
     res = fetch(reader)
+    
     if p.exitcode != 0
         throw(ArgumentError("Invalid spec"))
     end

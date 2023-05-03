@@ -17,6 +17,7 @@ using Setfield: Setfield, PropertyLens, @lens, @set
 using Pkg.Artifacts
 using DataStructures
 import TableTraitsUtils
+import BufferedStreams
 
 export renderer, actionlinks
 export @vg_str, @vgplot, vgplot, @vgfrag, vgfrag
