@@ -15,7 +15,7 @@ end
 function convert_vg_to_x(v::VGSpec, fileformat; cmd_args="")
     script_path = vegalite_app_path("node_modules", "vega-cli", "bin", "vg2$fileformat")
 
-    p = open(Cmd(`$(NodeJS_18_jll.node()) $script_path $cmd_args`, dir=vegalite_app_path()), "r+")
+    p = open(Cmd(`$(NodeJS.nodejs_cmd()) $script_path $cmd_args`, dir=vegalite_app_path()), "r+")
 
     buffered_output_stream = BufferedStreams.BufferedOutputStream(p.in)
 
