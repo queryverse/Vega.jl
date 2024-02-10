@@ -9,30 +9,28 @@ function Base.show(io::IO, m::MIME"text/html", v::Vega.VGSpec)
 end
 
 makedocs(
-  modules=[Vega],
-  sitename="Vega.jl",
-  pages=[
-    "Home" => "index.md",
-    "Getting Started" => Any[
-        "Installation" => "gettingstarted/installation.md"
-    ],
-    "User Guide" => Any[
-        "Using Vega" => "userguide/vega.md"
-    ],
-    "Examples" => Any[
-        
-        "Line & Area Charts" => "examples/examples_vega_line_area_charts.md",
-        "Circular Charts" => "examples/examples_vega_circular_charts.md",
-        "Scatter Plots" => "examples/examples_vega_scatter_plots.md",
-        "Tree Diagrams" => "examples/examples_vega_tree_diagrams.md",
-        "Network Diagrams" => "examples/examples_vega_network_diagrams.md",
-        "Single Data Source" => "examples/examples_vega_single_data_source.md",
-        "Multiple Data Source" => "examples/examples_vega_multi_data_source.md"
-    ],
-    "Reference Manual" => [
-        "Global settings" => "referencemanual/global.md",
-        "Outputs" => "referencemanual/output.md"]
-  ]
+    modules=[Vega],
+    sitename="Vega.jl",
+    pages=[
+        "Home" => "index.md",
+        "Getting Started" => Any[
+            "Installation"=>"gettingstarted/installation.md"
+        ],
+        "User Guide" => Any[
+            "Using Vega"=>"userguide/vega.md"
+        ],
+        "Examples" => Any["Line & Area Charts"=>"examples/examples_vega_line_area_charts.md",
+            "Circular Charts"=>"examples/examples_vega_circular_charts.md",
+            "Scatter Plots"=>"examples/examples_vega_scatter_plots.md",
+            "Tree Diagrams"=>"examples/examples_vega_tree_diagrams.md",
+            "Network Diagrams"=>"examples/examples_vega_network_diagrams.md",
+            "Single Data Source"=>"examples/examples_vega_single_data_source.md",
+            "Multiple Data Source"=>"examples/examples_vega_multi_data_source.md"
+        ],
+        "Reference Manual" => [
+            "Global settings" => "referencemanual/global.md",
+            "Outputs" => "referencemanual/output.md"]
+    ]
 )
 
 deploydocs(

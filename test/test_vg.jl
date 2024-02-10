@@ -5,7 +5,7 @@
     using VegaDatasets
     using Dates
     using Vega: getparams
-    
+
     include("testhelper_create_vg_plot.jl")
 
     @test vg"""{ "data": [ { "name": "test" } ] }"""(URI("http://www.foo.com/bar.json"), "test") == vg"""
@@ -37,7 +37,7 @@
             """
     end
 
-    df = DataFrame(a=[1.,2.], b=["A", "B"], c=[Date(2000), Date(2001)])
+    df = DataFrame(a=[1., 2.], b=["A", "B"], c=[Date(2000), Date(2001)])
 
     p1 = getvgplot()
 

@@ -19,7 +19,7 @@ function convert_nt_to_dict(item::AbstractVegaFragment, fragtype)
     return fragtype(item.positional, OrderedDict{String,Any}(string(k) => convert_nt_to_dict(v, fragtype) for (k, v) in pairs(item.named)))
 end
 
-function walk_dict(f, d::T, parent) where {T <: AbstractDict}
+function walk_dict(f, d::T, parent) where {T<:AbstractDict}
     res = T()
     for p in d
         if p[2] isa Dict
@@ -108,6 +108,6 @@ function convert_frag_tree_to_dict(spec::VGFrag)
     return OrderedDict{String,Any}(k => replace_remaining_frag(v) for (k, v) in spec.named)
 end
 
-function vgplot(args...;kwargs...)
-    return VGSpec(convert_frag_tree_to_dict(fix_shortcut_level_spec(vgfrag(args...;kwargs...))))
+function vgplot(args...; kwargs...)
+    return VGSpec(convert_frag_tree_to_dict(fix_shortcut_level_spec(vgfrag(args...; kwargs...))))
 end

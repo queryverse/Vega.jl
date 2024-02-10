@@ -4,7 +4,7 @@ end
 
 abstract type AbstractVegaSpec end
 
-Base.copy(spec::T) where {T <: AbstractVegaSpec} = T(copy(getparams(spec)))
+Base.copy(spec::T) where {T<:AbstractVegaSpec} = T(copy(getparams(spec)))
 
 const ObjectLike = Union{AbstractVegaSpec,ObjectProxy}
 
@@ -51,11 +51,11 @@ struct DataValuesNode
     function DataValuesNode(it)
 
         col_values, col_names = TableTraitsUtils.create_columns_from_iterabletable(it)
-    
+
         return new(OrderedDict{Symbol,AbstractVector}(i[1] => i[2] for i in zip(col_names, col_values)))
     end
 end
-  
+
 Base.:(==)(a::DataValuesNode, b::DataValuesNode) = a.columns == b.columns
 
 function our_show_json(io, it, col_names)
