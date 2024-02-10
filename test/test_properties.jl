@@ -2,7 +2,7 @@
     using Setfield
 
     include("testhelper_create_vg_plot.jl")
-    
+
     vgp = getvgplot()
     @test vgp.width isa Number
     @static if VERSION >= v"1.3"

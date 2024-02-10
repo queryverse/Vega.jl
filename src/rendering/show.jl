@@ -28,9 +28,9 @@ function convert_vg_to_x(v::VGSpec, fileformat; cmd_args="")
     reader = @async read(p, String)
 
     wait(writer)
-    wait(p)    
+    wait(p)
     res = fetch(reader)
-    
+
     if p.exitcode != 0
         throw(ArgumentError("Invalid spec"))
     end

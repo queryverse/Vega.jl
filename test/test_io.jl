@@ -1,11 +1,11 @@
 @testitem "io" begin
-    using Vega:getparams
+    using Vega: getparams
     using DataFrames
     using Dates
     using FileIO
 
     include("testhelper_create_vg_plot.jl")
-    
+
     vgp = getvgplot()
 
     # @testset "$fmt (indent=$(repr(indent)))" for (fmt, plt) in [
