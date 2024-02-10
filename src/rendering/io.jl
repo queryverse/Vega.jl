@@ -40,5 +40,5 @@ end
 
 savespec(filename::AbstractString, v::AbstractVegaSpec; kwargs...) =
     open(filename, "w") do io
-    savespec(io, v; kwargs...)
-end
+        savespec(io, v; kwargs...)
+    end

@@ -68,7 +68,7 @@ show if plots will have (true) or not (false) the action links displayed
 indicate if actions links should be dislpayed under the plot
 """
 actionlinks() = ACTIONSLINKS
-actionlinks(b::Bool) = (global ACTIONSLINKS ; ACTIONSLINKS = b)
+actionlinks(b::Bool) = (global ACTIONSLINKS; ACTIONSLINKS = b)
 
 
 ########################  includes  #####################################
