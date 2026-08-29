@@ -11,6 +11,7 @@ end
 makedocs(
   modules=[Vega],
   sitename="Vega.jl",
+  warnonly = [:missing_docs],
   pages=[
     "Home" => "index.md",
     "Getting Started" => Any[
