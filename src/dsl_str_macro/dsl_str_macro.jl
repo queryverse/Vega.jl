@@ -1,3 +1,3 @@
 macro vg_str(content)
-    return VGSpec(JSON.parse(content))
+    return VGSpec(json_parse(content))
 end
