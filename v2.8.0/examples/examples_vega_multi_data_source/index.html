@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Multiple Data Source · Vega.jl</title><meta name="title" content="Multiple Data Source · Vega.jl"/><meta property="og:title" content="Multiple Data Source · Vega.jl"/><meta property="twitter:title" content="Multiple Data Source · Vega.jl"/><meta name="description" content="Documentation for Vega.jl."/><meta property="og:description" content="Documentation for Vega.jl."/><meta property="twitter:description" content="Documentation for Vega.jl."/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.63.2/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">Vega.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Getting Started</span><ul><li><a class="tocitem" href="../../gettingstarted/installation/">Installation</a></li></ul></li><li><span class="tocitem">User Guide</span><ul><li><a class="tocitem" href="../../userguide/vega/">Using Vega</a></li></ul></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../examples_vega_line_area_charts/">Line &amp; Area Charts</a></li><li><a class="tocitem" href="../examples_vega_circular_charts/">Circular Charts</a></li><li><a class="tocitem" href="../examples_vega_scatter_plots/">Scatter Plots</a></li><li><a class="tocitem" href="../examples_vega_tree_diagrams/">Tree Diagrams</a></li><li><a class="tocitem" href="../examples_vega_network_diagrams/">Network Diagrams</a></li><li><a class="tocitem" href="../examples_vega_single_data_source/">Single Data Source</a></li><li class="is-active"><a class="tocitem" href>Multiple Data Source</a><ul class="internal"><li><a class="tocitem" href="#Dorling-Cartogram"><span>Dorling Cartogram</span></a></li></ul></li></ul></li><li><span class="tocitem">Reference Manual</span><ul><li><a class="tocitem" href="../../referencemanual/global/">Global settings</a></li><li><a class="tocitem" href="../../referencemanual/output/">Outputs</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Multiple Data Source</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Multiple Data Source</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/queryverse/Vega.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/queryverse/Vega.jl/blob/main/docs/src/examples/examples_vega_multi_data_source.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Using-Vega-with-Multiple-Data-Sources"><a class="docs-heading-anchor" href="#Using-Vega-with-Multiple-Data-Sources">Using Vega with Multiple Data Sources</a><a id="Using-Vega-with-Multiple-Data-Sources-1"></a><a class="docs-heading-anchor-permalink" href="#Using-Vega-with-Multiple-Data-Sources" title="Permalink"></a></h1><h2 id="Dorling-Cartogram"><a class="docs-heading-anchor" href="#Dorling-Cartogram">Dorling Cartogram</a><a id="Dorling-Cartogram-1"></a><a class="docs-heading-anchor-permalink" href="#Dorling-Cartogram" title="Permalink"></a></h2><p>From <a href="https://vega.github.io/vega/examples/dorling-cartogram/">Vega Dorling Cartogram Example</a></p><pre><code class="language-julia hljs">using Vega, VegaDatasets, URIParser
+
+uri = URI(&quot;https://raw.githubusercontent.com/vega/vega-datasets/master/data/us-10m.json&quot;)
+
+vg&quot;&quot;&quot;{
+  &quot;width&quot;: 900,
+  &quot;height&quot;: 520,
+  &quot;autosize&quot;: &quot;none&quot;,
+
+  &quot;config&quot;: {
+    &quot;legend&quot;: {
+      &quot;gradientDirection&quot;: &quot;horizontal&quot;,
+      &quot;gradientLength&quot;: 120,
+      &quot;gradientThickness&quot;: 10
+    }
+  },
+
+  &quot;data&quot;: [
+    {
+      &quot;name&quot;: &quot;states&quot;,
+      &quot;format&quot;: {&quot;type&quot;: &quot;topojson&quot;, &quot;feature&quot;: &quot;states&quot;}
+    },
+    {
+      &quot;name&quot;: &quot;obesity&quot;,
+      &quot;transform&quot;: [
+        {
+          &quot;type&quot;: &quot;lookup&quot;,
+          &quot;from&quot;: &quot;states&quot;, &quot;key&quot;: &quot;id&quot;,
+          &quot;fields&quot;: [&quot;id&quot;], &quot;as&quot;: [&quot;geo&quot;]
+        },
+        {
+          &quot;type&quot;: &quot;filter&quot;,
+          &quot;expr&quot;: &quot;datum.geo&quot;
+        },
+        {
+          &quot;type&quot;: &quot;formula&quot;, &quot;as&quot;: &quot;centroid&quot;,
+          &quot;expr&quot;: &quot;geoCentroid(&#39;projection&#39;, datum.geo)&quot;
+        }
+      ]
+    }
+  ],
+
+  &quot;projections&quot;: [
+    {
+      &quot;name&quot;: &quot;projection&quot;,
+      &quot;type&quot;: &quot;albersUsa&quot;,
+      &quot;scale&quot;: 1100,
+      &quot;translate&quot;: [{&quot;signal&quot;: &quot;width / 2&quot;}, {&quot;signal&quot;: &quot;height / 2&quot;}]
+    }
+  ],
+
+  &quot;scales&quot;: [
+    {
+      &quot;name&quot;: &quot;size&quot;,
+      &quot;domain&quot;: {&quot;data&quot;: &quot;obesity&quot;, &quot;field&quot;: &quot;rate&quot;},
+      &quot;zero&quot;: false,
+      &quot;range&quot;: [1000, 5000]
+    },
+    {
+      &quot;name&quot;: &quot;color&quot;,
+      &quot;type&quot;: &quot;linear&quot;,
+      &quot;nice&quot;: true,
+      &quot;domain&quot;: {&quot;data&quot;: &quot;obesity&quot;, &quot;field&quot;: &quot;rate&quot;},
+      &quot;range&quot;: &quot;ramp&quot;
+    }
+  ],
+
+  &quot;legends&quot;: [
+    {
+      &quot;title&quot;: &quot;% of Obese Adults&quot;,
+      &quot;orient&quot;: &quot;bottom-right&quot;,
+      &quot;type&quot;: &quot;symbol&quot;,
+      &quot;size&quot;: &quot;size&quot;,
+      &quot;fill&quot;: &quot;color&quot;,
+      &quot;format&quot;: &quot;.1%&quot;,
+      &quot;clipHeight&quot;: 16
+    }
+  ],
+
+  &quot;marks&quot;: [
+    {
+      &quot;name&quot;: &quot;circles&quot;,
+      &quot;type&quot;: &quot;symbol&quot;,
+      &quot;from&quot;: {&quot;data&quot;: &quot;obesity&quot;},
+      &quot;encode&quot;: {
+        &quot;enter&quot;: {
+          &quot;size&quot;: {&quot;scale&quot;: &quot;size&quot;, &quot;field&quot;: &quot;rate&quot;},
+          &quot;fill&quot;: {&quot;scale&quot;: &quot;color&quot;, &quot;field&quot;: &quot;rate&quot;},
+          &quot;stroke&quot;: {&quot;value&quot;: &quot;white&quot;},
+          &quot;strokeWidth&quot;: {&quot;value&quot;: 1.5},
+          &quot;x&quot;: {&quot;field&quot;: &quot;centroid[0]&quot;},
+          &quot;y&quot;: {&quot;field&quot;: &quot;centroid[1]&quot;},
+          &quot;tooltip&quot;: {&quot;signal&quot;: &quot;&#39;Obesity Rate: &#39; + format(datum.rate, &#39;.1%&#39;)&quot;}
+        }
+      },
+      &quot;transform&quot;: [
+        {
+          &quot;type&quot;: &quot;force&quot;,
+          &quot;static&quot;: true,
+          &quot;forces&quot;: [
+            {&quot;force&quot;: &quot;collide&quot;, &quot;radius&quot;: {&quot;expr&quot;: &quot;1 + sqrt(datum.size) / 2&quot;}},
+            {&quot;force&quot;: &quot;x&quot;, &quot;x&quot;: &quot;datum.centroid[0]&quot;},
+            {&quot;force&quot;: &quot;y&quot;, &quot;y&quot;: &quot;datum.centroid[1]&quot;}
+          ]
+        }
+      ]
+    },
+    {
+      &quot;type&quot;: &quot;text&quot;,
+      &quot;interactive&quot;: false,
+      &quot;from&quot;: {&quot;data&quot;: &quot;circles&quot;},
+      &quot;encode&quot;: {
+        &quot;enter&quot;: {
+          &quot;align&quot;: {&quot;value&quot;: &quot;center&quot;},
+          &quot;baseline&quot;: {&quot;value&quot;: &quot;middle&quot;},
+          &quot;fontSize&quot;: {&quot;value&quot;: 13},
+          &quot;fontWeight&quot;: {&quot;value&quot;: &quot;bold&quot;},
+          &quot;text&quot;: {&quot;field&quot;: &quot;datum.state&quot;}
+        },
+        &quot;update&quot;: {
+          &quot;x&quot;: {&quot;field&quot;: &quot;x&quot;},
+          &quot;y&quot;: {&quot;field&quot;: &quot;y&quot;}
+        }
+      }
+    }
+  ]
+}&quot;&quot;&quot;(uri, &quot;states&quot;)(dataset(&quot;obesity&quot;), &quot;obesity&quot;)</code></pre><img src="0da6cfb9.svg" alt="Example block output"/></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../examples_vega_single_data_source/">« Single Data Source</a><a class="docs-footer-nextpage" href="../../referencemanual/global/">Global settings »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.19.0 on <span class="colophon-date" title="Saturday 19 September 2026 03:08">Saturday 19 September 2026</span>. Using Julia version 1.12.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
