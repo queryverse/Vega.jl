@@ -11,7 +11,6 @@ using URIParser
 using FilePaths
 using REPL, Dates
 using Random
-import JSONSchema
 using Setfield: Setfield, PropertyLens, @lens, @set
 # import Cairo, Rsvg
 using Pkg.Artifacts
@@ -72,6 +71,7 @@ actionlinks(b::Bool) = (global ACTIONSLINKS ; ACTIONSLINKS = b)
 
 
 ########################  includes  #####################################
+include("json_compat.jl")
 include("spec_utils.jl")
 include("vgspec.jl")
 

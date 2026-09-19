@@ -5,7 +5,7 @@ Load a vega specification from a file with name `filename`. Returns
 a `VGSpec` object.
 """
 loadvgspec(filename::AbstractString) = open(loadvgspec, filename)
-loadvgspec(io::IO) = VGSpec(JSON.parse(io))
+loadvgspec(io::IO) = VGSpec(json_parse(io))
 
 """
     savespec(filename::AbstractString, v::VLSpec)
@@ -32,9 +32,9 @@ function savespec(io::IO, v::VGSpec; include_data=false, indent=nothing)
         end
     end
     if indent === nothing
-        JSON.print(io, output_dict)
+        json_print(io, output_dict)
     else
-        JSON.print(io, output_dict, indent)
+        json_print(io, output_dict, indent)
     end
 end
 

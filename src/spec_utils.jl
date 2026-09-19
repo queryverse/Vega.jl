@@ -67,9 +67,9 @@ function our_show_json(io, it, col_names)
 
         for (col_index, col_value) in enumerate(row)
             col_index == 1 || print(io, ",")
-            JSON.print(io, col_names[col_index])
+            json_print(io, col_names[col_index])
             print(io, ":")
-            JSON.print(io, col_value isa DataValue ? get(col_value, nothing) : col_value)
+            json_print(io, col_value isa DataValue ? get(col_value, nothing) : col_value)
         end
 
         print(io, "}")
@@ -78,8 +78,17 @@ function our_show_json(io, it, col_names)
     print(io, "]")
 end
 
-function JSON.Writer.show_json(io::JSON.Writer.SC, ::JSON.Writer.CS, d::DataValuesNode)
+function show_datavaluesnode(io, d::DataValuesNode)
     col_names = collect(keys(d.columns))
     it = TableTraitsUtils.create_tableiterator(collect(values(d.columns)), col_names)
     our_show_json(io, it, col_names)
+end
+
+@static if JSON_HAS_WRITER
+    JSON.Writer.show_json(io::JSON.Writer.SC, ::JSON.Writer.CS, d::DataValuesNode) =
+        show_datavaluesnode(io, d)
+else
+    # `lower` is the only serialization hook JSON.jl >=1.0 offers, and a
+    # `JSONText` is emitted verbatim, so the bytes match the `show_json` path.
+    JSON.lower(d::DataValuesNode) = JSON.JSONText(sprint(show_datavaluesnode, d))
 end
