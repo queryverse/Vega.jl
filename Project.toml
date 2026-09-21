@@ -34,6 +34,9 @@ test = ["VegaDatasets", "Dates", "Test", "DataFrames", "TestItemRunner", "Generi
 
 [compat]
 REPL = "< 0.0.1, 1.6"
+Random = "< 0.0.1, 1.6"
+Pkg = "< 0.0.1, 1.5"
+Dates = "< 0.0.1, 1.6"
 TableTraitsUtils = "1"
 IteratorInterfaceExtensions = "0.1.1, 1"
 BufferedStreams = "1.1"
