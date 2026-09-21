@@ -33,6 +33,7 @@ NodeJS = "2bd173c7-0d6d-553b-b6af-13a54713934c"
 test = ["VegaDatasets", "Dates", "Test", "DataFrames", "TestItemRunner", "GenericLinearAlgebra"]
 
 [compat]
+Random = "< 0.0.1, 1.6"
 TableTraitsUtils = "1"
 IteratorInterfaceExtensions = "0.1.1, 1"
 BufferedStreams = "1.1"
